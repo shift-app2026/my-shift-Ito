@@ -36,7 +36,7 @@
     }
   </style>
 </head>
-<body class="flex justify-center p-1 sm:p-3 relative">
+<body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
 
   <!-- 自動消滅メッセージ（トースト通知） -->
   <div id="toastMessage" class="fixed top-3 left-1/2 transform -translate-x-1/2 bg-stone-900/90 text-rose-50 text-xs py-1.5 px-3 rounded-xl shadow-xl border border-rose-200/20 z-50 transition-all duration-300 opacity-0 pointer-events-none text-center">
@@ -57,20 +57,20 @@
     </div>
   </div>
 
-  <div class="w-full max-w-md bg-white rounded-[1.75rem] sm:rounded-[2rem] shadow-2xl border border-rose-100/60 overflow-hidden flex flex-col">
+  <div class="w-full max-w-md bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl border border-rose-100/60 overflow-hidden flex flex-col h-[94vh] sm:h-auto max-h-[920px]">
     
     <!-- ヘッダー（給与タブでのみ表示） -->
-    <div id="appHeader" class="bg-gradient-to-r from-rose-900 via-rose-800 to-rose-950 text-amber-100 p-2 text-center border-b border-rose-900/30 flex justify-between items-center shadow-sm">
+    <div id="appHeader" class="bg-gradient-to-r from-rose-900 via-rose-800 to-rose-950 text-amber-100 p-2 text-center border-b border-rose-900/30 flex justify-between items-center shadow-sm shrink-0">
       <span class="text-sm opacity-80">✧</span>
       <h1 class="text-xs font-medium tracking-widest font-serif-title text-rose-50">MY SHIFT & SALARY</h1>
       <span class="text-sm opacity-80">✧</span>
     </div>
 
     <!-- メインコンテンツ表示エリア -->
-    <div class="p-2 sm:p-3 flex-1 space-y-2 overflow-y-auto">
+    <div class="p-2 sm:p-2.5 flex-1 space-y-2 overflow-y-auto">
       
       <!-- タブ1: 給与 -->
-      <div id="tab-clock" class="tab-content space-y-2.5">
+      <div id="tab-clock" class="tab-content space-y-2">
         
         <!-- 一番上：今日の日付表示 -->
         <div class="bg-gradient-to-br from-stone-800 to-stone-900 text-stone-100 p-2 rounded-2xl text-center shadow-md border border-stone-700 space-y-0.5">
@@ -81,7 +81,7 @@
         </div>
 
         <!-- 給与期間ごとの目標＆円形プログレスバーウィジェット -->
-        <div class="bg-white p-2.5 rounded-2xl border border-rose-100/80 shadow-sm space-y-1.5 relative">
+        <div class="bg-white p-2 rounded-2xl border border-rose-100/80 shadow-sm space-y-1 relative">
           
           <div class="flex justify-end px-1">
             <button onclick="editMonthlyGoal()" class="text-[10px] text-rose-800 font-bold bg-rose-50 hover:bg-rose-100 px-2.5 py-0.5 rounded-xl transition border border-rose-200/80 shadow-xs">
@@ -94,7 +94,7 @@
               ◀
             </button>
 
-            <div class="relative w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center shrink-0">
+            <div class="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center shrink-0">
               <svg class="w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 36 36">
                 <path class="text-stone-200/70" stroke-width="3.5" stroke="currentColor" fill="none"
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -104,7 +104,7 @@
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
                 <span class="text-[9px] font-bold text-stone-400 tracking-wider">給料見込</span>
-                <span id="goalCurrentPay" class="text-lg font-bold font-serif-title text-stone-900 tracking-tight">¥0</span>
+                <span id="goalCurrentPay" class="text-base font-bold font-serif-title text-stone-900 tracking-tight">¥0</span>
                 <span id="goalPercentText" class="text-[10px] font-bold text-white bg-rose-900 px-1.5 py-0.2 rounded-full mt-0.5 shadow-xs">0%</span>
               </div>
             </div>
@@ -121,7 +121,7 @@
         </div>
 
         <!-- 本日のシフト予定 -->
-        <div class="bg-white p-2.5 rounded-2xl border border-rose-100/80 shadow-sm space-y-1.5">
+        <div class="bg-white p-2 rounded-2xl border border-rose-100/80 shadow-sm space-y-1">
           <div class="text-xs font-bold text-rose-900 border-b border-rose-100 pb-1 flex justify-between items-center tracking-wide">
             <span>本日のシフト予定</span>
             <span id="todayShiftDateLabel" class="font-normal text-stone-500 text-[10px]"></span>
@@ -129,7 +129,7 @@
           <div id="todayBreakdownContainer" class="space-y-1 text-xs text-stone-600">
             <span class="text-stone-400">本日のシフトはありません</span>
           </div>
-          <div class="border-t border-rose-100 pt-1.5 flex justify-between items-baseline text-rose-900">
+          <div class="border-t border-rose-100 pt-1 flex justify-between items-baseline text-rose-900">
             <div>
               <span class="text-[10px] font-bold text-stone-500">合計労働時間: </span>
               <span id="todayTotalHours" class="font-bold text-stone-800 text-xs">0 時間</span>
@@ -142,20 +142,20 @@
         </div>
 
         <!-- 今月の給与支給額（受取予定） -->
-        <div class="bg-gradient-to-br from-rose-50/90 via-rose-50/50 to-stone-50 text-rose-950 p-2.5 rounded-2xl border border-rose-200/70 shadow-xs space-y-1.5">
+        <div class="bg-gradient-to-br from-rose-50/90 via-rose-50/50 to-stone-50 text-rose-950 p-2 rounded-2xl border border-rose-200/70 shadow-xs space-y-1">
           <div class="text-xs font-bold text-rose-900 border-b border-rose-200/70 pb-1 flex justify-between items-center tracking-wide">
             <span>今月の給与支給額（受取予定）</span>
             <span id="currentReceiveMonthLabel" class="text-[10px] text-rose-900 font-bold bg-white px-2 py-0.5 rounded-xl border border-rose-200"></span>
           </div>
           <div id="monthlyReceiveBreakdown" class="space-y-1 text-xs text-stone-700"></div>
-          <div class="border-t border-rose-200/70 pt-1.5 flex justify-between items-baseline">
+          <div class="border-t border-rose-200/70 pt-1 flex justify-between items-baseline">
             <span class="text-xs font-bold text-rose-900">今月の受取総額 合計</span>
             <span id="monthlyReceiveTotalPay" class="text-base font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
           </div>
         </div>
 
         <!-- 年間収入合計 -->
-        <div class="bg-white p-2.5 rounded-2xl border border-stone-200 shadow-xs space-y-1">
+        <div class="bg-white p-2 rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <div class="text-xs font-bold text-stone-500 border-b border-stone-100 pb-1 flex justify-between items-center tracking-wide">
             <span>年間収入合計 (2026年)</span>
             <span class="text-[10px] font-normal text-stone-400">1/1 〜 12/31</span>
@@ -205,10 +205,10 @@
         </div>
 
         <!-- 日付選択後の設定エリア -->
-        <div class="bg-gradient-to-br from-rose-50/40 to-stone-50 p-2.5 rounded-2xl border border-rose-100 shadow-sm space-y-1.5">
+        <div class="bg-gradient-to-br from-rose-50/40 to-stone-50 p-2 rounded-2xl border border-rose-100 shadow-sm space-y-1.5">
           <p id="selectedDateTitle" class="text-xs font-bold text-rose-900 tracking-wide">日付を選択してください</p>
 
-          <div class="border-t border-rose-100 pt-1.5 space-y-1">
+          <div class="border-t border-rose-100 pt-1 space-y-1">
             <label class="text-[10px] font-bold text-stone-500 block">バイト先の切り替え</label>
             <div id="jobSelectContainer" class="flex space-x-1"></div>
           </div>
@@ -228,7 +228,7 @@
           </div>
 
           <!-- 時間修正エリア -->
-          <div class="space-y-1.5 border-t border-rose-100 pt-1.5">
+          <div class="space-y-1 border-t border-rose-100 pt-1">
             <div class="flex justify-between items-center">
               <span class="text-[11px] font-bold text-stone-700">時間修正</span>
               <button type="button" onclick="clearSlot()" class="text-[10px] text-rose-800 hover:text-rose-950 font-bold px-2 py-0.5 rounded bg-rose-100/60 hover:bg-rose-200/60 transition">
@@ -237,7 +237,7 @@
             </div>
             
             <div class="flex items-center space-x-1.5">
-              <div class="flex-1 grid grid-cols-2 gap-1 text-xs bg-white p-1.5 rounded-xl border border-rose-200/60 shadow-xs">
+              <div class="flex-1 grid grid-cols-2 gap-1 text-xs bg-white p-1 rounded-xl border border-rose-200/60 shadow-xs">
                 <div>
                   <label class="text-stone-400 text-[9px] block mb-0.5">開始時間</label>
                   <input type="time" id="shiftStart" class="w-full p-1 border rounded-lg border-rose-200/80 bg-stone-50 text-stone-700 focus:outline-none focus:border-rose-400 font-bold text-xs">
@@ -256,15 +256,15 @@
       </div>
 
       <!-- タブ3: カレンダー一覧 -->
-      <div id="tab-list" class="tab-content hidden space-y-2.5">
-        <div class="flex justify-between items-center bg-stone-100/80 p-2 rounded-xl border border-stone-200/60 text-xs">
-          <button onclick="changeListMonth(-1)" class="text-rose-900 font-bold px-2.5 py-0.5 hover:bg-rose-200/50 rounded-lg transition">◀ 前月</button>
+      <div id="tab-list" class="tab-content hidden space-y-2">
+        <div class="flex justify-between items-center bg-stone-100/80 p-1.5 rounded-xl border border-stone-200/60 text-xs">
+          <button onclick="changeListMonth(-1)" class="text-rose-900 font-bold px-2 py-0.5 hover:bg-rose-200/50 rounded-lg transition">◀ 前月</button>
           <h2 id="currentListMonthLabel" class="font-bold text-stone-800 tracking-wider">----</h2>
-          <button onclick="changeListMonth(1)" class="text-rose-900 font-bold px-2.5 py-0.5 hover:bg-rose-200/50 rounded-lg transition">翌月 ▶</button>
+          <button onclick="changeListMonth(1)" class="text-rose-900 font-bold px-2 py-0.5 hover:bg-rose-200/50 rounded-lg transition">翌月 ▶</button>
         </div>
 
-        <div class="bg-white p-2.5 sm:p-3 rounded-2xl border border-rose-100 space-y-2 shadow-sm">
-          <div class="text-xs font-bold text-stone-700 border-b border-rose-100 pb-1.5 flex justify-between items-center tracking-wide">
+        <div class="bg-white p-2.5 rounded-2xl border border-rose-100 space-y-1.5 shadow-sm">
+          <div class="text-xs font-bold text-stone-700 border-b border-rose-100 pb-1 flex justify-between items-center tracking-wide">
             <span id="standaloneListTitleLabel">〇月のシフト一覧</span>
             <div class="flex items-center space-x-1">
               <span class="text-[10px] text-stone-400 font-normal">カレンダー機能</span>
@@ -274,12 +274,12 @@
               </select>
             </div>
           </div>
-          <div id="standaloneShiftListContainer" class="space-y-1 max-h-[350px] overflow-y-auto pr-1 text-xs"></div>
+          <div id="standaloneShiftListContainer" class="space-y-1 max-h-[320px] overflow-y-auto pr-1 text-xs"></div>
         </div>
       </div>
 
       <!-- タブ4: 設定 -->
-      <div id="tab-settings" class="tab-content hidden space-y-2.5">
+      <div id="tab-settings" class="tab-content hidden space-y-2">
         
         <button onclick="saveSettings()" class="w-full bg-stone-900 text-rose-100 font-bold py-2 rounded-xl text-xs hover:bg-stone-800 transition shadow-md flex items-center justify-center space-x-1">
           <span>💾 設定を保存する</span>
@@ -336,76 +336,75 @@
                 </div>
               </div>
 
-              <!-- 時間帯の区切り＆時給設定（時間 → 時給の順にコンパクト配置） -->
+              <!-- 時間帯の区切り＆時給設定（スマホでもはみ出さないコンパクト均等配置） -->
               <div class="pt-1 border-t border-rose-100 space-y-1.5">
                 <span class="font-bold text-stone-700 block text-xs">時間帯の区切りと時給設定</span>
-                <p class="text-[10px] text-stone-400">時間を左側に、時給を右側に1列で配置しています</p>
 
                 <!-- 早朝 -->
                 <div class="bg-stone-50 p-2 rounded-xl border border-stone-200/80 flex items-center justify-between gap-1">
                   <div class="flex items-center space-x-1 shrink-0">
-                    <span class="font-bold text-stone-700 text-xs">☀️ 早朝</span>
-                    <div class="flex items-center space-x-1 text-[11px] text-stone-600">
-                      <input type="time" id="settingMorningStart" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-18">
+                    <span class="font-bold text-stone-700 text-xs w-11">☀️ 早朝</span>
+                    <div class="flex items-center space-x-0.5 text-[11px] text-stone-600">
+                      <input type="time" id="settingMorningStart" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-[72px]">
                       <span>〜</span>
-                      <input type="time" id="settingMorningEnd" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-18">
+                      <input type="time" id="settingMorningEnd" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-[72px]">
                     </div>
                   </div>
                   <div class="flex items-center space-x-0.5 text-[11px] font-bold text-stone-700 shrink-0">
-                    <span>時給</span>
-                    <input type="text" inputmode="numeric" id="settingWageMorning" oninput="formatInputNumber(this)" class="w-14 p-1 border rounded border-stone-300 bg-white text-center font-bold text-xs">
-                    <span>円</span>
+                    <span class="text-[10px] text-stone-400">時給</span>
+                    <input type="text" inputmode="numeric" id="settingWageMorning" oninput="formatInputNumber(this)" class="w-12 p-0.5 border rounded border-stone-300 bg-white text-center font-bold text-xs">
+                    <span class="text-[10px]">円</span>
                   </div>
                 </div>
 
                 <!-- 日中 -->
                 <div class="bg-stone-50 p-2 rounded-xl border border-stone-200/80 flex items-center justify-between gap-1">
                   <div class="flex items-center space-x-1 shrink-0">
-                    <span class="font-bold text-stone-700 text-xs">🌞 日中</span>
-                    <div class="flex items-center space-x-1 text-[11px] text-stone-600">
-                      <input type="time" id="settingDayStart" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-18">
+                    <span class="font-bold text-stone-700 text-xs w-11">🌞 日中</span>
+                    <div class="flex items-center space-x-0.5 text-[11px] text-stone-600">
+                      <input type="time" id="settingDayStart" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-[72px]">
                       <span>〜</span>
-                      <input type="time" id="settingDayEnd" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-18">
+                      <input type="time" id="settingDayEnd" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-[72px]">
                     </div>
                   </div>
                   <div class="flex items-center space-x-0.5 text-[11px] font-bold text-stone-700 shrink-0">
-                    <span>時給</span>
-                    <input type="text" inputmode="numeric" id="settingWageDay" oninput="formatInputNumber(this)" class="w-14 p-1 border rounded border-stone-300 bg-white text-center font-bold text-xs">
-                    <span>円</span>
+                    <span class="text-[10px] text-stone-400">時給</span>
+                    <input type="text" inputmode="numeric" id="settingWageDay" oninput="formatInputNumber(this)" class="w-12 p-0.5 border rounded border-stone-300 bg-white text-center font-bold text-xs">
+                    <span class="text-[10px]">円</span>
                   </div>
                 </div>
 
                 <!-- 夕勤 -->
                 <div class="bg-stone-50 p-2 rounded-xl border border-stone-200/80 flex items-center justify-between gap-1">
                   <div class="flex items-center space-x-1 shrink-0">
-                    <span class="font-bold text-stone-700 text-xs">🌆 夕勤</span>
-                    <div class="flex items-center space-x-1 text-[11px] text-stone-600">
-                      <input type="time" id="settingEveningStart" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-18">
+                    <span class="font-bold text-stone-700 text-xs w-11">🌆 夕勤</span>
+                    <div class="flex items-center space-x-0.5 text-[11px] text-stone-600">
+                      <input type="time" id="settingEveningStart" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-[72px]">
                       <span>〜</span>
-                      <input type="time" id="settingEveningEnd" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-18">
+                      <input type="time" id="settingEveningEnd" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-[72px]">
                     </div>
                   </div>
                   <div class="flex items-center space-x-0.5 text-[11px] font-bold text-stone-700 shrink-0">
-                    <span>時給</span>
-                    <input type="text" inputmode="numeric" id="settingWageEvening" oninput="formatInputNumber(this)" class="w-14 p-1 border rounded border-stone-300 bg-white text-center font-bold text-xs">
-                    <span>円</span>
+                    <span class="text-[10px] text-stone-400">時給</span>
+                    <input type="text" inputmode="numeric" id="settingWageEvening" oninput="formatInputNumber(this)" class="w-12 p-0.5 border rounded border-stone-300 bg-white text-center font-bold text-xs">
+                    <span class="text-[10px]">円</span>
                   </div>
                 </div>
 
                 <!-- 深夜 -->
                 <div class="bg-stone-50 p-2 rounded-xl border border-stone-200/80 flex items-center justify-between gap-1">
                   <div class="flex items-center space-x-1 shrink-0">
-                    <span class="font-bold text-stone-700 text-xs">🌙 深夜</span>
-                    <div class="flex items-center space-x-1 text-[11px] text-stone-600">
-                      <input type="time" id="settingNightStart" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-18">
+                    <span class="font-bold text-stone-700 text-xs w-11">🌙 深夜</span>
+                    <div class="flex items-center space-x-0.5 text-[11px] text-stone-600">
+                      <input type="time" id="settingNightStart" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-[72px]">
                       <span>〜</span>
-                      <input type="time" id="settingNightEnd" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-18">
+                      <input type="time" id="settingNightEnd" class="p-0.5 border rounded border-stone-300 bg-white text-[11px] font-bold w-[72px]">
                     </div>
                   </div>
                   <div class="flex items-center space-x-0.5 text-[11px] font-bold text-stone-700 shrink-0">
-                    <span>時給</span>
-                    <input type="text" inputmode="numeric" id="settingWageNight" oninput="formatInputNumber(this)" class="w-14 p-1 border rounded border-stone-300 bg-white text-center font-bold text-xs">
-                    <span>円</span>
+                    <span class="text-[10px] text-stone-400">時給</span>
+                    <input type="text" inputmode="numeric" id="settingWageNight" oninput="formatInputNumber(this)" class="w-12 p-0.5 border rounded border-stone-300 bg-white text-center font-bold text-xs">
+                    <span class="text-[10px]">円</span>
                   </div>
                 </div>
               </div>
@@ -478,7 +477,7 @@
     </div>
 
     <!-- 下部ナビゲーションタブ -->
-    <div class="bg-stone-100 border-t border-stone-200/70 p-1 grid grid-cols-4 gap-1">
+    <div class="bg-stone-100 border-t border-stone-200/70 p-1 grid grid-cols-4 gap-1 shrink-0">
       <button onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-1 rounded-xl text-[11px] text-center transition">
         給与
       </button>
