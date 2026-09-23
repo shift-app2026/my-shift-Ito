@@ -223,17 +223,17 @@
                 <div id="labelHeaderBreak1" class="text-center text-stone-700 font-bold text-[10px]">休憩時間</div>
                 <div id="labelHeaderClear1" class="text-center text-stone-700 font-bold text-[10px]">クリア</div>
 
-                <div id="fieldColStart1">
+                <div id="fieldColStart1" class="col-span-3">
                   <input type="time" id="shiftStart1" onchange="autoSaveShift()" class="w-full p-2 border rounded-xl border-rose-300 bg-white text-stone-900 font-bold focus:outline-none focus:border-rose-500">
                 </div>
-                <div id="fieldColEnd1">
+                <div id="fieldColEnd1" class="col-span-3">
                   <input type="time" id="shiftEnd1" onchange="autoSaveShift()" class="w-full p-2 border rounded-xl border-rose-300 bg-white text-stone-900 font-bold focus:outline-none focus:border-rose-500">
                 </div>
-                <div id="fieldColBreak1" class="flex items-center space-x-1">
+                <div id="fieldColBreak1" class="col-span-3 flex items-center space-x-1">
                   <input type="text" inputmode="numeric" id="shiftBreak1" oninput="formatInputNumber(this); autoSaveShift();" class="w-full p-2 border rounded-xl border-rose-300 bg-white text-center font-bold text-stone-900 text-xs focus:outline-none focus:border-rose-500" placeholder="0">
                   <span class="text-[10px] font-bold text-stone-700 shrink-0">分</span>
                 </div>
-                <div id="fieldColClear1" class="text-center">
+                <div id="fieldColClear1" class="col-span-3 text-center">
                   <button type="button" onclick="clearSlot(1)" class="w-full py-2 text-[10px] text-stone-700 hover:text-stone-950 font-bold rounded-xl bg-stone-200 hover:bg-stone-300 transition">クリア</button>
                 </div>
               </div>
@@ -247,17 +247,17 @@
                 <div id="labelHeaderBreak2" class="text-center text-stone-700 font-bold text-[10px]">休憩時間</div>
                 <div id="labelHeaderClear2" class="text-center text-stone-700 font-bold text-[10px]">クリア</div>
 
-                <div id="fieldColStart2">
+                <div id="fieldColStart2" class="col-span-3">
                   <input type="time" id="shiftStart2" onchange="autoSaveShift()" class="w-full p-2 border rounded-xl border-rose-300 bg-white text-stone-900 font-bold focus:outline-none focus:border-rose-500">
                 </div>
-                <div id="fieldColEnd2">
+                <div id="fieldColEnd2" class="col-span-3">
                   <input type="time" id="shiftEnd2" onchange="autoSaveShift()" class="w-full p-2 border rounded-xl border-rose-300 bg-white text-stone-900 font-bold focus:outline-none focus:border-rose-500">
                 </div>
-                <div id="fieldColBreak2" class="flex items-center space-x-1">
+                <div id="fieldColBreak2" class="col-span-3 flex items-center space-x-1">
                   <input type="text" inputmode="numeric" id="shiftBreak2" oninput="formatInputNumber(this); autoSaveShift();" class="w-full p-2 border rounded-xl border-rose-300 bg-white text-center font-bold text-stone-900 text-xs focus:outline-none focus:border-rose-500" placeholder="0">
                   <span class="text-[10px] font-bold text-stone-700 shrink-0">分</span>
                 </div>
-                <div id="fieldColClear2" class="text-center">
+                <div id="fieldColClear2" class="col-span-3 text-center">
                   <button type="button" onclick="clearSlot(2)" class="w-full py-2 text-[10px] text-stone-700 hover:text-stone-950 font-bold rounded-xl bg-stone-200 hover:bg-stone-300 transition">クリア</button>
                 </div>
               </div>
@@ -275,7 +275,7 @@
         </div>
 
         <div class="bg-white p-2.5 rounded-2xl border border-rose-200 space-y-1.5 shadow-sm">
-          <div class="text-xs font-bold text-stone-900 border-b border-rose-200 pb-1.5 flex flex-col items-end tracking-wide leading-relaxed">
+          <div class="text-xs font-bold text-stone-900 border-b border-rose-200 pb-1.5 flex flex-col items-start tracking-wide leading-relaxed pl-1">
             <span class="text-xs text-stone-900 font-bold">※日付の🗓️をタップすると</span>
             <span class="text-xs text-stone-900 font-bold">Googleカレンダーに登録できます</span>
           </div>
@@ -1900,6 +1900,13 @@
         let dayClass = "p-0.5 rounded-lg transition-all cursor-pointer text-stone-900 font-bold flex flex-col items-center justify-center min-h-[38px]";
         if (d.getDay() === 0 || isJapaneseHoliday(d)) dayClass += " text-rose-700 font-extrabold";
 
+        // お給料日の日付は丸で囲む（丸数字風デザイン）
+        let isPayday = (paydayJobs.length > 0);
+        let dayNumStyle = "";
+        if (isPayday) {
+          dayNumStyle = "w-6 h-6 rounded-full bg-rose-700 text-white flex items-center justify-center shadow-xs text-xs";
+        }
+
         if (isSelected) {
           dayClass += " bg-white text-rose-950 font-extrabold border-2 border-rose-900 shadow-sm scale-105";
         } else if (hasShift) {
@@ -1918,9 +1925,8 @@
 
         calendarDays.innerHTML += `
           <div onclick="selectCalendarDate('${dateStr}')" class="${dayClass}">
-            <span class="text-xs font-bold leading-tight">${d.getDate()}</span>
+            <span class="${isPayday ? dayNumStyle : 'text-xs font-bold leading-tight'}">${d.getDate()}</span>
             ${iconHtml}
-            ${paydayHtml}
           </div>
         `;
       }
