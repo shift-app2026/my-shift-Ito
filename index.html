@@ -264,7 +264,7 @@
 
         <div class="bg-white p-2.5 rounded-2xl border border-rose-200 space-y-1.5 shadow-sm">
           <div class="text-xs font-bold text-stone-900 border-b border-rose-200 pb-1.5 flex justify-end items-center tracking-wide">
-            <span class="text-xs text-stone-900 font-bold">※日付の🗓️をクリックするとGoogleカレンダーに登録できます</span>
+            <span class="text-xs text-stone-900 font-bold">※日付の🗓️をタップするとGoogleカレンダーに登録できます</span>
           </div>
           <div id="standaloneShiftListContainer" class="space-y-1 max-h-[480px] overflow-y-auto pr-1 text-xs"></div>
         </div>
@@ -284,7 +284,7 @@
 
           <div class="pt-1 border-t border-rose-200 space-y-1">
             <div class="flex justify-between items-center mb-1">
-              <span class="text-xs font-bold text-stone-700">バイト先名（名前の変更は ✏️ をクリックしてください）</span>
+              <span class="text-xs font-bold text-stone-700">バイト先名（名前の変更は ✏️ をタップしてください）</span>
             </div>
             <div id="settingsJobNameInputs" class="grid grid-cols-3 gap-1.5"></div>
           </div>
@@ -393,16 +393,14 @@
                   
                   <div class="p-2 rounded-xl border border-rose-300 space-y-1.5 bg-stone-50/50 flex flex-col justify-between">
                     <span class="font-bold text-stone-800 text-xs">交通費</span>
-                    <div class="flex items-center justify-between text-xs px-1">
+                    <div class="grid grid-cols-2 gap-1 text-xs">
                       <div class="flex items-center space-x-0.5">
-                        <span class="text-[10px] font-bold text-stone-700">月</span>
-                        <input type="text" inputmode="numeric" id="settingTransMonth" oninput="formatInputNumber(this)" class="w-9 p-0.5 border rounded text-center font-bold text-xs bg-white border-rose-300 text-stone-900" placeholder="0">
-                        <span class="text-xs font-bold">円</span>
+                        <span class="text-[10px] font-bold text-stone-700 shrink-0">月</span>
+                        <input type="text" inputmode="numeric" id="settingTransMonth" oninput="formatInputNumber(this)" class="w-full p-0.5 border rounded text-center font-bold text-xs bg-white border-rose-300 text-stone-900" placeholder="0">
                       </div>
                       <div class="flex items-center space-x-0.5">
-                        <span class="text-[10px] font-bold text-stone-700">1日</span>
-                        <input type="text" inputmode="numeric" id="settingTransDay" oninput="formatInputNumber(this)" class="w-9 p-0.5 border rounded text-center font-bold text-xs bg-white border-rose-300 text-stone-900" placeholder="0">
-                        <span class="text-xs font-bold">円</span>
+                        <span class="text-[10px] font-bold text-stone-700 shrink-0">1日</span>
+                        <input type="text" inputmode="numeric" id="settingTransDay" oninput="formatInputNumber(this)" class="w-full p-0.5 border rounded text-center font-bold text-xs bg-white border-rose-300 text-stone-900" placeholder="0">
                       </div>
                     </div>
                   </div>
@@ -1187,19 +1185,17 @@
       const presets = configData[jobKey].presets || [];
       presets.forEach((p, idx) => {
         container.innerHTML += `
-          <div class="flex items-center justify-between bg-stone-50 p-1.5 rounded-xl border border-rose-200 text-xs">
-            <div class="flex items-center space-x-1 overflow-x-auto py-0.5">
-              <span class="text-[11px] text-stone-700 font-bold w-4 shrink-0">${idx+1}.</span>
-              <input type="time" id="preset_start_${idx}" value="${p.start || ''}" class="p-1 border rounded border-rose-300 bg-white text-xs font-bold text-stone-900 w-[78px] shrink-0">
-              <span class="shrink-0 font-bold text-stone-700">〜</span>
-              <input type="time" id="preset_end_${idx}" value="${p.end || ''}" class="p-1 border rounded border-rose-300 bg-white text-xs font-bold text-stone-900 w-[78px] shrink-0">
-              <div class="flex items-center space-x-0.5 ml-1 shrink-0">
-                <span class="text-[11px] font-bold text-stone-700">休憩</span>
-                <input type="text" inputmode="numeric" id="preset_break_${idx}" value="${p.breakMins ? p.breakMins : ''}" oninput="formatInputNumber(this)" class="p-1 border rounded border-rose-300 bg-white text-xs font-bold text-stone-900 w-9 text-center" placeholder="0">
-                <span class="text-[11px] font-bold text-stone-700">分</span>
-              </div>
+          <div class="flex items-center justify-between bg-stone-50 p-1.5 rounded-xl border border-rose-200 text-xs gap-1">
+            <span class="text-[11px] text-stone-700 font-bold w-4 shrink-0 text-center">${idx+1}.</span>
+            <input type="time" id="preset_start_${idx}" value="${p.start || ''}" class="p-1 border rounded border-rose-300 bg-white text-xs font-bold text-stone-900 w-[72px] shrink-0 text-center">
+            <span class="shrink-0 font-bold text-stone-700">〜</span>
+            <input type="time" id="preset_end_${idx}" value="${p.end || ''}" class="p-1 border rounded border-rose-300 bg-white text-xs font-bold text-stone-900 w-[72px] shrink-0 text-center">
+            <div class="flex items-center space-x-0.5 shrink-0">
+              <span class="text-[10px] font-bold text-stone-700">休</span>
+              <input type="text" inputmode="numeric" id="preset_break_${idx}" value="${p.breakMins ? p.breakMins : ''}" oninput="formatInputNumber(this)" class="p-1 border rounded border-rose-300 bg-white text-xs font-bold text-stone-900 w-8 text-center" placeholder="0">
+              <span class="text-[10px] font-bold text-stone-700">分</span>
             </div>
-            <button type="button" onclick="clearPresetRow(${idx})" class="text-stone-700 hover:text-stone-950 font-bold px-2.5 py-0.5 rounded text-xs transition shrink-0 ml-1 bg-stone-200">クリア</button>
+            <button type="button" onclick="clearPresetRow(${idx})" class="text-stone-700 hover:text-stone-950 font-bold px-2 py-0.5 rounded text-xs transition shrink-0 bg-stone-200">クリア</button>
           </div>
         `;
       });
