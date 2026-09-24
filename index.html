@@ -217,15 +217,15 @@
 
         <div class="bg-gradient-to-br from-rose-50/30 to-stone-50 p-2 rounded-2xl border border-stone-200 shadow-sm space-y-2">
           
-          <!-- 前月の一括コピー機能（修正可能） -->
+          <!-- 前月の一括コピー機能（曜日に合わせてコピー） -->
           <div class="bg-white p-2 rounded-xl border border-rose-200/60 shadow-xs space-y-1">
             <div class="flex justify-between items-center">
-              <span class="text-[11px] font-bold text-rose-950">📋 前月のシフトをすべてコピー</span>
+              <span class="text-[11px] font-bold text-rose-950">📋 前月のシフトを曜日に合わせてコピー</span>
               <button type="button" onclick="copyEntirePreviousMonth()" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm">
                 一括コピーする
               </button>
             </div>
-            <p class="text-[10px] text-stone-500 leading-tight">※前月のシフトを一括で今月にコピーします。コピー後の修正も可能です。</p>
+            <p class="text-[10px] text-stone-500 leading-tight truncate">※前月の曜日に合わせてコピーされます。コピー後の修正も可能です。</p>
           </div>
 
           <div class="flex justify-between items-center border-b border-stone-200 pb-1.5 pt-1">
@@ -421,7 +421,11 @@
 
                   <!-- 確定・新規追加ボタンの見た目を統一 -->
                   <div class="flex items-center justify-between pt-1 border-t border-stone-200/60 gap-1">
-                    <span class="font-bold text-stone-700 text-xs shrink-0">時給 <span id="displayBaseWageText">1,100</span>円</span>
+                    <div class="flex items-center space-x-1 shrink-0">
+                      <span class="font-bold text-stone-700 text-xs">時給</span>
+                      <input type="text" inputmode="numeric" id="settingBaseWageInput" oninput="formatInputNumber(this)" class="w-16 p-1 border rounded-lg font-bold text-right pr-0.5 bg-white border-stone-200 text-stone-900 text-xs" placeholder="1,100">
+                      <span class="font-bold text-stone-700 text-xs">円</span>
+                    </div>
                     <div class="flex items-center space-x-0.5 shrink-0">
                       <span class="font-bold text-stone-600 text-[11px]">＋</span>
                       <input type="text" inputmode="numeric" id="input_b_plus" oninput="formatInputNumber(this)" class="w-12 p-1 border rounded-lg font-bold text-right pr-0.5 bg-white border-stone-200 text-stone-900" placeholder="50">
@@ -471,7 +475,7 @@
                 <!-- 下：その他手当 -->
                 <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 flex items-center justify-between">
                   <span class="font-bold text-stone-700 text-xs shrink-0">その他手当</span>
-                  <div class="flex items-center space-x-2 shrink-0">
+                  <div class="flex items-center space-x-3 shrink-0">
                     <div class="flex items-center space-x-0.5">
                       <span class="text-[10px] font-bold text-stone-500">月額</span>
                       <input type="text" inputmode="numeric" id="settingAllowanceMonth" oninput="formatInputNumber(this)" class="w-14 p-1 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
@@ -651,19 +655,39 @@
         prevYear -= 1;
       }
 
-      let copiedCount = 0;
+      function getWeekdayDates(year, month) {
+        let weekdaysMap = { 0:[], 1:[], 2:[], 3:[], 4:[], 5:[], 6:[] };
+        let daysInMonth = new Date(year, month + 1, 0).getDate();
+        for (let d = 1; d <= daysInMonth; d++) {
+          let dt = new Date(year, month, d);
+          weekdaysMap[dt.getDay()].push(d);
+        }
+        return weekdaysMap;
+      }
 
-      Object.keys(shiftsData).forEach(dateStr => {
-        let [y, m, d] = dateStr.split('-').map(Number);
-        if (y === prevYear && m === (prevMonth + 1)) {
-          let daysInCurrMonth = new Date(currYear, currMonth + 1, 0).getDate();
-          if (d <= daysInCurrMonth) {
-            let newDateStr = `${currYear}-${currMonth + 1}-${d}`;
-            shiftsData[newDateStr] = JSON.parse(JSON.stringify(shiftsData[dateStr]));
+      let prevWeekdays = getWeekdayDates(prevYear, prevMonth);
+      let currDaysInMonth = new Date(currYear, currMonth + 1, 0).getDate();
+      
+      let copiedCount = 0;
+      let currWeekdaysCount = { 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0 };
+
+      for (let d = 1; d <= currDaysInMonth; d++) {
+        let currDt = new Date(currYear, currMonth, d);
+        let dow = currDt.getDay();
+        let occurrenceIndex = currWeekdaysCount[dow];
+        currWeekdaysCount[dow]++;
+
+        if (prevWeekdays[dow] && prevWeekdays[dow][occurrenceIndex] !== undefined) {
+          let prevDayNum = prevWeekdays[dow][occurrenceIndex];
+          let prevDateStr = `${prevYear}-${prevMonth + 1}-${prevDayNum}`;
+          
+          if (shiftsData[prevDateStr]) {
+            let currDateStr = `${currYear}-${currMonth + 1}-${d}`;
+            shiftsData[currDateStr] = JSON.parse(JSON.stringify(shiftsData[prevDateStr]));
             copiedCount++;
           }
         }
-      });
+      }
 
       if (copiedCount === 0) {
         showToast("コピー元の前月シフトが見つかりませんでした");
@@ -678,7 +702,7 @@
       renderCalendar();
       renderStandaloneShiftList();
       initOverviewPage();
-      showToast(`前月のシフトを一括コピーしました！(修正も可能です)✨`);
+      showToast(`前月のシフトを曜日に合わせて一括コピーしました！✨`);
     }
 
     function loadDateToInputs(dateStr) {
@@ -2088,6 +2112,7 @@
       const countEl = document.getElementById('settingJobCount');
       const closeEl = document.getElementById('settingCloseDay');
       const payEl = document.getElementById('settingPayDay');
+      const baseWageInput = document.getElementById('settingBaseWageInput');
       const paidEl = document.getElementById('settingWagePaid');
       const transMonth = document.getElementById('settingTransMonth');
       const transDay = document.getElementById('settingTransDay');
@@ -2097,9 +2122,7 @@
       if (countEl) configData.jobCount = Number(countEl.value);
       if (closeEl) j.closeDay = closeEl.value;
       if (payEl) j.payDay = payEl.value;
-      
-      const bText = document.getElementById('displayBaseWageText');
-      if (bText) bText.innerText = (j.baseWage || 1100).toLocaleString();
+      if (baseWageInput) j.baseWage = parseFormattedNumber(baseWageInput.value);
 
       if (paidEl) j.paid = parseFormattedNumber(paidEl.value);
       if (transMonth) j.transMonth = parseFormattedNumber(transMonth.value);
@@ -2118,8 +2141,8 @@
       document.getElementById('settingCloseDay').value = j.closeDay !== undefined ? j.closeDay : '20';
       document.getElementById('settingPayDay').value = j.payDay !== undefined ? j.payDay : '5';
       let bWage = j.baseWage ? j.baseWage : 1100;
-      const bText = document.getElementById('displayBaseWageText');
-      if (bText) bText.innerText = bWage.toLocaleString();
+      const baseWageInput = document.getElementById('settingBaseWageInput');
+      if (baseWageInput) baseWageInput.value = bWage.toLocaleString();
 
       document.getElementById('settingWagePaid').value = j.paid ? j.paid.toLocaleString() : '1,100';
       document.getElementById('settingTransMonth').value = j.transMonth ? j.transMonth.toLocaleString() : '';
