@@ -26,8 +26,10 @@
       box-shadow: 0 4px 12px rgba(136, 19, 55, 0.3);
     }
     input, select {
-      font-size: 13px !important;
+      font-size: 11.5px !important;
       color: #1c1917 !important;
+      padding-left: 2px !important;
+      padding-right: 2px !important;
     }
     /* 給料日のハート横並びデザイン */
     .payday-pin-container {
@@ -362,99 +364,99 @@
               <div class="pt-1.5 border-t border-stone-200 space-y-1.5">
                 <div class="text-xs font-bold text-stone-800">【時給入力＆その他手当】</div>
                 <div class="grid grid-cols-2 gap-1.5">
-                  <div class="p-2 rounded-xl border border-stone-200 space-y-1.5 bg-stone-50/50 flex flex-col justify-between">
+                  <div class="p-1.5 sm:p-2 rounded-xl border border-stone-200 space-y-1 bg-stone-50/50 flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                      <span class="font-bold text-stone-700 text-xs">早朝</span>
+                      <span class="font-bold text-stone-700 text-[11px] sm:text-xs">早朝</span>
                       <div class="flex items-center space-x-0.5">
-                        <input type="text" inputmode="numeric" id="settingWageMorning" oninput="formatInputNumber(this)" class="w-16 p-1 border rounded-lg font-bold text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
-                        <span class="text-xs font-bold text-stone-600">円</span>
+                        <input type="text" inputmode="numeric" id="settingWageMorning" oninput="formatInputNumber(this)" class="w-14 sm:w-16 p-0.5 sm:p-1 border rounded-lg font-bold text-[11px] sm:text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
+                        <span class="text-[11px] sm:text-xs font-bold text-stone-600">円</span>
                       </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-1">
-                      <div class="flex items-center space-x-1">
-                        <input type="time" id="settingTimeMorningStart" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
-                        <span class="text-stone-400 font-bold">〜</span>
-                        <input type="time" id="settingTimeMorningEnd" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
+                    <div class="grid grid-cols-1 gap-0.5">
+                      <div class="flex items-center justify-between space-x-0.5">
+                        <input type="time" id="settingTimeMorningStart" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
+                        <span class="text-stone-400 font-bold shrink-0 text-[11px]">〜</span>
+                        <input type="time" id="settingTimeMorningEnd" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
                       </div>
                     </div>
                   </div>
-                  <div class="p-2 rounded-xl border border-stone-200 space-y-1.5 bg-stone-50/50 flex flex-col justify-between">
+                  <div class="p-1.5 sm:p-2 rounded-xl border border-stone-200 space-y-1 bg-stone-50/50 flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                      <span class="font-bold text-stone-700 text-xs">日中</span>
+                      <span class="font-bold text-stone-700 text-[11px] sm:text-xs">日中</span>
                       <div class="flex items-center space-x-0.5">
-                        <input type="text" inputmode="numeric" id="settingWageDay" oninput="formatInputNumber(this)" class="w-16 p-1 border rounded-lg font-bold text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
-                        <span class="text-xs font-bold text-stone-600">円</span>
+                        <input type="text" inputmode="numeric" id="settingWageDay" oninput="formatInputNumber(this)" class="w-14 sm:w-16 p-0.5 sm:p-1 border rounded-lg font-bold text-[11px] sm:text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
+                        <span class="text-[11px] sm:text-xs font-bold text-stone-600">円</span>
                       </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-1">
-                      <div class="flex items-center space-x-1">
-                        <input type="time" id="settingTimeDayStart" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
-                        <span class="text-stone-400 font-bold">〜</span>
-                        <input type="time" id="settingTimeDayEnd" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
+                    <div class="grid grid-cols-1 gap-0.5">
+                      <div class="flex items-center justify-between space-x-0.5">
+                        <input type="time" id="settingTimeDayStart" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
+                        <span class="text-stone-400 font-bold shrink-0 text-[11px]">〜</span>
+                        <input type="time" id="settingTimeDayEnd" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
                       </div>
                     </div>
                   </div>
-                  <div class="p-2 rounded-xl border border-stone-200 space-y-1.5 bg-stone-50/50 flex flex-col justify-between">
+                  <div class="p-1.5 sm:p-2 rounded-xl border border-stone-200 space-y-1 bg-stone-50/50 flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                      <span class="font-bold text-stone-700 text-xs">夕方</span>
+                      <span class="font-bold text-stone-700 text-[11px] sm:text-xs">夕方</span>
                       <div class="flex items-center space-x-0.5">
-                        <input type="text" inputmode="numeric" id="settingWageEvening" oninput="formatInputNumber(this)" class="w-16 p-1 border rounded-lg font-bold text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
-                        <span class="text-xs font-bold text-stone-600">円</span>
+                        <input type="text" inputmode="numeric" id="settingWageEvening" oninput="formatInputNumber(this)" class="w-14 sm:w-16 p-0.5 sm:p-1 border rounded-lg font-bold text-[11px] sm:text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
+                        <span class="text-[11px] sm:text-xs font-bold text-stone-600">円</span>
                       </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-1">
-                      <div class="flex items-center space-x-1">
-                        <input type="time" id="settingTimeEveningStart" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
-                        <span class="text-stone-400 font-bold">〜</span>
-                        <input type="time" id="settingTimeEveningEnd" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
+                    <div class="grid grid-cols-1 gap-0.5">
+                      <div class="flex items-center justify-between space-x-0.5">
+                        <input type="time" id="settingTimeEveningStart" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
+                        <span class="text-stone-400 font-bold shrink-0 text-[11px]">〜</span>
+                        <input type="time" id="settingTimeEveningEnd" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
                       </div>
                     </div>
                   </div>
-                  <div class="p-2 rounded-xl border border-stone-200 space-y-1.5 bg-stone-50/50 flex flex-col justify-between">
+                  <div class="p-1.5 sm:p-2 rounded-xl border border-stone-200 space-y-1 bg-stone-50/50 flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                      <span class="font-bold text-stone-700 text-xs">夜</span>
+                      <span class="font-bold text-stone-700 text-[11px] sm:text-xs">夜</span>
                       <div class="flex items-center space-x-0.5">
-                        <input type="text" inputmode="numeric" id="settingWageNight" oninput="formatInputNumber(this)" class="w-16 p-1 border rounded-lg font-bold text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
-                        <span class="text-xs font-bold text-stone-600">円</span>
+                        <input type="text" inputmode="numeric" id="settingWageNight" oninput="formatInputNumber(this)" class="w-14 sm:w-16 p-0.5 sm:p-1 border rounded-lg font-bold text-[11px] sm:text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
+                        <span class="text-[11px] sm:text-xs font-bold text-stone-600">円</span>
                       </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-1">
-                      <div class="flex items-center space-x-1">
-                        <input type="time" id="settingTimeNightStart" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
-                        <span class="text-stone-400 font-bold">〜</span>
-                        <input type="time" id="settingTimeNightEnd" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
+                    <div class="grid grid-cols-1 gap-0.5">
+                      <div class="flex items-center justify-between space-x-0.5">
+                        <input type="time" id="settingTimeNightStart" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
+                        <span class="text-stone-400 font-bold shrink-0 text-[11px]">〜</span>
+                        <input type="time" id="settingTimeNightEnd" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
                       </div>
                     </div>
                   </div>
-                  <div class="p-2 rounded-xl border border-stone-200 space-y-1.5 bg-stone-50/50 flex flex-col justify-between">
+                  <div class="p-1.5 sm:p-2 rounded-xl border border-stone-200 space-y-1 bg-stone-50/50 flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                      <span class="font-bold text-stone-700 text-xs">深夜</span>
+                      <span class="font-bold text-stone-700 text-[11px] sm:text-xs">深夜</span>
                       <div class="flex items-center space-x-0.5">
-                        <input type="text" inputmode="numeric" id="settingWageMidnight" oninput="formatInputNumber(this)" class="w-16 p-1 border rounded-lg font-bold text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
-                        <span class="text-xs font-bold text-stone-600">円</span>
+                        <input type="text" inputmode="numeric" id="settingWageMidnight" oninput="formatInputNumber(this)" class="w-14 sm:w-16 p-0.5 sm:p-1 border rounded-lg font-bold text-[11px] sm:text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
+                        <span class="text-[11px] sm:text-xs font-bold text-stone-600">円</span>
                       </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-1">
-                      <div class="flex items-center space-x-1">
-                        <input type="time" id="settingTimeMidnightStart" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
-                        <span class="text-stone-400 font-bold">〜</span>
-                        <input type="time" id="settingTimeMidnightEnd" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
+                    <div class="grid grid-cols-1 gap-0.5">
+                      <div class="flex items-center justify-between space-x-0.5">
+                        <input type="time" id="settingTimeMidnightStart" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
+                        <span class="text-stone-400 font-bold shrink-0 text-[11px]">〜</span>
+                        <input type="time" id="settingTimeMidnightEnd" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
                       </div>
                     </div>
                   </div>
-                  <div class="p-2 rounded-xl border border-stone-200 space-y-1.5 bg-stone-50/50 flex flex-col justify-between">
+                  <div class="p-1.5 sm:p-2 rounded-xl border border-stone-200 space-y-1 bg-stone-50/50 flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                      <span class="font-bold text-stone-700 text-xs">追加</span>
+                      <span class="font-bold text-stone-700 text-[11px] sm:text-xs">追加</span>
                       <div class="flex items-center space-x-0.5">
-                        <input type="text" inputmode="numeric" id="settingWageExtra" oninput="formatInputNumber(this)" class="w-16 p-1 border rounded-lg font-bold text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
-                        <span class="text-xs font-bold text-stone-600">円</span>
+                        <input type="text" inputmode="numeric" id="settingWageExtra" oninput="formatInputNumber(this)" class="w-14 sm:w-16 p-0.5 sm:p-1 border rounded-lg font-bold text-[11px] sm:text-xs bg-white border-stone-200 text-right pr-1 text-stone-900" placeholder="0">
+                        <span class="text-[11px] sm:text-xs font-bold text-stone-600">円</span>
                       </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-1">
-                      <div class="flex items-center space-x-1">
-                        <input type="time" id="settingTimeExtraStart" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
-                        <span class="text-stone-400 font-bold">〜</span>
-                        <input type="time" id="settingTimeExtraEnd" class="w-full p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
+                    <div class="grid grid-cols-1 gap-0.5">
+                      <div class="flex items-center justify-between space-x-0.5">
+                        <input type="time" id="settingTimeExtraStart" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
+                        <span class="text-stone-400 font-bold shrink-0 text-[11px]">〜</span>
+                        <input type="time" id="settingTimeExtraEnd" class="w-[44%] p-0.5 sm:p-1 border rounded-lg text-center font-bold text-[10px] sm:text-xs bg-white border-stone-200 text-stone-900">
                       </div>
                     </div>
                   </div>
