@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>マイシフト＆給料（最終調整版 v15）</title>
+  <title>マイシフト＆給料（最終調整版 v19）</title>
   
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%239d174d'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='%23fef3c7'>✨</text></svg>">
 
@@ -25,7 +25,7 @@
       font-weight: bold; 
       box-shadow: 0 4px 12px rgba(136, 19, 55, 0.3);
     }
-    input, select {
+    input, select, textarea {
       font-size: 11px !important;
       color: #1c1917 !important;
       padding-left: 1px !important;
@@ -217,7 +217,6 @@
 
         <div class="bg-gradient-to-br from-rose-50/30 to-stone-50 p-2 rounded-2xl border border-stone-200 shadow-sm space-y-2">
           
-          <!-- 前月の一括コピー機能（曜日に合わせてコピー） -->
           <div class="bg-white p-2 rounded-xl border border-rose-200/60 shadow-xs space-y-1">
             <div class="flex justify-between items-center">
               <span class="text-[11px] font-bold text-rose-950">📋 前月のシフトを曜日に合わせてコピー</span>
@@ -439,55 +438,75 @@
                 </div>
               </div>
 
-              <!-- ③ 有給休暇・交通費・その他手当の設定 -->
+              <!-- ③ 手当・有給・プチメモの設定（横並び2カラム構成） -->
               <div class="pt-1.5 border-t border-stone-200 space-y-1.5">
                 <div class="text-xs font-bold text-stone-800">【手当・有給の設定】</div>
                 
+                <!-- 1行目：有給休暇 ＆ プチメモ（横並び2カラム） -->
                 <div class="grid grid-cols-2 gap-1.5">
-                  <!-- 左：有給休暇 -->
-                  <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 flex items-center justify-between">
-                    <span class="font-bold text-stone-700 text-xs shrink-0">有給休暇</span>
-                    <div class="flex items-center space-x-0.5 shrink-0">
-                      <span class="text-[10px] font-bold text-stone-600">時給</span>
-                      <input type="text" inputmode="numeric" id="settingWagePaid" oninput="formatInputNumber(this)" class="w-12 p-1 border rounded-lg font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="1100">
-                      <span class="text-[10px] font-bold text-stone-600">円</span>
+                  <!-- 左カラム：有給休暇 -->
+                  <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 space-y-1">
+                    <span class="font-bold text-stone-700 text-xs block">有給休暇</span>
+                    <div class="flex items-center justify-between">
+                      <span class="text-[10px] font-bold text-stone-500">時給</span>
+                      <div class="flex items-center space-x-0.5">
+                        <input type="text" inputmode="numeric" id="settingWagePaid" oninput="formatInputNumber(this)" class="w-12 p-0.5 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="1100">
+                        <span class="text-[10px] font-bold text-stone-600">円</span>
+                      </div>
                     </div>
                   </div>
-                  
-                  <!-- 右：交通費 -->
-                  <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 flex items-center justify-between">
-                    <span class="font-bold text-stone-700 text-xs shrink-0">交通費</span>
-                    <div class="flex items-center space-x-1 shrink-0">
-                      <div class="flex items-center space-x-0.5">
-                        <span class="text-[9px] font-bold text-stone-500">月</span>
-                        <input type="text" inputmode="numeric" id="settingTransMonth" oninput="formatInputNumber(this)" class="w-9 p-0.5 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
-                        <span class="text-[9px] font-bold text-stone-600">円</span>
+
+                  <!-- 右カラム：プチメモ（タイトルなし・プレースホルダー表示＆2行の高さ） -->
+                  <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 flex flex-col justify-between">
+                    <textarea id="settingMemoInput" rows="2" class="w-full p-1 border rounded border-stone-200 bg-white text-xs font-bold text-stone-900 resize-none focus:outline-none focus:border-rose-900" placeholder="メモを入力"></textarea>
+                  </div>
+                </div>
+
+                <!-- 2行目：交通費 ＆ その他手当（横並び2カラム） -->
+                <div class="grid grid-cols-2 gap-1.5">
+                  <!-- 左カラム：交通費 -->
+                  <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 space-y-1">
+                    <span class="font-bold text-stone-700 text-xs block">交通費</span>
+                    <div class="space-y-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-stone-500">月額</span>
+                        <div class="flex items-center space-x-0.5">
+                          <input type="text" inputmode="numeric" id="settingTransMonth" oninput="formatInputNumber(this)" class="w-11 p-0.5 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
+                          <span class="text-[10px] font-bold text-stone-600">円</span>
+                        </div>
                       </div>
-                      <div class="flex items-center space-x-0.5">
-                        <span class="text-[9px] font-bold text-stone-500">1日</span>
-                        <input type="text" inputmode="numeric" id="settingTransDay" oninput="formatInputNumber(this)" class="w-9 p-0.5 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
-                        <span class="text-[9px] font-bold text-stone-600">円</span>
+                      <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-stone-500">1日</span>
+                        <div class="flex items-center space-x-0.5">
+                          <input type="text" inputmode="numeric" id="settingTransDay" oninput="formatInputNumber(this)" class="w-11 p-0.5 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
+                          <span class="text-[10px] font-bold text-stone-600">円</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 右カラム：その他手当 -->
+                  <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 space-y-1">
+                    <span class="font-bold text-stone-700 text-xs block">その他手当</span>
+                    <div class="space-y-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-stone-500">月額</span>
+                        <div class="flex items-center space-x-0.5">
+                          <input type="text" inputmode="numeric" id="settingAllowanceMonth" oninput="formatInputNumber(this)" class="w-11 p-0.5 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
+                          <span class="text-[10px] font-bold text-stone-600">円</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-stone-500">1日</span>
+                        <div class="flex items-center space-x-0.5">
+                          <input type="text" inputmode="numeric" id="settingAllowanceDay" oninput="formatInputNumber(this)" class="w-11 p-0.5 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
+                          <span class="text-[10px] font-bold text-stone-600">円</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <!-- 下：その他手当 -->
-                <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 flex items-center justify-between">
-                  <span class="font-bold text-stone-700 text-xs shrink-0">その他手当</span>
-                  <div class="flex items-center space-x-3 shrink-0">
-                    <div class="flex items-center space-x-0.5">
-                      <span class="text-[10px] font-bold text-stone-500">月額</span>
-                      <input type="text" inputmode="numeric" id="settingAllowanceMonth" oninput="formatInputNumber(this)" class="w-14 p-1 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
-                      <span class="text-[10px] font-bold text-stone-600">円</span>
-                    </div>
-                    <div class="flex items-center space-x-0.5">
-                      <span class="text-[10px] font-bold text-stone-500">1日</span>
-                      <input type="text" inputmode="numeric" id="settingAllowanceDay" oninput="formatInputNumber(this)" class="w-12 p-1 border rounded font-bold text-xs bg-white border-stone-200 text-right pr-0.5 text-stone-900" placeholder="0">
-                      <span class="text-[10px] font-bold text-stone-600">円</span>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               <div class="pt-2 border-t border-stone-200 space-y-1.5">
@@ -586,6 +605,7 @@
         payDay: savedJob?.payDay || '5',
         baseWage: Number(savedJob?.baseWage) || 1100,
         paid: Number(savedJob?.paid) || 1100,
+        memo: savedJob?.memo || '',
         transMonth: Number(savedJob?.transMonth) || 0,
         transDay: Number(savedJob?.transDay) || 0,
         allowanceMonth: Number(savedJob?.allowanceMonth) || 0,
@@ -1099,7 +1119,10 @@
       let totalAllowance = (job.allowanceMonth || 0) + (job.allowanceDay * workDaysCount);
       let grandTotal = totalPeriodPay + totalTrans + totalAllowance;
 
+      let memoDisplay = job.memo ? `<div class="p-2 bg-stone-50 rounded-xl border border-stone-200 text-xs font-bold text-stone-700 whitespace-pre-wrap">メモ: ${job.memo}</div>` : '';
+
       contentArea.innerHTML = `
+        ${memoDisplay}
         <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 space-y-0.5 mb-1">
           <div class="text-center font-bold text-stone-800 text-[11px]">給料計算の対象期間：<span class="text-stone-600">${startStr} - ${endStr}</span></div>
           <div class="flex justify-around text-[10px] font-bold text-stone-500">
@@ -2114,6 +2137,7 @@
       const payEl = document.getElementById('settingPayDay');
       const baseWageInput = document.getElementById('settingBaseWageInput');
       const paidEl = document.getElementById('settingWagePaid');
+      const memoInput = document.getElementById('settingMemoInput');
       const transMonth = document.getElementById('settingTransMonth');
       const transDay = document.getElementById('settingTransDay');
       const allowanceMonth = document.getElementById('settingAllowanceMonth');
@@ -2125,6 +2149,7 @@
       if (baseWageInput) j.baseWage = parseFormattedNumber(baseWageInput.value);
 
       if (paidEl) j.paid = parseFormattedNumber(paidEl.value);
+      if (memoInput) j.memo = memoInput.value;
       if (transMonth) j.transMonth = parseFormattedNumber(transMonth.value);
       if (transDay) j.transDay = parseFormattedNumber(transDay.value);
       if (allowanceMonth) j.allowanceMonth = parseFormattedNumber(allowanceMonth.value);
@@ -2145,6 +2170,9 @@
       if (baseWageInput) baseWageInput.value = bWage.toLocaleString();
 
       document.getElementById('settingWagePaid').value = j.paid ? j.paid.toLocaleString() : '1,100';
+      const memoInput = document.getElementById('settingMemoInput');
+      if (memoInput) memoInput.value = j.memo || '';
+
       document.getElementById('settingTransMonth').value = j.transMonth ? j.transMonth.toLocaleString() : '';
       document.getElementById('settingTransDay').value = j.transDay ? j.transDay.toLocaleString() : '';
       document.getElementById('settingAllowanceMonth').value = j.allowanceMonth ? j.allowanceMonth.toLocaleString() : '';
