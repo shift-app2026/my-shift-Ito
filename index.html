@@ -2078,14 +2078,14 @@
 
         container.innerHTML += `
           <div onclick="selectCalendarDate('${dateStr}'); switchTab('calendar');" 
-               class="flex items-start p-2 rounded-xl border transition cursor-pointer ${bgStyle} space-x-2">
-            <div class="w-16 shrink-0 font-bold ${isSelected ? 'text-stone-900' : dayColor} pt-0.5">
+               class="flex items-center p-2 rounded-xl border transition cursor-pointer ${bgStyle} space-x-2 overflow-hidden">
+            <div class="w-16 shrink-0 font-bold ${isSelected ? 'text-stone-900' : dayColor}">
               ${d.getMonth()+1}/${d.getDate()} (${dayOfWeek})
             </div>
-            <div class="flex-1 space-y-0.5 pt-0.5 overflow-x-auto">
+            <div class="flex-1 space-y-0.5 overflow-hidden">
               ${hasShift ? linesHtml : `<div class="text-xs text-stone-400 font-bold">予定なし</div>`}
             </div>
-            <div class="flex items-center space-x-1 shrink-0 pt-0.5">
+            <div class="flex items-center space-x-1 shrink-0">
               ${batchCalendarIcon}
               ${badgeHtml}
             </div>
@@ -2351,7 +2351,7 @@
       document.getElementById('settingTimeEveningStart').value = parseTimeRangeString(j.timeEvening, false);
       document.getElementById('settingTimeEveningEnd').value = parseTimeRangeString(j.timeEvening, true);
       document.getElementById('settingTimeNightStart').value = parseTimeRangeString(j.timeNight, false);
-      document.getElementById('settingTimeNightEnd').value = parseTimeRangeString(j.timeNight, true);
+      document.getElementById('settingTimeNightEnd').value, parseTimeRangeString(j.timeNight, true);
       document.getElementById('settingTimeMidnightStart').value = parseTimeRangeString(j.timeMidnight, false);
       document.getElementById('settingTimeMidnightEnd').value = parseTimeRangeString(j.timeMidnight, true);
       document.getElementById('settingTimeExtraStart').value = parseTimeRangeString(j.timeExtra, false);
