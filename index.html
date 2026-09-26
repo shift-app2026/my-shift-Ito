@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>マイシフト＆給料（完全修正版 v69）</title>
+  <title>マイシフト＆給料（完全修正版 v70）</title>
   
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%239d174d'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='%23fef3c7'>✨</text></svg>">
 
@@ -2008,7 +2008,55 @@
       renderPresetInputs(jobId);
     }
 
-    function renderBonusRulesList(jobId) {}
+    function renderBonusRulesList(jobId) {
+      const container = document.getElementById('bonusRulesListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const job = jobsConfigList.find(j => j.id === jobId) || jobsConfigList[0];
+      const rules = job.bonusRules || [];
+
+      if (rules.length === 0) {
+        container.innerHTML = `<span class="text-stone-400 text-xs">登録されている条件はありません</span>`;
+        return;
+      }
+
+      rules.forEach((rule, idx) => {
+        let dayMap = {
+          weekday: '平日',
+          saturday: '土曜',
+          sunday: '日曜',
+          holiday: '祝日',
+          sat_sun: '土日',
+          sun_hol: '日祝'
+        };
+
+        let dayText = [];
+        if (rule.days) {
+          Object.keys(dayMap).forEach(k => {
+            if (rule.days[k]) dayText.push(dayMap[k]);
+          });
+        }
+
+        container.innerHTML += `
+          <div class="flex items-center justify-between bg-stone-50 p-1.5 rounded-xl border border-stone-200 text-xs">
+            <span class="font-bold text-stone-800">${dayText.join('・') || '指定なし'} ${rule.start}〜${rule.end} (+${rule.plus}円)</span>
+            <button type="button" onclick="removeBonusRule(${idx})" class="text-stone-400 hover:text-rose-800 font-bold px-1 text-xs cursor-pointer">✕</button>
+          </div>
+        `;
+      });
+    }
+
+    function removeBonusRule(idx) {
+      let j = jobsConfigList.find(job => job.id === currentSettingsJobKey);
+      if (j && j.bonusRules) {
+        j.bonusRules.splice(idx, 1);
+        saveAllDataStorage();
+        renderBonusRulesList(currentSettingsJobKey);
+        showToast("時給アップ条件を削除しました");
+      }
+    }
+
     function confirmCurrentBonusRule(event) {
       let s = document.getElementById('input_b_start').value;
       let e = document.getElementById('input_b_end').value;
