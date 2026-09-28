@@ -365,7 +365,7 @@
                 <div class="flex justify-between items-center">
                   <div class="text-xs font-bold text-stone-800">【時給登録】</div>
                   <div class="flex items-center space-x-1">
-                    <button type="button" onclick="confirmCurrentBonusRule(event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-sm cursor-pointer">設定</button>
+                    <button type="button" onclick="confirmCurrentBonusRule(event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-sm cursor-pointer">登録</button>
                     <button type="button" onclick="addBonusRuleInputRow(event)" class="bg-stone-800 hover:bg-stone-700 text-rose-50 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-sm cursor-pointer">追加</button>
                     <button type="button" onclick="deleteSelectedBonusRuleRow(event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-sm cursor-pointer">削除</button>
                   </div>
@@ -2121,75 +2121,228 @@
       }
     }
 
+    // ===== 時給登録：選択・登録・追加・削除 =====
+
+    // 枠を選択するだけ。
+    // 入力欄を再描画しないので、PCでもスマホでも入力途中の値が消えません。
+    function selectBonusRuleRow(idx) {
+      selectedBonusRuleIndex = Number(idx);
+
+      const rows = document.querySelectorAll('#bonusRulesInputRowsContainer .bonus-rule-row');
+      rows.forEach((row, i) => {
+        const selected = i === selectedBonusRuleIndex;
+        row.classList.toggle('bg-rose-50', selected);
+        row.classList.toggle('border-rose-300', selected);
+        row.classList.toggle('bg-white', !selected);
+        row.classList.toggle('border-rose-200/70', !selected);
+
+        const label = row.querySelector('.bonus-selected-label');
+        if (label) {
+          label.textContent = selected ? '選択中' : '';
+          label.classList.toggle('opacity-100', selected);
+          label.classList.toggle('opacity-0', !selected);
+        }
+      });
+    }
+
+    // 入力欄をクリックした場合も、その枠を選択状態にする。
+    // ここでは再描画しない。
+    function selectBonusRuleFromInput(idx, event) {
+      if (event) event.stopPropagation();
+      selectBonusRuleRow(idx);
+    }
+
     function toggleRuleDay(ruleIdx, dayKey, event) {
       if (event) event.preventDefault();
-      event.stopPropagation();
+      if (event) event.stopPropagation();
+
+      // 曜日ボタンを押す前に、画面に入力されている値を保存
+      syncBonusRuleInputsToConfig(currentSettingsJobKey);
+
       const job = jobsConfigList.find(j => j.id === currentSettingsJobKey) || jobsConfigList[0];
-      if (job && job.bonusRules && job.bonusRules[ruleIdx]) {
-        if (!job.bonusRules[ruleIdx].days) job.bonusRules[ruleIdx].days = {};
-        job.bonusRules[ruleIdx].days[dayKey] = !job.bonusRules[ruleIdx].days[dayKey];
-        renderBonusRulesInputRows(currentSettingsJobKey);
+      if (!job) return;
+
+      if (!job.bonusRules) job.bonusRules = [];
+      if (!job.bonusRules[ruleIdx]) {
+        job.bonusRules[ruleIdx] = {
+          days: { weekday: true, saturday: false, sunday: false, holiday: false },
+          start: '',
+          end: '',
+          baseWage: '',
+          plusWage: ''
+        };
       }
+
+      if (!job.bonusRules[ruleIdx].days) {
+        job.bonusRules[ruleIdx].days = {
+          weekday: false, saturday: false, sunday: false, holiday: false
+        };
+      }
+
+      selectedBonusRuleIndex = Number(ruleIdx);
+      job.bonusRules[ruleIdx].days[dayKey] =
+        !job.bonusRules[ruleIdx].days[dayKey];
+
+      saveAllDataStorage();
+      renderBonusRulesInputRows(currentSettingsJobKey);
+      selectBonusRuleRow(ruleIdx);
     }
 
     function renderBonusRulesInputRows(jobId) {
       const container = document.getElementById('bonusRulesInputRowsContainer');
       if (!container) return;
-      container.innerHTML = '';
 
       const job = jobsConfigList.find(j => j.id === jobId) || jobsConfigList[0];
+      if (!job) return;
+
       let rules = job.bonusRules || [];
+
       if (rules.length === 0) {
-        rules = [{ days: { weekday: true, saturday: false, sunday: false, holiday: false }, start: '', end: '', baseWage: '', plusWage: '' }];
+        rules = [{
+          days: { weekday: true, saturday: false, sunday: false, holiday: false },
+          start: '',
+          end: '',
+          baseWage: '',
+          plusWage: ''
+        }];
+        job.bonusRules = rules;
       }
 
       if (selectedBonusRuleIndex >= rules.length) {
+        selectedBonusRuleIndex = rules.length - 1;
+      }
+      if (selectedBonusRuleIndex < 0) {
         selectedBonusRuleIndex = 0;
       }
 
+      let htmlRows = '';
+
       rules.forEach((rule, idx) => {
-        let isSelected = (idx === selectedBonusRuleIndex);
-        let rowBgClass = isSelected 
-          ? "bg-rose-50/60 border-rose-300 shadow-xs" 
-          : "bg-white border-rose-200/70 hover:bg-rose-50/30";
+        const isSelected = idx === selectedBonusRuleIndex;
+        const rowBgClass = isSelected
+          ? 'bg-rose-50 border-rose-300'
+          : 'bg-white border-rose-200/70';
 
-        let wageVal = (rule.baseWage !== undefined && rule.baseWage !== '') ? Number(rule.baseWage).toLocaleString() : '';
-        let d = rule.days || {};
-        
-        let wOn = d.weekday ? "bg-rose-100 text-rose-950 font-bold shadow-xs border border-rose-300" : "bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50";
-        let satOn = d.saturday ? "bg-rose-100 text-rose-950 font-bold shadow-xs border border-rose-300" : "bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50";
-        let sunOn = d.sunday ? "bg-rose-100 text-rose-950 font-bold shadow-xs border border-rose-300" : "bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50";
-        let holOn = d.holiday ? "bg-rose-100 text-rose-950 font-bold shadow-xs border border-rose-300" : "bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50";
+        const wageVal =
+          rule.baseWage !== undefined && rule.baseWage !== ''
+            ? Number(rule.baseWage).toLocaleString()
+            : '';
 
-        container.innerHTML += `
-          <div onclick="selectBonusRuleRow(${idx})" class="${rowBgClass} p-2 rounded-xl border transition cursor-pointer space-y-1.5 text-xs">
+        const plusVal =
+          rule.plusWage !== undefined && rule.plusWage !== ''
+            ? Number(rule.plusWage).toLocaleString()
+            : '';
+
+        const d = rule.days || {};
+
+        const wOn = d.weekday
+          ? 'bg-rose-100 text-rose-950 font-bold shadow-xs border border-rose-300'
+          : 'bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50';
+
+        const satOn = d.saturday
+          ? 'bg-rose-100 text-rose-950 font-bold shadow-xs border border-rose-300'
+          : 'bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50';
+
+        const sunOn = d.sunday
+          ? 'bg-rose-100 text-rose-950 font-bold shadow-xs border border-rose-300'
+          : 'bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50';
+
+        const holOn = d.holiday
+          ? 'bg-rose-100 text-rose-950 font-bold shadow-xs border border-rose-300'
+          : 'bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50';
+
+        htmlRows += `
+          <div
+            class="bonus-rule-row ${rowBgClass} p-2 rounded-xl border transition cursor-pointer space-y-1.5 text-xs"
+            onclick="selectBonusRuleRow(${idx})"
+          >
+            <div class="flex items-center justify-between mb-0.5">
+              <span class="text-[10px] font-bold text-rose-900">
+                時給設定 ${idx + 1}
+              </span>
+              <span class="bonus-selected-label text-[10px] font-bold text-rose-700 ${isSelected ? 'opacity-100' : 'opacity-0'}">
+                選択中
+              </span>
+            </div>
+
             <div class="flex items-center justify-between gap-0.5 text-xs">
               <div class="flex items-center space-x-1 shrink-0">
-                <input type="time" id="input_b_start_${idx}" value="${rule.start || ''}" class="p-1 border rounded-lg border-rose-200 bg-white font-bold text-stone-950 text-center w-[74px]" onclick="event.stopPropagation()">
+                <input
+                  type="time"
+                  id="input_b_start_${idx}"
+                  value="${rule.start || ''}"
+                  class="p-1 border rounded-lg border-rose-200 bg-white font-bold text-stone-950 text-center w-[74px]"
+                  onclick="selectBonusRuleFromInput(${idx}, event)"
+                >
                 <span class="text-stone-400 font-bold">〜</span>
-                <input type="time" id="input_b_end_${idx}" value="${rule.end || ''}" class="p-1 border rounded-lg border-rose-200 bg-white font-bold text-stone-950 text-center w-[74px]" onclick="event.stopPropagation()">
+                <input
+                  type="time"
+                  id="input_b_end_${idx}"
+                  value="${rule.end || ''}"
+                  class="p-1 border rounded-lg border-rose-200 bg-white font-bold text-stone-950 text-center w-[74px]"
+                  onclick="selectBonusRuleFromInput(${idx}, event)"
+                >
               </div>
+
               <div class="flex items-center space-x-0.5 shrink-0">
                 <span class="font-bold text-stone-700 text-[11px]">時給</span>
                 <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                  <input type="text" inputmode="numeric" id="input_b_wage_${idx}" value="${wageVal}" oninput="formatInputNumber(this)" class="w-14 font-bold text-right text-stone-950 bg-transparent text-xs" onclick="event.stopPropagation()">
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    id="input_b_wage_${idx}"
+                    value="${wageVal}"
+                    oninput="formatInputNumber(this)"
+                    class="w-14 font-bold text-right text-stone-950 bg-transparent text-xs"
+                    onclick="selectBonusRuleFromInput(${idx}, event)"
+                  >
                   <span class="text-[10px] font-bold text-stone-600">円</span>
                 </div>
               </div>
             </div>
+
             <div class="flex flex-col space-y-1 pt-1 border-t border-rose-100/60 text-xs">
-              <span class="font-bold text-stone-700 text-[11px]">時給アップの曜日選択（複数可）</span>
+              <span class="font-bold text-stone-700 text-[11px]">
+                時給アップの曜日選択（複数可）
+              </span>
+
               <div class="flex items-center justify-between gap-1">
                 <div class="flex space-x-1 flex-1">
-                  <button type="button" onclick="toggleRuleDay(${idx}, 'weekday', event)" class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${wOn}">平日</button>
-                  <button type="button" onclick="toggleRuleDay(${idx}, 'saturday', event)" class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${satOn}">土曜</button>
-                  <button type="button" onclick="toggleRuleDay(${idx}, 'sunday', event)" class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${sunOn}">日曜</button>
-                  <button type="button" onclick="toggleRuleDay(${idx}, 'holiday', event)" class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${holOn}">祝日</button>
+                  <button type="button"
+                    onclick="toggleRuleDay(${idx}, 'weekday', event)"
+                    class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${wOn}">
+                    平日
+                  </button>
+                  <button type="button"
+                    onclick="toggleRuleDay(${idx}, 'saturday', event)"
+                    class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${satOn}">
+                    土曜
+                  </button>
+                  <button type="button"
+                    onclick="toggleRuleDay(${idx}, 'sunday', event)"
+                    class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${sunOn}">
+                    日曜
+                  </button>
+                  <button type="button"
+                    onclick="toggleRuleDay(${idx}, 'holiday', event)"
+                    class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${holOn}">
+                    祝日
+                  </button>
                 </div>
+
                 <div class="flex items-center space-x-0.5 shrink-0 pl-1">
                   <span class="font-bold text-stone-700 text-[11px]">＋</span>
                   <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                    <input type="text" inputmode="numeric" id="input_b_plus_${idx}" value="${rule.plusWage !== undefined && rule.plusWage !== '' ? Number(rule.plusWage).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-10 font-bold text-right text-stone-950 bg-transparent text-xs" onclick="event.stopPropagation()" placeholder="0">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      id="input_b_plus_${idx}"
+                      value="${plusVal}"
+                      oninput="formatInputNumber(this)"
+                      class="w-10 font-bold text-right text-stone-950 bg-transparent text-xs"
+                      onclick="selectBonusRuleFromInput(${idx}, event)"
+                      placeholder="0"
+                    >
                     <span class="text-[10px] font-bold text-stone-600">円</span>
                   </div>
                 </div>
@@ -2198,83 +2351,151 @@
           </div>
         `;
       });
+
+      container.innerHTML = htmlRows;
     }
 
-    function selectBonusRuleRow(idx) {
+    // 「登録」：現在の入力内容を保存する。
+    // 選択中の枠だけでなく、画面上の入力値もまとめて保存します。
+    function confirmCurrentBonusRule(event) {
+      if (event) event.preventDefault();
+
       syncBonusRuleInputsToConfig(currentSettingsJobKey);
-      selectedBonusRuleIndex = idx;
+      saveAllDataStorage();
+
+      const keepSelected = selectedBonusRuleIndex;
       renderBonusRulesInputRows(currentSettingsJobKey);
+      selectBonusRuleRow(keepSelected);
+      alert('時給設定を登録しました♡');
     }
 
+    // 「追加」：現在の入力内容を保存してから、一番下に空の枠を追加。
     function addBonusRuleInputRow(event) {
       if (event) event.preventDefault();
+
       syncBonusRuleInputsToConfig(currentSettingsJobKey);
+
       const job = jobsConfigList.find(j => j.id === currentSettingsJobKey);
-      if (job) {
-        if (!job.bonusRules) job.bonusRules = [];
-        job.bonusRules.push({ days: { weekday: true, saturday: false, sunday: false, holiday: false }, start: '', end: '', baseWage: '', plusWage: '' });
-        selectedBonusRuleIndex = job.bonusRules.length - 1;
-        saveAllDataStorage();
-        renderBonusRulesInputRows(currentSettingsJobKey);
-      }
+      if (!job) return;
+
+      if (!job.bonusRules) job.bonusRules = [];
+
+      job.bonusRules.push({
+        days: { weekday: true, saturday: false, sunday: false, holiday: false },
+        start: '',
+        end: '',
+        baseWage: '',
+        plusWage: ''
+      });
+
+      // 追加した新しい枠を選択状態にする
+      selectedBonusRuleIndex = job.bonusRules.length - 1;
+
+      saveAllDataStorage(true);
+      renderBonusRulesInputRows(currentSettingsJobKey);
+
+      // 追加しただけでは、時刻欄を自動選択・自動フォーカスしない。
+      // ユーザーがクリックした場所から入力を開始できるようにする。
+      selectBonusRuleRow(selectedBonusRuleIndex);
     }
 
+    // 「削除」：現在選択されている枠だけを削除。
     function deleteSelectedBonusRuleRow(event) {
       if (event) event.preventDefault();
+
       syncBonusRuleInputsToConfig(currentSettingsJobKey);
+
       const job = jobsConfigList.find(j => j.id === currentSettingsJobKey);
-      if (job && job.bonusRules) {
-        if (job.bonusRules.length <= 1) return;
-        job.bonusRules.splice(selectedBonusRuleIndex, 1);
+      if (!job || !job.bonusRules || job.bonusRules.length === 0) return;
+
+      const deleteIndex = Number(selectedBonusRuleIndex);
+
+      if (deleteIndex < 0 || deleteIndex >= job.bonusRules.length) return;
+
+      if (job.bonusRules.length === 1) {
+        // 最後の1枠は入力画面として残す。
+        job.bonusRules[0] = {
+          days: { weekday: true, saturday: false, sunday: false, holiday: false },
+          start: '',
+          end: '',
+          baseWage: '',
+          plusWage: ''
+        };
+        selectedBonusRuleIndex = 0;
+      } else {
+        job.bonusRules.splice(deleteIndex, 1);
+
         if (selectedBonusRuleIndex >= job.bonusRules.length) {
           selectedBonusRuleIndex = job.bonusRules.length - 1;
         }
-        saveAllDataStorage();
-        renderBonusRulesInputRows(currentSettingsJobKey);
       }
+
+      saveAllDataStorage(true);
+      renderBonusRulesInputRows(currentSettingsJobKey);
+      selectBonusRuleRow(selectedBonusRuleIndex);
     }
 
     function syncBonusRuleInputsToConfig(jobId) {
       const job = jobsConfigList.find(j => j.id === jobId);
       if (!job) return;
+
       let newRules = [];
       let idx = 0;
+
       while (true) {
-        let sEl = document.getElementById(`input_b_start_${idx}`);
-        let eEl = document.getElementById(`input_b_end_${idx}`);
-        let wEl = document.getElementById(`input_b_wage_${idx}`);
-        let pEl = document.getElementById(`input_b_plus_${idx}`);
+        const sEl = document.getElementById(`input_b_start_${idx}`);
+        const eEl = document.getElementById(`input_b_end_${idx}`);
+        const wEl = document.getElementById(`input_b_wage_${idx}`);
+        const pEl = document.getElementById(`input_b_plus_${idx}`);
+
         if (!sEl || !eEl) break;
 
-        let existingRule = job.bonusRules && job.bonusRules[idx] ? job.bonusRules[idx] : {};
-        let daysObj = existingRule.days || { weekday: true, saturday: false, sunday: false, holiday: false };
+        const existingRule =
+          job.bonusRules && job.bonusRules[idx]
+            ? job.bonusRules[idx]
+            : {};
+
+        const daysObj = existingRule.days || {
+          weekday: true,
+          saturday: false,
+          sunday: false,
+          holiday: false
+        };
 
         newRules.push({
           days: daysObj,
           start: sEl.value || '',
           end: eEl.value || '',
-          baseWage: wEl && wEl.value !== '' ? parseFormattedNumber(wEl.value) : '',
-          plusWage: pEl && pEl.value !== '' ? parseFormattedNumber(pEl.value) : ''
+          baseWage:
+            wEl && wEl.value !== ''
+              ? parseFormattedNumber(wEl.value)
+              : '',
+          plusWage:
+            pEl && pEl.value !== ''
+              ? parseFormattedNumber(pEl.value)
+              : ''
         });
+
         idx++;
       }
+
       if (newRules.length > 0) {
         job.bonusRules = newRules;
-        if (newRules[0].baseWage !== '' && newRules[0].baseWage !== undefined) {
+
+        if (
+          newRules[0].baseWage !== '' &&
+          newRules[0].baseWage !== undefined
+        ) {
           job.baseWage = newRules[0].baseWage;
         }
       }
     }
 
-    function confirmCurrentBonusRule(event) {
-      if (event) event.preventDefault();
-      syncBonusRuleInputsToConfig(currentSettingsJobKey);
-      saveAllDataStorage();
-      renderBonusRulesInputRows(currentSettingsJobKey);
-    }
-
-    function saveAllDataStorage() {
-      syncUIFormToConfig(currentSettingsJobKey);
+    // skipSync=true のときは、画面の入力欄から設定を読み直さず、
+    // メモリ上のデータ（jobsConfigList）をそのまま保存する。
+    // （追加・削除の直後に画面の古い状態で上書きされるのを防ぐため）
+    function saveAllDataStorage(skipSync) {
+      if (!skipSync) syncUIFormToConfig(currentSettingsJobKey);
       let payload = {
         monthlyGoal: monthlyGoal,
         jobsList: jobsConfigList
