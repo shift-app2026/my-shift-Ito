@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>まいシフト＆給料（完全修正版 v93）</title>
+  <title>まいシフト＆給料（完全修正版 v97）</title>
   
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%239d174d'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='%23fef3c7'>✨</text></svg>">
 
@@ -97,10 +97,10 @@
     </div>
   </div>
 
-  <div class="w-full max-w-md bg-white/95 backdrop-blur-md rounded-[1.8rem] sm:rounded-[2.2rem] shadow-xl border border-rose-200/60 overflow-hidden flex flex-col min-h-screen sm:min-h-0">
+  <div class="w-full max-w-md bg-white/95 backdrop-blur-md rounded-[1.8rem] sm:rounded-[2.2rem] shadow-xl border border-rose-200/60 overflow-hidden flex flex-col min-h-screen sm:min-h-0 pb-20">
 
     <!-- メインコンテンツ領域 -->
-    <div class="p-3 sm:p-4 flex-1 space-y-3 overflow-y-auto pb-64">
+    <div class="p-3 sm:p-4 flex-1 space-y-3 overflow-y-auto">
       
       <!-- タブ1: 給与 -->
       <div id="tab-clock" class="tab-content space-y-2">
@@ -291,7 +291,7 @@
         </div>
       </div>
 
-      <!-- タブ3: 予定表 (15日までゆったり見られるように高さを調整) -->
+      <!-- タブ3: 予定表 -->
       <div id="tab-list" class="tab-content hidden space-y-2">
         <div class="flex justify-between items-center bg-rose-50/50 p-1.5 rounded-xl border border-rose-100 text-xs">
           <button onclick="changeListMonth(-1)" class="text-stone-700 font-bold px-2 py-0.5 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">◀ 前月</button>
@@ -366,9 +366,12 @@
                 <div id="bonusRulesInputRowsContainer" class="space-y-1.5"></div>
               </div>
 
-              <!-- 【有給休暇・交通費・手当】 -->
+              <!-- 【有給休暇・交通費・手当】（追加ボタン＆手当レイアウト完全修正） -->
               <div class="pt-2 border-t border-rose-100 space-y-2">
-                <div class="text-xs font-bold text-stone-800">【有給休暇・交通費・手当】</div>
+                <div class="flex justify-between items-center">
+                  <div class="text-xs font-bold text-stone-800">【有給休暇・交通費・手当】</div>
+                  <button type="button" onclick="addExtraAllowanceRow(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">+ 手当の追加</button>
+                </div>
                 
                 <div class="bg-rose-50/30 p-2.5 rounded-xl border border-rose-100 space-y-2 text-xs">
                   
@@ -376,47 +379,26 @@
                   <div class="flex items-center justify-between gap-1">
                     <div class="flex items-center space-x-1 shrink-0">
                       <span class="font-bold text-stone-700">有給時給</span>
-                      <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                        <input type="text" inputmode="numeric" id="settingWagePaid" oninput="formatInputNumber(this)" class="w-12 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="1,100">
+                      <div class="flex items-center space-x-1 bg-white p-1 rounded-lg border border-rose-200">
+                        <input type="text" inputmode="numeric" id="settingWagePaid" oninput="formatInputNumber(this)" class="w-12 font-bold text-right text-stone-900 bg-transparent text-xs" placeholder="1,100">
                         <span class="text-[10px] font-bold text-stone-600">円</span>
                       </div>
                     </div>
-                    <div class="flex items-center space-x-1 shrink-0">
+                    <div class="flex items-center space-x-1.5 shrink-0">
                       <span class="font-bold text-stone-700">交通費</span>
-                      <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                        <span class="text-[10px] font-bold text-stone-500">月額</span>
-                        <input type="text" inputmode="numeric" id="settingAllowanceMonth" oninput="formatInputNumber(this)" class="w-10 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
-                        <span class="text-[10px] font-bold text-stone-500">円</span>
-                      </div>
-                      <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                        <span class="text-[10px] font-bold text-stone-500">1日</span>
-                        <input type="text" inputmode="numeric" id="settingAllowanceDay" oninput="formatInputNumber(this)" class="w-10 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
-                        <span class="text-[10px] font-bold text-stone-500">円</span>
+                      <div class="flex items-center space-x-1 bg-white p-1 rounded-lg border border-rose-200">
+                        <select id="settingAllowanceType" class="bg-transparent font-bold text-stone-700 text-xs focus:outline-none">
+                          <option value="月額">月額</option>
+                          <option value="1日">1日</option>
+                        </select>
+                        <input type="text" inputmode="numeric" id="settingAllowanceVal" oninput="formatInputNumber(this)" class="w-11 font-bold text-right text-stone-900 bg-transparent text-xs" placeholder="0">
+                        <span class="text-[10px] font-bold text-stone-600">円</span>
                       </div>
                     </div>
                   </div>
 
-                  <!-- 2行目: 手当 (月額・1日・メモ) -> 枠で囲むのは「○」（入力部分）のみ -->
-                  <div class="pt-2 border-t border-rose-200/50 flex items-center justify-between gap-1">
-                    <span class="font-bold text-stone-700 shrink-0">手当</span>
-                    <div class="flex items-center space-x-1">
-                      <div class="flex items-center space-x-0.5">
-                        <span class="text-[10px] font-bold text-stone-700">月額</span>
-                        <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                          <input type="text" inputmode="numeric" id="settingExtraMonth1" oninput="formatInputNumber(this)" class="w-9 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
-                          <span class="text-[10px] font-bold text-stone-500">円</span>
-                        </div>
-                      </div>
-                      <div class="flex items-center space-x-0.5">
-                        <span class="text-[10px] font-bold text-stone-700">1日</span>
-                        <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                          <input type="text" inputmode="numeric" id="settingExtraDay1" oninput="formatInputNumber(this)" class="w-9 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
-                          <span class="text-[10px] font-bold text-stone-500">円</span>
-                        </div>
-                      </div>
-                      <input type="text" id="settingExtraName1" class="w-16 p-1 border rounded-lg font-bold text-xs bg-white border-rose-200 text-stone-900 text-center shrink-0" placeholder="メモ">
-                    </div>
-                  </div>
+                  <!-- 2行目以降: 追加可能な手当リスト（手当文字・月額/1日・金額枠を左に寄せ、メモ欄を広げた完全版） -->
+                  <div id="extraAllowancesContainer" class="space-y-2 pt-1"></div>
 
                 </div>
 
@@ -429,7 +411,7 @@
 
     </div>
 
-    <!-- 画面下固定のナビゲーションメニュー -->
+    <!-- 画面下固定のナビゲーションメニュー（常に画面下に固定） -->
     <div class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-stone-100/95 backdrop-blur-md border-t border-rose-200/60 p-1.5 space-y-1 shadow-lg">
       <div id="settingSaveButtonContainer">
         <button onclick="saveSettings(event)" class="w-full bg-rose-900 text-rose-50 font-bold py-2 rounded-xl text-[11px] hover:bg-rose-800 transition shadow-sm flex items-center justify-center space-x-1 cursor-pointer">
@@ -486,6 +468,19 @@
         { days: { weekday: true, saturday: false, sunday: false, holiday: false }, start: '', end: '', baseWage: '', plusWage: '' }
       ];
 
+      let extras = [];
+      if (savedJob?.extraAllowances && Array.isArray(savedJob.extraAllowances)) {
+        extras = savedJob.extraAllowances;
+      } else if (savedJob?.extraName1 !== undefined || savedJob?.extraVal1 !== undefined) {
+        extras = [{
+          name: savedJob.extraName1 || '',
+          type: savedJob.extraType1 || '月額',
+          val: savedJob.extraVal1 !== undefined ? savedJob.extraVal1 : ''
+        }];
+      } else {
+        extras = [{ name: '', type: '月額', val: '' }];
+      }
+
       return {
         id: savedJob?.id || 'job_' + Math.random().toString(36).substr(2, 9),
         name: savedJob?.name !== undefined ? savedJob.name : defName,
@@ -493,17 +488,17 @@
         payDay: savedJob?.payDay || '5',
         baseWage: savedJob?.baseWage !== undefined ? savedJob.baseWage : '',
         paid: savedJob?.paid !== undefined ? savedJob.paid : '',
-        allowanceMonth: savedJob?.allowanceMonth !== undefined ? savedJob.allowanceMonth : '',
-        allowanceDay: savedJob?.allowanceDay !== undefined ? savedJob.allowanceDay : '',
-        extraName1: savedJob?.extraName1 || '',
-        extraMonth1: savedJob?.extraMonth1 !== undefined ? savedJob.extraMonth1 : '',
-        extraDay1: savedJob?.extraDay1 !== undefined ? savedJob.extraDay1 : '',
+        allowanceType: savedJob?.allowanceType || '月額',
+        allowanceVal: savedJob?.allowanceVal !== undefined ? savedJob.allowanceVal : '',
+        extraAllowances: extras,
         bonusRules: bonusRules,
         presets: loadedPresets
       };
     }
 
     window.onload = function() {
+      window.scrollTo(0, 0);
+
       const yearEl = document.getElementById('currentYearDisplay');
       if (yearEl) yearEl.innerText = new Date().getFullYear();
 
@@ -798,8 +793,12 @@
             let res = calculateJobShiftMinutesAndPay(jobShift, jobConf, dateObj);
             totalDayMins += res.totalMins;
             totalDayPay += res.totalPay;
-            if (Number(jobConf.allowanceDay) > 0) totalDayPay += Number(jobConf.allowanceDay);
-            if (Number(jobConf.extraDay1) > 0) totalDayPay += Number(jobConf.extraDay1);
+            if (jobConf.allowanceType === '1日' && Number(jobConf.allowanceVal) > 0) totalDayPay += Number(jobConf.allowanceVal);
+            if (jobConf.extraAllowances) {
+              jobConf.extraAllowances.forEach(ex => {
+                if (ex.type === '1日' && Number(ex.val) > 0) totalDayPay += Number(ex.val);
+              });
+            }
 
             for (let i = 1; i <= 3; i++) {
               let s = jobShift[`start${i}`], e = jobShift[`end${i}`];
@@ -1139,22 +1138,29 @@
         }
       }
 
-      let allowanceMonthTotal = Number(job.allowanceMonth) || 0;
-      let allowanceDayTotal = (Number(job.allowanceDay) || 0) * workDaysCount;
-      let extraMonth1Total = Number(job.extraMonth1) || 0;
-      let extraDay1Total = (Number(job.extraDay1) || 0) * workDaysCount;
+      let allowanceAmount = Number(job.allowanceVal) || 0;
+      let allowanceTotal = (job.allowanceType === '1日') ? allowanceAmount * workDaysCount : allowanceAmount;
 
-      let totalAllowance = allowanceMonthTotal + allowanceDayTotal + extraMonth1Total + extraDay1Total;
-      let grandTotal = totalPeriodPay + totalAllowance;
-
+      let totalExtras = 0;
       let extrasHtml = '';
-      if (allowanceMonthTotal > 0 || allowanceDayTotal > 0) {
-        extrasHtml += `<div class="py-1 flex justify-between items-center text-xs border-b border-rose-100"><span class="font-bold text-stone-800">交通費</span><span class="font-bold text-stone-900">= ¥${(allowanceMonthTotal + allowanceDayTotal).toLocaleString()}</span></div>`;
+      if (allowanceAmount > 0) {
+        extrasHtml += `<div class="py-1 flex justify-between items-center text-xs border-b border-rose-100"><span class="font-bold text-stone-800">交通費 (${job.allowanceType})</span><span class="font-bold text-stone-900">= ¥${allowanceTotal.toLocaleString()}</span></div>`;
+        totalExtras += allowanceTotal;
       }
-      let extraTitle = job.extraName1 ? `手当 (${job.extraName1})` : `手当`;
-      if (extraMonth1Total > 0 || extraDay1Total > 0) {
-        extrasHtml += `<div class="py-1 flex justify-between items-center text-xs border-b border-rose-100"><span class="font-bold text-stone-800">${extraTitle}</span><span class="font-bold text-stone-900">= ¥${(extraMonth1Total + extraDay1Total).toLocaleString()}</span></div>`;
+
+      if (job.extraAllowances) {
+        job.extraAllowances.forEach(ex => {
+          let amt = Number(ex.val) || 0;
+          if (amt > 0) {
+            let subTotal = (ex.type === '1日') ? amt * workDaysCount : amt;
+            totalExtras += subTotal;
+            let title = ex.name ? `手当 (${ex.name} / ${ex.type})` : `手当 (${ex.type})`;
+            extrasHtml += `<div class="py-1 flex justify-between items-center text-xs border-b border-rose-100"><span class="font-bold text-stone-800">${title}</span><span class="font-bold text-stone-900">= ¥${subTotal.toLocaleString()}</span></div>`;
+          }
+        });
       }
+
+      let grandTotal = totalPeriodPay + totalExtras;
 
       contentArea.innerHTML = `
         <div class="bg-rose-50/40 p-2 rounded-xl border border-rose-100 space-y-0.5 mb-1">
@@ -1360,8 +1366,12 @@
 
           if (jobMins > 0 || isPaid) {
             hasAnyTodayShift = true;
-            if (Number(jobConf.allowanceDay) > 0) jobPay += Number(jobConf.allowanceDay);
-            if (Number(jobConf.extraDay1) > 0) jobPay += Number(jobConf.extraDay1);
+            if (jobConf.allowanceType === '1日' && Number(jobConf.allowanceVal) > 0) jobPay += Number(jobConf.allowanceVal);
+            if (jobConf.extraAllowances) {
+              jobConf.extraAllowances.forEach(ex => {
+                if (ex.type === '1日' && Number(ex.val) > 0) jobPay += Number(ex.val);
+              });
+            }
           }
         }
 
@@ -1409,19 +1419,25 @@
             let jobShift = dayData[jobConf.id];
             if (jobShift) {
               let isPaid = jobShift.isPaidLeave;
-              if (isPaid) {
-                totalPay += Number(jobConf.paid) || 1100;
-                workDaysCount++;
-                if (Number(jobConf.allowanceDay) > 0) totalPay += Number(jobConf.allowanceDay);
-                if (Number(jobConf.extraDay1) > 0) totalPay += Number(jobConf.extraDay1);
-              } else {
+              let dayHasWork = isPaid;
+              if (!isPaid) {
                 let res = calculateJobShiftMinutesAndPay(jobShift, jobConf, new Date(d));
-                if (res.totalMins > 0) {
-                  totalMins += res.totalMins;
+                if (res.totalMins > 0) dayHasWork = true;
+              }
+
+              if (dayHasWork) {
+                workDaysCount++;
+                if (isPaid) {
+                  totalPay += Number(jobConf.paid) || 1100;
+                } else {
+                  let res = calculateJobShiftMinutesAndPay(jobShift, jobConf, new Date(d));
                   totalPay += res.totalPay;
-                  workDaysCount++;
-                  if (Number(jobConf.allowanceDay) > 0) totalPay += Number(jobConf.allowanceDay);
-                  if (Number(jobConf.extraDay1) > 0) totalPay += Number(jobConf.extraDay1);
+                }
+                if (jobConf.allowanceType === '1日' && Number(jobConf.allowanceVal) > 0) totalPay += Number(jobConf.allowanceVal);
+                if (jobConf.extraAllowances) {
+                  jobConf.extraAllowances.forEach(ex => {
+                    if (ex.type === '1日' && Number(ex.val) > 0) totalPay += Number(ex.val);
+                  });
                 }
               }
             }
@@ -1430,9 +1446,17 @@
       }
 
       jobsConfigList.forEach(jConf => {
-        let monthAdd = (Number(jConf.allowanceMonth) || 0) + (Number(jConf.extraMonth1) || 0);
-        let dayAdd = ((Number(jConf.allowanceDay) || 0) + (Number(jConf.extraDay1) || 0)) * workDaysCount;
-        totalPay += monthAdd + dayAdd;
+        let allowanceAmount = Number(jConf.allowanceVal) || 0;
+        let allowanceTotal = (jConf.allowanceType === '1日') ? allowanceAmount * workDaysCount : allowanceAmount;
+        totalPay += allowanceTotal;
+
+        if (jConf.extraAllowances) {
+          jConf.extraAllowances.forEach(ex => {
+            let amt = Number(ex.val) || 0;
+            let sub = (ex.type === '1日') ? amt * workDaysCount : amt;
+            totalPay += sub;
+          });
+        }
       });
 
       const goalTargetDisplay = document.getElementById('goalTargetDisplay');
@@ -1539,23 +1563,39 @@
             if (jobShift.isPaidLeave) {
               jobReceivePay += Number(job.paid) || 1100;
               jobWorkDays++;
-              if (Number(job.allowanceDay) > 0) jobReceivePay += Number(job.allowanceDay);
-              if (Number(job.extraDay1) > 0) jobReceivePay += Number(job.extraDay1);
+              if (job.allowanceType === '1日' && Number(job.allowanceVal) > 0) jobReceivePay += Number(job.allowanceVal);
+              if (job.extraAllowances) {
+                job.extraAllowances.forEach(ex => {
+                  if (ex.type === '1日' && Number(ex.val) > 0) jobReceivePay += Number(ex.val);
+                });
+              }
             } else {
               let res = calculateJobShiftMinutesAndPay(jobShift, job, new Date(d));
               if (res.totalMins > 0) {
                 jobReceivePay += res.totalPay;
                 jobWorkDays++;
-                if (Number(job.allowanceDay) > 0) jobReceivePay += Number(job.allowanceDay);
-                if (Number(job.extraDay1) > 0) jobReceivePay += Number(job.extraDay1);
+                if (job.allowanceType === '1日' && Number(job.allowanceVal) > 0) jobReceivePay += Number(job.allowanceVal);
+                if (job.extraAllowances) {
+                  job.extraAllowances.forEach(ex => {
+                    if (ex.type === '1日' && Number(ex.val) > 0) jobReceivePay += Number(ex.val);
+                  });
+                }
               }
             }
           }
         }
 
-        let monthAdd = (Number(job.allowanceMonth) || 0) + (Number(job.extraMonth1) || 0);
-        let dayAdd = ((Number(job.allowanceDay) || 0) + (Number(job.extraDay1) || 0)) * jobWorkDays;
-        jobReceivePay += monthAdd + dayAdd;
+        let allowanceAmount = Number(job.allowanceVal) || 0;
+        let allowanceTotal = (job.allowanceType === '1日') ? allowanceAmount * jobWorkDays : allowanceAmount;
+        jobReceivePay += allowanceTotal;
+
+        if (job.extraAllowances) {
+          job.extraAllowances.forEach(ex => {
+            let amt = Number(ex.val) || 0;
+            let sub = (ex.type === '1日') ? amt * jobWorkDays : amt;
+            jobReceivePay += sub;
+          });
+        }
 
         totalReceivePay += jobReceivePay;
 
@@ -1594,15 +1634,23 @@
               if (jobShift.isPaidLeave) {
                 totalYearPay += Number(jobConf.paid) || 1100;
                 totalWorkDaysYear++;
-                if (Number(jobConf.allowanceDay) > 0) totalYearPay += Number(jobConf.allowanceDay);
-                if (Number(jobConf.extraDay1) > 0) totalYearPay += Number(jobConf.extraDay1);
+                if (jobConf.allowanceType === '1日' && Number(jobConf.allowanceVal) > 0) totalYearPay += Number(jobConf.allowanceVal);
+                if (jobConf.extraAllowances) {
+                  jobConf.extraAllowances.forEach(ex => {
+                    if (ex.type === '1日' && Number(ex.val) > 0) totalYearPay += Number(ex.val);
+                  });
+                }
               } else {
                 let res = calculateJobShiftMinutesAndPay(jobShift, jobConf, new Date(d));
                 if (res.totalMins > 0) {
                   totalYearPay += res.totalPay;
                   totalWorkDaysYear++;
-                  if (Number(jobConf.allowanceDay) > 0) totalYearPay += Number(jobConf.allowanceDay);
-                  if (Number(jobConf.extraDay1) > 0) totalYearPay += Number(jobConf.extraDay1);
+                  if (jobConf.allowanceType === '1日' && Number(jobConf.allowanceVal) > 0) totalYearPay += Number(jobConf.allowanceVal);
+                  if (jobConf.extraAllowances) {
+                    jobConf.extraAllowances.forEach(ex => {
+                      if (ex.type === '1日' && Number(ex.val) > 0) totalYearPay += Number(ex.val);
+                    });
+                  }
                 }
               }
             }
@@ -1611,9 +1659,17 @@
       }
 
       jobsConfigList.forEach(jConf => {
-        let monthlyAdd = (Number(jConf.allowanceMonth) || 0) + (Number(jConf.extraMonth1) || 0);
-        let dailyAdd = ((Number(jConf.allowanceDay) || 0) + (Number(jConf.extraDay1) || 0)) * totalWorkDaysYear;
-        totalYearPay += (monthlyAdd * 12) + dailyAdd;
+        let allowanceAmount = Number(jConf.allowanceVal) || 0;
+        let allowanceYearTotal = (jConf.allowanceType === '1日') ? allowanceAmount * totalWorkDaysYear : allowanceAmount * 12;
+        totalYearPay += allowanceYearTotal;
+
+        if (jConf.extraAllowances) {
+          jConf.extraAllowances.forEach(ex => {
+            let amt = Number(ex.val) || 0;
+            let sub = (ex.type === '1日') ? amt * totalWorkDaysYear : amt * 12;
+            totalYearPay += sub;
+          });
+        }
       });
 
       const yearlyEl = document.getElementById('yearlyTotalPay');
@@ -1941,20 +1997,31 @@
       const closeEl = document.getElementById('settingCloseDay');
       const payEl = document.getElementById('settingPayDay');
       const paidEl = document.getElementById('settingWagePaid');
-      const allowanceMonth = document.getElementById('settingAllowanceMonth');
-      const allowanceDay = document.getElementById('settingAllowanceDay');
-      const extraName1 = document.getElementById('settingExtraName1');
-      const extraMonth1 = document.getElementById('settingExtraMonth1');
-      const extraDay1 = document.getElementById('settingExtraDay1');
+      const allowanceType = document.getElementById('settingAllowanceType');
+      const allowanceVal = document.getElementById('settingAllowanceVal');
 
       if (closeEl) j.closeDay = closeEl.value;
       if (payEl) j.payDay = payEl.value;
       if (paidEl) j.paid = paidEl.value !== '' ? parseFormattedNumber(paidEl.value) : '';
-      if (allowanceMonth) j.allowanceMonth = allowanceMonth.value !== '' ? parseFormattedNumber(allowanceMonth.value) : '';
-      if (allowanceDay) j.allowanceDay = allowanceDay.value !== '' ? parseFormattedNumber(allowanceDay.value) : '';
-      if (extraName1) j.extraName1 = extraName1.value;
-      if (extraMonth1) j.extraMonth1 = extraMonth1.value !== '' ? parseFormattedNumber(extraMonth1.value) : '';
-      if (extraDay1) j.extraDay1 = extraDay1.value !== '' ? parseFormattedNumber(extraDay1.value) : '';
+      if (allowanceType) j.allowanceType = allowanceType.value;
+      if (allowanceVal) j.allowanceVal = allowanceVal.value !== '' ? parseFormattedNumber(allowanceVal.value) : '';
+
+      let newExtras = [];
+      let idx = 0;
+      while (true) {
+        let typeEl = document.getElementById(`extraType_${idx}`);
+        let valEl = document.getElementById(`extraVal_${idx}`);
+        let nameEl = document.getElementById(`extraName_${idx}`);
+        if (!typeEl || !valEl || !nameEl) break;
+
+        newExtras.push({
+          type: typeEl.value,
+          val: valEl.value !== '' ? parseFormattedNumber(valEl.value) : '',
+          name: nameEl.value
+        });
+        idx++;
+      }
+      j.extraAllowances = newExtras;
 
       syncBonusRuleInputsToConfig(jobId);
     }
@@ -1966,13 +2033,72 @@
       document.getElementById('settingCloseDay').value = j.closeDay !== undefined ? j.closeDay : '20';
       document.getElementById('settingPayDay').value = j.payDay !== undefined ? j.payDay : '5';
       document.getElementById('settingWagePaid').value = (j.paid !== undefined && j.paid !== '') ? Number(j.paid).toLocaleString() : '';
-      document.getElementById('settingAllowanceMonth').value = (j.allowanceMonth !== undefined && j.allowanceMonth !== '') ? Number(j.allowanceMonth).toLocaleString() : '';
-      document.getElementById('settingAllowanceDay').value = (j.allowanceDay !== undefined && j.allowanceDay !== '') ? Number(j.allowanceDay).toLocaleString() : '';
-      document.getElementById('settingExtraName1').value = j.extraName1 || '';
-      document.getElementById('settingExtraMonth1').value = (j.extraMonth1 !== undefined && j.extraMonth1 !== '') ? Number(j.extraMonth1).toLocaleString() : '';
-      document.getElementById('settingExtraDay1').value = (j.extraDay1 !== undefined && j.extraDay1 !== '') ? Number(j.extraDay1).toLocaleString() : '';
+      document.getElementById('settingAllowanceType').value = j.allowanceType || '月額';
+      document.getElementById('settingAllowanceVal').value = (j.allowanceVal !== undefined && j.allowanceVal !== '') ? Number(j.allowanceVal).toLocaleString() : '';
 
+      renderExtraAllowancesUI(j);
       renderBonusRulesInputRows(jobId);
+    }
+
+    function renderExtraAllowancesUI(job) {
+      const container = document.getElementById('extraAllowancesContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let extras = job.extraAllowances || [];
+      if (extras.length === 0) {
+        extras = [{ type: '月額', val: '', name: '' }];
+        job.extraAllowances = extras;
+      }
+
+      extras.forEach((ex, idx) => {
+        let typeVal = ex.type || '月額';
+        let valStr = (ex.val !== undefined && ex.val !== '') ? Number(ex.val).toLocaleString() : '';
+        let nameVal = ex.name || '';
+
+        container.innerHTML += `
+          <div class="flex items-center justify-between gap-1 pt-1.5 border-t border-rose-200/50" id="extraRow_${idx}">
+            <span class="font-bold text-stone-700 shrink-0">手当</span>
+            <div class="flex items-center space-x-1 flex-1 justify-end">
+              <div class="flex items-center space-x-1 bg-white p-1 rounded-lg border border-rose-200 shrink-0">
+                <select id="extraType_${idx}" class="bg-transparent font-bold text-stone-700 text-xs focus:outline-none">
+                  <option value="月額" ${typeVal === '月額' ? 'selected' : ''}>月額</option>
+                  <option value="1日" ${typeVal === '1日' ? 'selected' : ''}>1日</option>
+                </select>
+                <input type="text" inputmode="numeric" id="extraVal_${idx}" value="${valStr}" oninput="formatInputNumber(this)" class="w-11 font-bold text-right text-stone-900 bg-transparent text-xs" placeholder="0">
+                <span class="text-[10px] font-bold text-stone-600">円</span>
+              </div>
+              <input type="text" id="extraName_${idx}" value="${nameVal}" class="flex-1 min-w-[60px] p-1 border rounded-lg font-bold text-xs bg-white border-rose-200 text-stone-900 text-center" placeholder="メモ">
+              <button type="button" onclick="deleteExtraAllowanceRow(${idx})" class="text-stone-400 hover:text-rose-800 text-xs font-bold px-1 shrink-0 cursor-pointer" title="削除">✕</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function addExtraAllowanceRow(event) {
+      syncUIFormToConfig(currentSettingsJobKey);
+      const job = jobsConfigList.find(j => j.id === currentSettingsJobKey);
+      if (job) {
+        if (!job.extraAllowances) job.extraAllowances = [];
+        job.extraAllowances.push({ type: '月額', val: '', name: '' });
+        saveAllDataStorage();
+        renderExtraAllowancesUI(job);
+      }
+    }
+
+    function deleteExtraAllowanceRow(idx) {
+      syncUIFormToConfig(currentSettingsJobKey);
+      const job = jobsConfigList.find(j => j.id === currentSettingsJobKey);
+      if (job && job.extraAllowances) {
+        if (job.extraAllowances.length <= 1) {
+          job.extraAllowances[0] = { type: '月額', val: '', name: '' };
+        } else {
+          job.extraAllowances.splice(idx, 1);
+        }
+        saveAllDataStorage();
+        renderExtraAllowancesUI(job);
+      }
     }
 
     function toggleRuleDay(ruleIdx, dayKey, event) {
@@ -2024,7 +2150,7 @@
               <div class="flex items-center space-x-0.5 shrink-0">
                 <span class="font-bold text-stone-700 text-[11px]">時給</span>
                 <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                  <input type="text" inputmode="numeric" id="input_b_wage_${idx}" value="${wageVal}" oninput="formatInputNumber(this)" class="w-14 font-bold text-right pr-0.5 text-stone-950 bg-transparent text-xs" onclick="event.stopPropagation()">
+                  <input type="text" inputmode="numeric" id="input_b_wage_${idx}" value="${wageVal}" oninput="formatInputNumber(this)" class="w-14 font-bold text-right text-stone-950 bg-transparent text-xs" onclick="event.stopPropagation()">
                   <span class="text-[10px] font-bold text-stone-600">円</span>
                 </div>
               </div>
@@ -2041,7 +2167,7 @@
                 <div class="flex items-center space-x-0.5 shrink-0 pl-1">
                   <span class="font-bold text-stone-700 text-[11px]">＋</span>
                   <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                    <input type="text" inputmode="numeric" id="input_b_plus_${idx}" value="${rule.plusWage !== undefined && rule.plusWage !== '' ? Number(rule.plusWage).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-10 font-bold text-right pr-0.5 text-stone-950 bg-transparent text-xs" onclick="event.stopPropagation()" placeholder="0">
+                    <input type="text" inputmode="numeric" id="input_b_plus_${idx}" value="${rule.plusWage !== undefined && rule.plusWage !== '' ? Number(rule.plusWage).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-10 font-bold text-right text-stone-950 bg-transparent text-xs" onclick="event.stopPropagation()" placeholder="0">
                     <span class="text-[10px] font-bold text-stone-600">円</span>
                   </div>
                 </div>
