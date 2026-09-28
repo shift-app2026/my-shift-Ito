@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>まいシフト＆給料（完全修正版 v92）</title>
+  <title>まいシフト＆給料（完全修正版 v93）</title>
   
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%239d174d'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='%23fef3c7'>✨</text></svg>">
 
@@ -28,7 +28,7 @@
     input, select {
       font-size: 11px !important;
       color: #292524 !important;
-      padding: 3px !important;
+      padding: 2px !important;
     }
     input[type="time"] {
       min-width: 0;
@@ -366,9 +366,9 @@
                 <div id="bonusRulesInputRowsContainer" class="space-y-1.5"></div>
               </div>
 
-              <!-- 【有給休暇・交通費・その他手当】 (綺麗にラベルと入力欄を分離し、はみ出しを完全解消) -->
+              <!-- 【有給休暇・交通費・手当】 -->
               <div class="pt-2 border-t border-rose-100 space-y-2">
-                <div class="text-xs font-bold text-stone-800">【有給休暇・交通費・その他手当】</div>
+                <div class="text-xs font-bold text-stone-800">【有給休暇・交通費・手当】</div>
                 
                 <div class="bg-rose-50/30 p-2.5 rounded-xl border border-rose-100 space-y-2 text-xs">
                   
@@ -377,7 +377,7 @@
                     <div class="flex items-center space-x-1 shrink-0">
                       <span class="font-bold text-stone-700">有給時給</span>
                       <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
-                        <input type="text" inputmode="numeric" id="settingWagePaid" oninput="formatInputNumber(this)" class="w-14 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="1,100">
+                        <input type="text" inputmode="numeric" id="settingWagePaid" oninput="formatInputNumber(this)" class="w-12 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="1,100">
                         <span class="text-[10px] font-bold text-stone-600">円</span>
                       </div>
                     </div>
@@ -385,32 +385,36 @@
                       <span class="font-bold text-stone-700">交通費</span>
                       <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
                         <span class="text-[10px] font-bold text-stone-500">月額</span>
-                        <input type="text" inputmode="numeric" id="settingAllowanceMonth" oninput="formatInputNumber(this)" class="w-11 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
+                        <input type="text" inputmode="numeric" id="settingAllowanceMonth" oninput="formatInputNumber(this)" class="w-10 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
                         <span class="text-[10px] font-bold text-stone-500">円</span>
                       </div>
                       <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
                         <span class="text-[10px] font-bold text-stone-500">1日</span>
-                        <input type="text" inputmode="numeric" id="settingAllowanceDay" oninput="formatInputNumber(this)" class="w-11 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
+                        <input type="text" inputmode="numeric" id="settingAllowanceDay" oninput="formatInputNumber(this)" class="w-10 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
                         <span class="text-[10px] font-bold text-stone-500">円</span>
                       </div>
                     </div>
                   </div>
 
-                  <!-- 2行目: その他手当て (月額・1日・内容) -->
+                  <!-- 2行目: 手当 (月額・1日・メモ) -> 枠で囲むのは「○」（入力部分）のみ -->
                   <div class="pt-2 border-t border-rose-200/50 flex items-center justify-between gap-1">
-                    <span class="font-bold text-stone-700 shrink-0">その他手当て</span>
+                    <span class="font-bold text-stone-700 shrink-0">手当</span>
                     <div class="flex items-center space-x-1">
-                      <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200 shrink-0">
-                        <span class="text-[10px] font-bold text-stone-500">月額</span>
-                        <input type="text" inputmode="numeric" id="settingExtraMonth1" oninput="formatInputNumber(this)" class="w-10 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
-                        <span class="text-[10px] font-bold text-stone-500">円</span>
+                      <div class="flex items-center space-x-0.5">
+                        <span class="text-[10px] font-bold text-stone-700">月額</span>
+                        <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
+                          <input type="text" inputmode="numeric" id="settingExtraMonth1" oninput="formatInputNumber(this)" class="w-9 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
+                          <span class="text-[10px] font-bold text-stone-500">円</span>
+                        </div>
                       </div>
-                      <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200 shrink-0">
-                        <span class="text-[10px] font-bold text-stone-500">1日</span>
-                        <input type="text" inputmode="numeric" id="settingExtraDay1" oninput="formatInputNumber(this)" class="w-10 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
-                        <span class="text-[10px] font-bold text-stone-500">円</span>
+                      <div class="flex items-center space-x-0.5">
+                        <span class="text-[10px] font-bold text-stone-700">1日</span>
+                        <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
+                          <input type="text" inputmode="numeric" id="settingExtraDay1" oninput="formatInputNumber(this)" class="w-9 font-bold text-right pr-0.5 text-stone-900 bg-transparent text-xs" placeholder="0">
+                          <span class="text-[10px] font-bold text-stone-500">円</span>
+                        </div>
                       </div>
-                      <input type="text" id="settingExtraName1" class="w-20 p-1 border rounded-lg font-bold text-xs bg-white border-rose-200 text-stone-900 text-center shrink-0" placeholder="内容">
+                      <input type="text" id="settingExtraName1" class="w-16 p-1 border rounded-lg font-bold text-xs bg-white border-rose-200 text-stone-900 text-center shrink-0" placeholder="メモ">
                     </div>
                   </div>
 
@@ -1147,7 +1151,7 @@
       if (allowanceMonthTotal > 0 || allowanceDayTotal > 0) {
         extrasHtml += `<div class="py-1 flex justify-between items-center text-xs border-b border-rose-100"><span class="font-bold text-stone-800">交通費</span><span class="font-bold text-stone-900">= ¥${(allowanceMonthTotal + allowanceDayTotal).toLocaleString()}</span></div>`;
       }
-      let extraTitle = job.extraName1 ? `その他手当て (${job.extraName1})` : `その他手当て`;
+      let extraTitle = job.extraName1 ? `手当 (${job.extraName1})` : `手当`;
       if (extraMonth1Total > 0 || extraDay1Total > 0) {
         extrasHtml += `<div class="py-1 flex justify-between items-center text-xs border-b border-rose-100"><span class="font-bold text-stone-800">${extraTitle}</span><span class="font-bold text-stone-900">= ¥${(extraMonth1Total + extraDay1Total).toLocaleString()}</span></div>`;
       }
@@ -1998,7 +2002,6 @@
 
       rules.forEach((rule, idx) => {
         let isSelected = (idx === selectedBonusRuleIndex);
-        // 右側の画像のように、太すぎる二重線をなくし、すっきりと上品な薄ピンクの枠線デザインに統一
         let rowBgClass = isSelected 
           ? "bg-rose-50/60 border-rose-300 shadow-xs" 
           : "bg-white border-rose-200/70 hover:bg-rose-50/30";
@@ -2011,17 +2014,19 @@
         let holOn = d.holiday ? "bg-rose-900 text-white font-bold shadow-xs" : "bg-white text-stone-700 border border-stone-200 hover:bg-rose-50/50";
 
         container.innerHTML += `
-          <div onclick="selectBonusRuleRow(${idx})" class="${rowBgClass} p-2.5 rounded-xl border transition cursor-pointer space-y-2 text-xs">
-            <div class="flex items-center justify-between gap-1 text-xs">
-              <div class="flex items-center space-x-1">
-                <input type="time" id="input_b_start_${idx}" value="${rule.start || ''}" class="p-1.5 border rounded-lg border-rose-200 bg-white font-bold text-stone-950 text-center w-[84px]" onclick="event.stopPropagation()">
-                <span class="text-stone-400 font-bold">〜</span>
-                <input type="time" id="input_b_end_${idx}" value="${rule.end || ''}" class="p-1.5 border rounded-lg border-rose-200 bg-white font-bold text-stone-950 text-center w-[84px]" onclick="event.stopPropagation()">
-              </div>
+          <div onclick="selectBonusRuleRow(${idx})" class="${rowBgClass} p-2 rounded-xl border transition cursor-pointer space-y-1.5 text-xs">
+            <div class="flex items-center justify-between gap-0.5 text-xs">
               <div class="flex items-center space-x-1 shrink-0">
+                <input type="time" id="input_b_start_${idx}" value="${rule.start || ''}" class="p-1 border rounded-lg border-rose-200 bg-white font-bold text-stone-950 text-center w-[74px]" onclick="event.stopPropagation()">
+                <span class="text-stone-400 font-bold">〜</span>
+                <input type="time" id="input_b_end_${idx}" value="${rule.end || ''}" class="p-1 border rounded-lg border-rose-200 bg-white font-bold text-stone-950 text-center w-[74px]" onclick="event.stopPropagation()">
+              </div>
+              <div class="flex items-center space-x-0.5 shrink-0">
                 <span class="font-bold text-stone-700 text-[11px]">時給</span>
-                <input type="text" inputmode="numeric" id="input_b_wage_${idx}" value="${wageVal}" oninput="formatInputNumber(this)" class="w-16 p-1 border rounded-lg font-bold text-right pr-1 bg-white border-rose-200 text-stone-950 text-xs" onclick="event.stopPropagation()">
-                <span class="font-bold text-stone-700 text-[11px]">円</span>
+                <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
+                  <input type="text" inputmode="numeric" id="input_b_wage_${idx}" value="${wageVal}" oninput="formatInputNumber(this)" class="w-14 font-bold text-right pr-0.5 text-stone-950 bg-transparent text-xs" onclick="event.stopPropagation()">
+                  <span class="text-[10px] font-bold text-stone-600">円</span>
+                </div>
               </div>
             </div>
             <div class="flex flex-col space-y-1 pt-1 border-t border-rose-100/60 text-xs">
@@ -2033,10 +2038,12 @@
                   <button type="button" onclick="toggleRuleDay(${idx}, 'sunday', event)" class="flex-1 py-1 rounded-lg text-[10px] transition text-center ${sunOn}">日曜</button>
                   <button type="button" onclick="toggleRuleDay(${idx}, 'holiday', event)" class="flex-1 py-1 rounded-lg text-[10px] transition text-center ${holOn}">祝日</button>
                 </div>
-                <div class="flex items-center space-x-1 shrink-0 pl-1">
+                <div class="flex items-center space-x-0.5 shrink-0 pl-1">
                   <span class="font-bold text-stone-700 text-[11px]">＋</span>
-                  <input type="text" inputmode="numeric" id="input_b_plus_${idx}" value="${rule.plusWage !== undefined && rule.plusWage !== '' ? Number(rule.plusWage).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-14 p-1 border rounded-lg font-bold text-right pr-1 bg-white border-rose-200 text-stone-950 text-xs" onclick="event.stopPropagation()" placeholder="0">
-                  <span class="font-bold text-stone-700 text-[11px]">円</span>
+                  <div class="flex items-center space-x-0.5 bg-white p-1 rounded-lg border border-rose-200">
+                    <input type="text" inputmode="numeric" id="input_b_plus_${idx}" value="${rule.plusWage !== undefined && rule.plusWage !== '' ? Number(rule.plusWage).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-10 font-bold text-right pr-0.5 text-stone-950 bg-transparent text-xs" onclick="event.stopPropagation()" placeholder="0">
+                    <span class="text-[10px] font-bold text-stone-600">円</span>
+                  </div>
                 </div>
               </div>
             </div>
