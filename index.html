@@ -21,6 +21,10 @@
       font-family: 'Noto Sans JP', sans-serif; 
       color: #292524;
       -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
+    button, input, select {
+      touch-action: manipulation;
     }
     .font-serif-title { font-family: 'Cinzel', 'Noto Sans JP', serif; }
     .tab-btn.active { 
@@ -55,7 +59,7 @@
       <div class="text-3xl">🎉💰✨</div>
       <h3 class="text-base font-bold text-rose-950 font-serif-title">本日はお給料日です！</h3>
       <p id="paydayModalText" class="text-xs text-stone-700 font-medium leading-relaxed">今月もお仕事本当にお疲れ様でした！自分へのご褒美は何にしますか？♡</p>
-      <button type="button" onclick="closePaydayModal()" class="w-full py-2 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm cursor-pointer">やったね！閉じる</button>
+      <button type="button" onclick="closePaydayModal()" class="w-full py-2.5 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm cursor-pointer">やったね！閉じる</button>
     </div>
   </div>
 
@@ -67,8 +71,8 @@
         <input type="text" inputmode="numeric" id="modalGoalInput" oninput="formatInputNumber(this)" class="w-full p-2.5 border rounded-xl border-rose-200 bg-rose-50/30 text-center font-bold text-stone-900 text-sm focus:outline-none focus:border-rose-400" placeholder="例: 200,000">
       </div>
       <div class="flex space-x-2">
-        <button type="button" onclick="closeGoalModal()" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition cursor-pointer">キャンセル</button>
-        <button type="button" onclick="submitGoalModal(event)" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm cursor-pointer">保存する</button>
+        <button type="button" onclick="closeGoalModal()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition cursor-pointer">キャンセル</button>
+        <button type="button" onclick="submitGoalModal(event)" class="flex-1 py-2 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm cursor-pointer">保存する</button>
       </div>
     </div>
   </div>
@@ -81,8 +85,8 @@
         <input type="text" id="modalJobNameInput" class="w-full p-2.5 border rounded-xl border-rose-200 bg-rose-50/30 text-center font-bold text-stone-900 text-sm focus:outline-none focus:border-rose-400" placeholder="店名を入力">
       </div>
       <div class="flex space-x-2">
-        <button type="button" onclick="closeJobNameModal()" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition cursor-pointer">キャンセル</button>
-        <button type="button" onclick="submitJobNameModal(event)" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm cursor-pointer">登録</button>
+        <button type="button" onclick="closeJobNameModal()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-stone-100 text-stone-600 hover:bg-stone-200 transition cursor-pointer">キャンセル</button>
+        <button type="button" onclick="submitJobNameModal(event)" class="flex-1 py-2 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm cursor-pointer">登録</button>
       </div>
     </div>
   </div>
@@ -92,12 +96,12 @@
     <div class="bg-white rounded-3xl p-3 w-full max-w-sm shadow-2xl border border-rose-100 space-y-2 max-h-[92vh] flex flex-col overflow-hidden">
       <div class="flex justify-between items-center border-b border-rose-100 pb-1.5 shrink-0">
         <h3 class="text-xs font-bold text-stone-900 tracking-wide">📋 給料見込の内訳</h3>
-        <button type="button" onclick="closeBreakdownModal()" class="text-stone-400 hover:text-stone-700 font-bold text-xs px-2 cursor-pointer">✕</button>
+        <button type="button" onclick="closeBreakdownModal()" class="text-stone-400 hover:text-stone-700 font-bold text-xs px-2 py-1 cursor-pointer">✕</button>
       </div>
       <div id="breakdownJobTabs" class="flex space-x-1 shrink-0 overflow-x-auto pb-1"></div>
       <div id="breakdownContentArea" class="space-y-1 overflow-y-auto pr-1 text-xs text-stone-800 flex-1 divide-y divide-stone-100"></div>
       <div class="pt-1 border-t border-rose-100 shrink-0">
-        <button type="button" onclick="closeBreakdownModal()" class="w-full py-2 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm cursor-pointer">閉じる</button>
+        <button type="button" onclick="closeBreakdownModal()" class="w-full py-2.5 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm cursor-pointer">閉じる</button>
       </div>
     </div>
   </div>
@@ -120,13 +124,13 @@
 
         <div class="bg-gradient-to-b from-white to-rose-50/20 p-3 rounded-2xl border border-rose-100 shadow-sm space-y-2 relative">
           <div class="flex justify-end px-1">
-            <button onclick="editMonthlyGoal()" class="text-xs text-rose-900 font-bold bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-xl transition border border-rose-200/80 shadow-xs cursor-pointer">
+            <button type="button" onclick="editMonthlyGoal()" class="text-xs text-rose-900 font-bold bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-xl transition border border-rose-200/80 shadow-xs cursor-pointer">
               目標変更: <span id="goalTargetDisplay">未設定</span> ✏️
             </button>
           </div>
 
           <div class="flex items-center justify-between py-0.5 relative">
-            <button onclick="changePayPeriodOffset(-1)" class="w-7 h-7 flex items-center justify-center rounded-full bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0 cursor-pointer">◀</button>
+            <button type="button" onclick="changePayPeriodOffset(-1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0 cursor-pointer">◀</button>
             <div class="relative w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center shrink-0">
               <svg class="w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 36 36">
                 <path class="text-rose-100/60" stroke-width="4.2" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -141,16 +145,16 @@
                 <span id="goalPercentText" class="text-xs font-bold text-rose-50 bg-rose-900 px-2 py-0.5 rounded-full mt-0.5 shadow-xs">0%</span>
               </div>
             </div>
-            <button onclick="changePayPeriodOffset(1)" class="w-7 h-7 flex items-center justify-center rounded-full bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0 cursor-pointer">▶</button>
+            <button type="button" onclick="changePayPeriodOffset(1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0 cursor-pointer">▶</button>
           </div>
 
           <div class="px-1 pt-0.5">
-            <button onclick="openBreakdownModal()" class="w-full py-2 px-2 bg-gradient-to-r from-rose-900 to-rose-950 hover:from-rose-800 hover:to-rose-900 text-rose-50 font-bold rounded-xl text-xs transition shadow-sm flex items-center justify-center space-x-1 cursor-pointer">
+            <button type="button" onclick="openBreakdownModal()" class="w-full py-2.5 px-2 bg-gradient-to-r from-rose-900 to-rose-950 hover:from-rose-800 hover:to-rose-900 text-rose-50 font-bold rounded-xl text-xs transition shadow-sm flex items-center justify-center space-x-1 cursor-pointer">
               <span>📋 給料見込の対象期間・内訳を確認する</span>
             </button>
           </div>
 
-          <div class="flex justify-between items-center text-xs text-stone-700 bg-rose-50/40 p-2 rounded-xl border border-rose-100 shadow-xs mt-1">
+          <div class="flex justify-between items-center text-xs text-stone-700 bg-rose-50/40 p-2.5 rounded-xl border border-rose-100 shadow-xs mt-1">
             <span class="font-bold text-xs">期間の総労働時間</span>
             <span id="monthlyProgressHours" class="font-bold text-stone-900 text-xs">0 時間</span>
           </div>
@@ -201,10 +205,10 @@
 
       <!-- タブ2: シフト入力 -->
       <div id="tab-calendar" class="tab-content hidden space-y-2">
-        <div class="flex justify-between items-center bg-rose-50/50 p-1.5 rounded-xl border border-rose-100 text-xs">
-          <button onclick="changeMonth(-1)" class="text-stone-700 font-bold px-2 py-0.5 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">◀ 前月</button>
+        <div class="flex justify-between items-center bg-rose-50/50 p-2 rounded-xl border border-rose-100 text-xs">
+          <button type="button" onclick="changeMonth(-1)" class="text-stone-700 font-bold px-3 py-1 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">◀ 前月</button>
           <h2 id="currentMonthLabel" class="font-bold text-stone-900 text-xs tracking-wider">----</h2>
-          <button onclick="changeMonth(1)" class="text-stone-700 font-bold px-2 py-0.5 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">翌月 ▶</button>
+          <button type="button" onclick="changeMonth(1)" class="text-stone-700 font-bold px-3 py-1 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">翌月 ▶</button>
         </div>
 
         <div class="bg-white border border-rose-100 rounded-2xl p-2.5 shadow-sm">
@@ -220,7 +224,7 @@
           <div class="bg-white p-2.5 rounded-xl border border-rose-200/70 shadow-xs space-y-1">
             <div class="flex justify-between items-center">
               <span class="text-[11px] font-bold text-rose-950">📋 前月のシフトをすべてコピー</span>
-              <button type="button" onclick="copyEntirePreviousMonth(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">
+              <button type="button" onclick="copyEntirePreviousMonth(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">
                 一括コピーする
               </button>
             </div>
@@ -234,15 +238,15 @@
           <div id="jobSelectContainer" class="flex space-x-1.5 overflow-x-auto pb-1"></div>
 
           <div class="flex space-x-2 pt-0.5">
-            <button type="button" id="typeWorkBtn" onclick="setShiftType(false, event)" class="flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-rose-900 text-white border-rose-900 shadow-sm cursor-pointer">通常勤務</button>
-            <button type="button" id="typePaidBtn" onclick="setShiftType(true, event)" class="flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50 cursor-pointer">☆ 有給</button>
+            <button type="button" id="typeWorkBtn" onclick="setShiftType(false, event)" class="flex-1 py-2 rounded-xl text-xs font-bold border transition bg-rose-900 text-white border-rose-900 shadow-sm cursor-pointer">通常勤務</button>
+            <button type="button" id="typePaidBtn" onclick="setShiftType(true, event)" class="flex-1 py-2 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50 cursor-pointer">☆ 有給</button>
           </div>
 
           <!-- 【ワンタッチ登録】 -->
           <div class="bg-white p-2.5 rounded-xl border border-rose-200/70 shadow-xs space-y-2">
             <div class="flex justify-between items-center border-b border-rose-100 pb-1">
               <span class="text-xs font-bold text-stone-800">【ワンタッチ登録】</span>
-              <button type="button" onclick="addPresetRowOnShiftTab(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">追加</button>
+              <button type="button" onclick="addPresetRowOnShiftTab(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">追加</button>
             </div>
             <p class="text-[10px] text-stone-500 font-bold leading-tight">※追加ボタンを押してよく使う時間を登録してね</p>
             <div id="shiftTabPresetsContainer" class="space-y-1.5"></div>
@@ -252,7 +256,7 @@
           <div id="editSlotPanel" class="bg-white p-2.5 rounded-xl border border-rose-300 shadow-sm space-y-2 hidden">
             <div class="flex justify-between items-center border-b border-rose-100 pb-1">
               <span class="text-[11px] font-bold text-rose-900">✏️ 時間修正と休憩登録</span>
-              <button type="button" onclick="closeEditPanel()" class="text-stone-400 hover:text-stone-700 text-xs font-bold cursor-pointer">✕ 閉じる</button>
+              <button type="button" onclick="closeEditPanel()" class="text-stone-400 hover:text-stone-700 text-xs font-bold px-2 py-1 cursor-pointer">✕ 閉じる</button>
             </div>
             <div class="flex items-center justify-between text-xs gap-1">
               <div class="flex items-center space-x-1">
@@ -265,7 +269,7 @@
                 <input type="text" inputmode="numeric" id="editBreak" oninput="formatInputNumber(this)" class="p-1 border rounded border-stone-200 bg-center text-center font-bold text-stone-900 text-xs w-9" placeholder="0">
                 <span class="text-[10px] font-bold text-stone-500">分</span>
               </div>
-              <button type="button" onclick="confirmEditSlot(event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-3 py-1.5 rounded-lg text-xs transition shadow-xs cursor-pointer">確定</button>
+              <button type="button" onclick="confirmEditSlot(event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-3 py-2 rounded-lg text-xs transition shadow-xs cursor-pointer">確定</button>
             </div>
             <p class="text-[10px] text-stone-500 leading-tight">
               <span class="text-rose-900 font-bold">※休憩は選択時間範囲内の時給の高い時間帯で引かれます</span>
@@ -298,10 +302,10 @@
 
       <!-- タブ3: 予定表 -->
       <div id="tab-list" class="tab-content hidden space-y-2">
-        <div class="flex justify-between items-center bg-rose-50/50 p-1.5 rounded-xl border border-rose-100 text-xs">
-          <button onclick="changeListMonth(-1)" class="text-stone-700 font-bold px-2 py-0.5 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">◀ 前月</button>
+        <div class="flex justify-between items-center bg-rose-50/50 p-2 rounded-xl border border-rose-100 text-xs">
+          <button type="button" onclick="changeListMonth(-1)" class="text-stone-700 font-bold px-3 py-1 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">◀ 前月</button>
           <h2 id="currentListMonthLabel" class="font-bold text-stone-900 text-xs tracking-wider">----</h2>
-          <button onclick="changeListMonth(1)" class="text-stone-700 font-bold px-2 py-0.5 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">翌月 ▶</button>
+          <button type="button" onclick="changeListMonth(1)" class="text-stone-700 font-bold px-3 py-1 hover:bg-rose-100/60 rounded-lg transition cursor-pointer">翌月 ▶</button>
         </div>
 
         <div class="bg-white p-3 rounded-2xl border border-rose-100 space-y-1.5 shadow-sm">
@@ -321,8 +325,8 @@
             <div class="flex justify-between items-center">
               <span class="text-xs font-bold text-stone-800">【バイト先登録】</span>
               <div class="flex items-center space-x-1.5">
-                <button type="button" onclick="addNewJob(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">追加</button>
-                <button type="button" onclick="deleteCurrentSelectedJob(event)" class="bg-stone-100 text-stone-600 hover:bg-rose-100 hover:text-rose-800 text-[10px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm cursor-pointer">削除</button>
+                <button type="button" onclick="addNewJob(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">追加</button>
+                <button type="button" onclick="deleteCurrentSelectedJob(event)" class="bg-stone-100 text-stone-600 hover:bg-rose-100 hover:text-rose-800 text-[10px] font-bold px-3 py-1.5 rounded-lg transition shadow-sm cursor-pointer">削除</button>
               </div>
             </div>
             <p class="text-[10px] text-rose-900 font-bold leading-tight">※バイト先を登録し、選択をしてから、入力してね</p>
@@ -361,9 +365,9 @@
                 <div class="flex justify-between items-center">
                   <div class="text-xs font-bold text-stone-800">【時給登録】</div>
                   <div class="flex items-center space-x-1">
-                    <button type="button" onclick="confirmCurrentBonusRule(event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">設定</button>
-                    <button type="button" onclick="addBonusRuleInputRow(event)" class="bg-stone-800 hover:bg-stone-700 text-rose-50 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">追加</button>
-                    <button type="button" onclick="deleteSelectedBonusRuleRow(event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">削除</button>
+                    <button type="button" onclick="confirmCurrentBonusRule(event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-sm cursor-pointer">設定</button>
+                    <button type="button" onclick="addBonusRuleInputRow(event)" class="bg-stone-800 hover:bg-stone-700 text-rose-50 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-sm cursor-pointer">追加</button>
+                    <button type="button" onclick="deleteSelectedBonusRuleRow(event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-sm cursor-pointer">削除</button>
                   </div>
                 </div>
                 <p class="text-[10px] text-stone-400 font-bold leading-tight">※行をタップして選択してから操作してね</p>
@@ -375,7 +379,7 @@
               <div class="pt-2 border-t border-rose-100 space-y-2">
                 <div class="flex justify-between items-center">
                   <div class="text-xs font-bold text-stone-800">【有給休暇・交通費・手当】</div>
-                  <button type="button" onclick="addExtraAllowanceRow(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">+ 手当の追加</button>
+                  <button type="button" onclick="addExtraAllowanceRow(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">+ 手当の追加</button>
                 </div>
                 
                 <div class="bg-rose-50/30 p-2.5 rounded-xl border border-rose-100 space-y-2 text-xs">
@@ -417,15 +421,15 @@
     <!-- 画面下固定のナビゲーションメニュー -->
     <div class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-stone-100/95 backdrop-blur-md border-t border-rose-200/60 p-1.5 space-y-1 shadow-lg">
       <div id="settingSaveButtonContainer">
-        <button type="button" onclick="saveSettings(event)" class="w-full bg-rose-900 text-rose-50 font-bold py-2 rounded-xl text-[11px] hover:bg-rose-800 transition shadow-sm flex items-center justify-center space-x-1 cursor-pointer">
+        <button type="button" onclick="saveSettings(event)" class="w-full bg-rose-900 text-rose-50 font-bold py-2.5 rounded-xl text-[11px] hover:bg-rose-800 transition shadow-sm flex items-center justify-center space-x-1 cursor-pointer">
           <span>💾 設定を保存する（全ての入力が終わったら必ずタップしてね♡）</span>
         </button>
       </div>
       <div class="grid grid-cols-4 gap-1">
-        <button onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-1.5 px-0.5 rounded-xl text-[11px] sm:text-xs font-bold text-center transition shadow-xs truncate cursor-pointer">給与</button>
-        <button onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-rose-200/80 py-1.5 px-0.5 rounded-xl text-[11px] sm:text-xs font-bold text-center transition shadow-xs truncate cursor-pointer">シフト入力</button>
-        <button onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-rose-200/80 py-1.5 px-0.5 rounded-xl text-[11px] sm:text-xs font-bold text-center transition shadow-xs truncate cursor-pointer">予定表</button>
-        <button onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-white text-stone-700 border border-rose-200/80 py-1.5 px-0.5 rounded-xl text-[11px] sm:text-xs font-bold text-center transition shadow-xs truncate cursor-pointer">設定</button>
+        <button type="button" onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-2 px-0.5 rounded-xl text-[11px] sm:text-xs font-bold text-center transition shadow-xs truncate cursor-pointer">給与</button>
+        <button type="button" onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-rose-200/80 py-2 px-0.5 rounded-xl text-[11px] sm:text-xs font-bold text-center transition shadow-xs truncate cursor-pointer">シフト入力</button>
+        <button type="button" onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-rose-200/80 py-2 px-0.5 rounded-xl text-[11px] sm:text-xs font-bold text-center transition shadow-xs truncate cursor-pointer">予定表</button>
+        <button type="button" onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-white text-stone-700 border border-rose-200/80 py-2 px-0.5 rounded-xl text-[11px] sm:text-xs font-bold text-center transition shadow-xs truncate cursor-pointer">設定</button>
       </div>
     </div>
 
@@ -610,13 +614,13 @@
         html += `
           <div class="flex items-center justify-between bg-rose-50/30 p-1.5 rounded-xl border border-rose-100 gap-1">
             <div class="flex items-center space-x-1 flex-1">
-              <input type="time" id="shift_preset_s_${idx}" value="${sVal}" class="p-1 border rounded-lg border-rose-200 bg-white font-bold text-stone-900 w-[42%] text-center text-xs">
+              <input type="time" id="shift_preset_s_${idx}" value="${sVal}" class="p-1.5 border rounded-lg border-rose-200 bg-white font-bold text-stone-900 w-[42%] text-center text-xs">
               <span class="text-stone-400 font-bold">〜</span>
-              <input type="time" id="shift_preset_e_${idx}" value="${eVal}" class="p-1 border rounded-lg border-rose-200 bg-white font-bold text-stone-900 w-[42%] text-center text-xs">
+              <input type="time" id="shift_preset_e_${idx}" value="${eVal}" class="p-1.5 border rounded-lg border-rose-200 bg-white font-bold text-stone-900 w-[42%] text-center text-xs">
             </div>
             <div class="flex items-center space-x-1 shrink-0">
-              <button type="button" onclick="confirmShiftPresetRow(${idx}, event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-2.5 py-1 rounded-lg text-[10px] transition shadow-xs cursor-pointer">登録</button>
-              <button type="button" onclick="deleteShiftPresetRow(${idx}, event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-2.5 py-1 rounded-lg text-[10px] transition shadow-xs cursor-pointer">削除</button>
+              <button type="button" onclick="confirmShiftPresetRow(${idx}, event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-xs cursor-pointer">登録</button>
+              <button type="button" onclick="deleteShiftPresetRow(${idx}, event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-3 py-1.5 rounded-lg text-[10px] transition shadow-xs cursor-pointer">削除</button>
             </div>
           </div>
         `;
@@ -793,7 +797,7 @@
             html += `
               <div class="flex items-center justify-between bg-rose-50/40 p-2 rounded-xl border border-rose-100">
                 <span class="font-bold text-stone-800">${jName} &nbsp; <span class="text-rose-900">☆ 有給</span></span>
-                <button type="button" onclick="deletePaidLeaveForJob('${jobConf.id}', event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-2 py-1 rounded-lg text-[10px] transition cursor-pointer">削除</button>
+                <button type="button" onclick="deletePaidLeaveForJob('${jobConf.id}', event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-2.5 py-1.5 rounded-lg text-[10px] transition cursor-pointer">削除</button>
               </div>
             `;
           } else {
@@ -819,8 +823,8 @@
                   <div class="flex items-center justify-between bg-rose-50/40 p-2 rounded-xl border border-rose-100">
                     <span class="font-bold text-stone-900">${jName} ${s}〜${e}${breakText}</span>
                     <div class="flex items-center space-x-1 shrink-0">
-                      <button type="button" onclick="openEditPanelForSlotIndex(${i}, '${s}', '${e}')" class="bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold px-2 py-1 rounded-lg text-[10px] transition cursor-pointer">修正</button>
-                      <button type="button" onclick="deleteSingleSlot('${jobConf.id}', ${i}, event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-2 py-1 rounded-lg text-[10px] transition cursor-pointer">削除</button>
+                      <button type="button" onclick="openEditPanelForSlotIndex(${i}, '${s}', '${e}')" class="bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold px-2.5 py-1.5 rounded-lg text-[10px] transition cursor-pointer">修正</button>
+                      <button type="button" onclick="deleteSingleSlot('${jobConf.id}', ${i}, event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-2.5 py-1.5 rounded-lg text-[10px] transition cursor-pointer">削除</button>
                     </div>
                   </div>
                 `;
@@ -996,7 +1000,7 @@
         let styleClass = isSelected ? "bg-gradient-to-r from-rose-900 to-rose-950 text-white shadow-md font-bold" : "bg-white text-stone-700 border border-rose-200 hover:bg-rose-50/50 font-bold";
 
         container.innerHTML += `
-          <button type="button" onclick="switchBreakdownJob('${job.id}')" class="flex-1 py-1.5 rounded-xl text-xs font-bold transition truncate px-2 ${styleClass}">
+          <button type="button" onclick="switchBreakdownJob('${job.id}')" class="flex-1 py-2 rounded-xl text-xs font-bold transition truncate px-2 ${styleClass}">
             ${job.name || 'バイト'}
           </button>
         `;
@@ -1280,7 +1284,7 @@
           : "bg-white text-rose-900 border border-rose-200 hover:bg-rose-50/50 font-bold shadow-xs";
 
         container.innerHTML += `
-          <button type="button" id="jobTabBtn_${job.id}" onclick="switchJobTab('${job.id}')" class="flex-1 py-2 rounded-xl text-xs font-bold transition truncate px-2 ${styleClass}">
+          <button type="button" id="jobTabBtn_${job.id}" onclick="switchJobTab('${job.id}')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition truncate px-2 ${styleClass}">
             ${job.name || 'バイト'}
           </button>
         `;
@@ -1301,11 +1305,11 @@
 
       if (paidBtn && workBtn) {
         if (isPaid) {
-          paidBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-gradient-to-br from-rose-900 to-rose-950 text-white border-rose-900 shadow-sm";
-          workBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
+          paidBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold border transition bg-gradient-to-br from-rose-900 to-rose-950 text-white border-rose-900 shadow-sm";
+          workBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
         } else {
-          workBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-gradient-to-br from-rose-900 to-rose-950 text-white border-rose-900 shadow-sm";
-          paidBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
+          workBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold border transition bg-gradient-to-br from-rose-900 to-rose-950 text-white border-rose-900 shadow-sm";
+          paidBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
         }
       }
     }
@@ -1837,11 +1841,11 @@
           iconHtml = '<div class="h-[6px]"></div>';
         }
 
-        let dayClass = "p-0.5 rounded-xl transition-all cursor-pointer text-stone-800 font-bold flex flex-col items-center justify-center min-h-[38px] bg-white ";
+        let dayClass = "p-1 rounded-xl transition-all cursor-pointer text-stone-800 font-bold flex flex-col items-center justify-center min-h-[40px] bg-white ";
         if (d.getDay() === 0 || isJapaneseHoliday(d)) dayClass += " text-rose-600 font-extrabold";
 
         if (isSelected) {
-          dayClass = "p-0.5 rounded-xl transition-all cursor-pointer text-stone-900 font-extrabold flex flex-col items-center justify-center min-h-[38px] bg-white border-2 border-rose-900 shadow-xs scale-105";
+          dayClass = "p-1 rounded-xl transition-all cursor-pointer text-stone-900 font-extrabold flex flex-col items-center justify-center min-h-[40px] bg-white border-2 border-rose-900 shadow-xs scale-105";
           if (d.getDay() === 0 || isJapaneseHoliday(d)) dayClass += " text-rose-600";
         } else {
           dayClass += " hover:bg-rose-50/50 border border-transparent";
@@ -1917,7 +1921,7 @@
         }
 
         let hasShift = (linesHtml !== '');
-        let batchCalendarIcon = hasShift ? `<a href="${generateBatchGoogleCalendarUrl(dateStr, dayData)}" target="_blank" onclick="event.stopPropagation();" class="text-sm hover:scale-110 transition inline-block ml-1" title="Googleカレンダーに登録">📅</a>` : '';
+        let batchCalendarIcon = hasShift ? `<a href="${generateBatchGoogleCalendarUrl(dateStr, dayData)}" target="_blank" onclick="event.stopPropagation();" class="text-sm hover:scale-110 transition inline-block ml-1 p-1" title="Googleカレンダーに登録">📅</a>` : '';
         let isAllFinished = isAllShiftsFinishedForDate(new Date(d), dayData);
 
         let dayColor = "text-stone-800 font-bold";
@@ -1934,7 +1938,7 @@
 
         container.innerHTML += `
           <div onclick="selectCalendarDate('${dateStr}'); switchTab('calendar');" 
-               class="flex items-center p-2 rounded-xl border transition cursor-pointer ${bgStyle} space-x-2 overflow-hidden">
+               class="flex items-center p-2.5 rounded-xl border transition cursor-pointer ${bgStyle} space-x-2 overflow-hidden">
             <div class="w-16 shrink-0 font-bold ${isSelected ? 'text-stone-900' : dayColor}">
               ${d.getMonth()+1}/${d.getDate()} (${weekDays[d.getDay()
             ]})
@@ -1979,9 +1983,9 @@
           : "bg-white text-rose-900 border border-rose-200 hover:bg-rose-50/50 shadow-xs";
 
         container.innerHTML += `
-          <div onclick="selectSettingsJob('${job.id}')" class="px-3 py-1.5 rounded-xl border transition cursor-pointer flex items-center space-x-1.5 shrink-0 ${styleClass}">
+          <div onclick="selectSettingsJob('${job.id}')" class="px-3.5 py-2 rounded-xl border transition cursor-pointer flex items-center space-x-1.5 shrink-0 ${styleClass}">
             <span class="text-xs truncate">${job.name || 'バイト'}</span>
-            <button type="button" class="${isSelected ? 'text-rose-100 hover:text-white' : 'text-rose-900 hover:text-rose-700'} text-xs p-0.5 cursor-pointer" onclick="event.stopPropagation(); openJobNameModal('${job.id}');" title="変更">✏️</button>
+            <button type="button" class="${isSelected ? 'text-rose-100 hover:text-white' : 'text-rose-900 hover:text-rose-700'} text-xs p-1 cursor-pointer" onclick="event.stopPropagation(); openJobNameModal('${job.id}');" title="変更">✏️</button>
           </div>
         `;
       });
@@ -2084,7 +2088,7 @@
                 <span class="text-[10px] font-bold text-stone-600 shrink-0">円</span>
               </div>
               <input type="text" id="extraName_${idx}" value="${nameVal}" class="flex-1 min-w-[60px] px-2 py-[5px] border rounded-xl font-bold text-xs bg-white border-rose-200 text-stone-900 text-center focus:outline-none" placeholder="メモ">
-              <button type="button" onclick="deleteExtraAllowanceRow(${idx})" class="text-stone-400 hover:text-rose-800 text-xs font-bold px-1 shrink-0 cursor-pointer" title="削除">✕</button>
+              <button type="button" onclick="deleteExtraAllowanceRow(${idx})" class="text-stone-400 hover:text-rose-800 text-xs font-bold p-1.5 shrink-0 cursor-pointer" title="削除">✕</button>
             </div>
           </div>
         `;
@@ -2177,10 +2181,10 @@
               <span class="font-bold text-stone-700 text-[11px]">時給アップの曜日選択（複数可）</span>
               <div class="flex items-center justify-between gap-1">
                 <div class="flex space-x-1 flex-1">
-                  <button type="button" onclick="toggleRuleDay(${idx}, 'weekday', event)" class="flex-1 py-1 rounded-lg text-[10px] transition text-center ${wOn}">平日</button>
-                  <button type="button" onclick="toggleRuleDay(${idx}, 'saturday', event)" class="flex-1 py-1 rounded-lg text-[10px] transition text-center ${satOn}">土曜</button>
-                  <button type="button" onclick="toggleRuleDay(${idx}, 'sunday', event)" class="flex-1 py-1 rounded-lg text-[10px] transition text-center ${sunOn}">日曜</button>
-                  <button type="button" onclick="toggleRuleDay(${idx}, 'holiday', event)" class="flex-1 py-1 rounded-lg text-[10px] transition text-center ${holOn}">祝日</button>
+                  <button type="button" onclick="toggleRuleDay(${idx}, 'weekday', event)" class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${wOn}">平日</button>
+                  <button type="button" onclick="toggleRuleDay(${idx}, 'saturday', event)" class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${satOn}">土曜</button>
+                  <button type="button" onclick="toggleRuleDay(${idx}, 'sunday', event)" class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${sunOn}">日曜</button>
+                  <button type="button" onclick="toggleRuleDay(${idx}, 'holiday', event)" class="flex-1 py-1.5 rounded-lg text-[10px] transition text-center ${holOn}">祝日</button>
                 </div>
                 <div class="flex items-center space-x-0.5 shrink-0 pl-1">
                   <span class="font-bold text-stone-700 text-[11px]">＋</span>
@@ -2267,7 +2271,6 @@
       syncBonusRuleInputsToConfig(currentSettingsJobKey);
       saveAllDataStorage();
       renderBonusRulesInputRows(currentSettingsJobKey);
-      alert('時給設定を反映・保存しました！');
     }
 
     function saveAllDataStorage() {
