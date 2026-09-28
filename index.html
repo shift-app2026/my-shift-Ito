@@ -321,8 +321,8 @@
             <div class="flex justify-between items-center">
               <span class="text-xs font-bold text-stone-800">【バイト先登録】</span>
               <div class="flex items-center space-x-1.5">
-                <button type="button" id="btnAddJob" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">追加</button>
-                <button type="button" id="btnDeleteJob" class="bg-stone-100 text-stone-600 hover:bg-rose-100 hover:text-rose-800 text-[10px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm cursor-pointer">削除</button>
+                <button type="button" onclick="addNewJob(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">追加</button>
+                <button type="button" onclick="deleteCurrentSelectedJob(event)" class="bg-stone-100 text-stone-600 hover:bg-rose-100 hover:text-rose-800 text-[10px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm cursor-pointer">削除</button>
               </div>
             </div>
             <p class="text-[10px] text-rose-900 font-bold leading-tight">※バイト先を登録し、選択をしてから、入力してね</p>
@@ -361,9 +361,9 @@
                 <div class="flex justify-between items-center">
                   <div class="text-xs font-bold text-stone-800">【時給登録】</div>
                   <div class="flex items-center space-x-1">
-                    <button type="button" id="btnConfirmBonus" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">設定</button>
-                    <button type="button" id="btnAddBonus" class="bg-stone-800 hover:bg-stone-700 text-rose-50 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">追加</button>
-                    <button type="button" id="btnDeleteBonus" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">削除</button>
+                    <button type="button" onclick="confirmCurrentBonusRule(event)" class="bg-rose-900 hover:bg-rose-800 text-rose-50 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">設定</button>
+                    <button type="button" onclick="addBonusRuleInputRow(event)" class="bg-stone-800 hover:bg-stone-700 text-rose-50 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">追加</button>
+                    <button type="button" onclick="deleteSelectedBonusRuleRow(event)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold px-2 py-1 rounded-lg text-[10px] transition shadow-sm cursor-pointer">削除</button>
                   </div>
                 </div>
                 <p class="text-[10px] text-stone-400 font-bold leading-tight">※行をタップして選択してから操作してね</p>
@@ -375,7 +375,7 @@
               <div class="pt-2 border-t border-rose-100 space-y-2">
                 <div class="flex justify-between items-center">
                   <div class="text-xs font-bold text-stone-800">【有給休暇・交通費・手当】</div>
-                  <button type="button" id="btnAddExtra" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">+ 手当の追加</button>
+                  <button type="button" onclick="addExtraAllowanceRow(event)" class="bg-rose-900 text-rose-50 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-rose-800 transition shadow-sm cursor-pointer">+ 手当の追加</button>
                 </div>
                 
                 <div class="bg-rose-50/30 p-2.5 rounded-xl border border-rose-100 space-y-2 text-xs">
@@ -417,7 +417,7 @@
     <!-- 画面下固定のナビゲーションメニュー -->
     <div class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-stone-100/95 backdrop-blur-md border-t border-rose-200/60 p-1.5 space-y-1 shadow-lg">
       <div id="settingSaveButtonContainer">
-        <button id="btnSaveSettings" class="w-full bg-rose-900 text-rose-50 font-bold py-2 rounded-xl text-[11px] hover:bg-rose-800 transition shadow-sm flex items-center justify-center space-x-1 cursor-pointer">
+        <button type="button" onclick="saveSettings(event)" class="w-full bg-rose-900 text-rose-50 font-bold py-2 rounded-xl text-[11px] hover:bg-rose-800 transition shadow-sm flex items-center justify-center space-x-1 cursor-pointer">
           <span>💾 設定を保存する（全ての入力が終わったら必ずタップしてね♡）</span>
         </button>
       </div>
@@ -505,15 +505,6 @@
       const yearEl = document.getElementById('currentYearDisplay');
       if (yearEl) yearEl.innerText = new Date().getFullYear();
 
-      // 各ボタンに確実にイベントを設定（PC対応）
-      bindButtonEvent('btnConfirmBonus', confirmCurrentBonusRule);
-      bindButtonEvent('btnAddBonus', addBonusRuleInputRow);
-      bindButtonEvent('btnDeleteBonus', deleteSelectedBonusRuleRow);
-      bindButtonEvent('btnAddJob', addNewJob);
-      bindButtonEvent('btnDeleteJob', deleteCurrentSelectedJob);
-      bindButtonEvent('btnAddExtra', addExtraAllowanceRow);
-      bindButtonEvent('btnSaveSettings', saveSettings);
-
       ensureValidSelectedJob();
       renderSettingsJobNameInputs();
       loadSettingsToUI(currentSettingsJobKey);
@@ -535,16 +526,6 @@
 
       checkPaydayTodayAndShowModal();
     };
-
-    function bindButtonEvent(id, handler) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.onclick = function(e) {
-          if (e) e.preventDefault();
-          handler(e);
-        };
-      }
-    }
 
     function checkPaydayTodayAndShowModal() {
       const now = new Date();
@@ -568,6 +549,7 @@
     }
 
     function copyEntirePreviousMonth(event) {
+      if (event) event.preventDefault();
       const currYear = currentPeriodDate.getFullYear();
       const currMonth = currentPeriodDate.getMonth();
 
@@ -659,6 +641,7 @@
     }
 
     function addPresetRowOnShiftTab(event) {
+      if (event) event.preventDefault();
       syncShiftTabPresetsToConfig(currentSelectedJobKey);
       const job = jobsConfigList.find(j => j.id === currentSelectedJobKey);
       if (job) {
@@ -670,6 +653,7 @@
     }
 
     function deleteShiftPresetRow(idx, event) {
+      if (event) event.preventDefault();
       syncShiftTabPresetsToConfig(currentSelectedJobKey);
       const job = jobsConfigList.find(j => j.id === currentSelectedJobKey);
       if (job && job.presets) {
@@ -680,6 +664,7 @@
     }
 
     function confirmShiftPresetRow(idx, event) {
+      if (event) event.preventDefault();
       syncShiftTabPresetsToConfig(currentSelectedJobKey);
       saveAllDataStorage();
 
@@ -755,6 +740,7 @@
     }
 
     function confirmEditSlot(event) {
+      if (event) event.preventDefault();
       if (!selectedCalendarDateStr || editingSlotIndex === null) return;
 
       let s = document.getElementById('editStart').value;
@@ -853,6 +839,7 @@
     }
 
     function deleteSingleSlot(jobId, slotIndex, event) {
+      if (event) event.preventDefault();
       if (!selectedCalendarDateStr) return;
       if (shiftsData[selectedCalendarDateStr] && shiftsData[selectedCalendarDateStr][jobId]) {
         let jobShift = shiftsData[selectedCalendarDateStr][jobId];
@@ -884,6 +871,7 @@
     }
 
     function deletePaidLeaveForJob(jobId, event) {
+      if (event) event.preventDefault();
       if (!selectedCalendarDateStr) return;
       if (shiftsData[selectedCalendarDateStr]) {
         delete shiftsData[selectedCalendarDateStr][jobId];
@@ -950,6 +938,7 @@
     }
 
     function submitGoalModal(event) {
+      if (event) event.preventDefault();
       const input = document.getElementById('modalGoalInput');
       if (input) {
         let clean = Number(input.value.replace(/[^0-9]/g, ''));
@@ -1229,6 +1218,7 @@
     }
 
     function submitJobNameModal(event) {
+      if (event) event.preventDefault();
       const input = document.getElementById('modalJobNameInput');
       if (input) {
         let newName = input.value.trim();
@@ -1259,11 +1249,13 @@
       }
     }
 
-    function deleteCurrentSelectedJob() {
+    function deleteCurrentSelectedJob(event) {
+      if (event) event.preventDefault();
       deleteJob(currentSettingsJobKey);
     }
 
     function addNewJob(event) {
+      if (event) event.preventDefault();
       syncUIFormToConfig(currentSettingsJobKey);
       let newId = 'job_' + Math.random().toString(36).substr(2, 9);
       let newJob = createDefaultJobConfig({ id: newId }, `バイト${jobsConfigList.length + 1}`, defaultPresets1);
@@ -1319,6 +1311,7 @@
     }
 
     function setShiftType(isPaid, event) {
+      if (event) event.preventDefault();
       setShiftTypeUIOnly(isPaid);
       if (!selectedCalendarDateStr) {
         selectedCalendarDateStr = formatDateKey(new Date());
@@ -2099,6 +2092,7 @@
     }
 
     function addExtraAllowanceRow(event) {
+      if (event) event.preventDefault();
       syncUIFormToConfig(currentSettingsJobKey);
       const job = jobsConfigList.find(j => j.id === currentSettingsJobKey);
       if (job) {
@@ -2124,6 +2118,7 @@
     }
 
     function toggleRuleDay(ruleIdx, dayKey, event) {
+      if (event) event.preventDefault();
       event.stopPropagation();
       const job = jobsConfigList.find(j => j.id === currentSettingsJobKey) || jobsConfigList[0];
       if (job && job.bonusRules && job.bonusRules[ruleIdx]) {
@@ -2285,6 +2280,7 @@
     }
 
     function saveSettings(event) {
+      if (event) event.preventDefault();
       saveAllDataStorage();
       ensureValidSelectedJob();
       loadSettingsToUI(currentSettingsJobKey);
