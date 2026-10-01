@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>マイシフト＆給料</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>マイシフト＆給料｜アイデア版</title>
   
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%239d174d'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='%23fef3c7'>📅</text></svg>">
 
@@ -20,20 +21,18 @@
     }
     .font-serif-title { font-family: 'Cinzel', 'Noto Sans JP', serif; }
     .tab-btn.active { 
-      background: linear-gradient(135deg, #881337 0%, #4c0519 100%); 
-      color: white; 
+      background: linear-gradient(135deg, #881337 0%, #4c0519 100%) !important; 
+      color: white !important; 
       font-weight: bold; 
       box-shadow: 0 4px 12px rgba(136, 19, 55, 0.3);
     }
     input, select {
-      font-size: 11px !important;
+      font-size: 15px !important;
       color: #1c1917 !important;
-      padding-left: 2px !important;
-      padding-right: 2px !important;
+      padding: 6px 10px !important;
     }
     input[type="time"] {
       min-width: 0;
-      padding: 1px !important;
     }
     .payday-pin-container {
       display: inline-flex;
@@ -43,102 +42,183 @@
       line-height: 1;
     }
   </style>
-
-<style>
-  #jobPresetSettingsList button { white-space: nowrap; min-width: 32px; }
-  #jobPresetSettingsList input, #jobPresetSettingsList select { min-width: 0; }
-  #settingSubPaneWage .grid-cols-2 > div { min-width: 0; }
-  #settingSubPaneWage .grid-cols-2 input[type="time"] { min-width: 0; }
-  #settingSubPaneWage .grid-cols-2 select { min-width: 0; }
-  #settingSubPaneWage .grid-cols-\[5fr_7fr\] > div { min-width: 0; }
-  #settingSubPaneWage .grid-cols-\[5fr_7fr\] span { white-space: nowrap; }
-</style>
 </head>
 <body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
 
-  <div id="toastMessage" class="fixed top-3 left-1/2 transform -translate-x-1/2 bg-stone-900/95 text-rose-50 text-xs py-1.5 px-3 rounded-xl shadow-xl border border-rose-200/20 z-50 transition-all duration-300 opacity-0 pointer-events-none text-center font-bold">
+  <div id="toastMessage" class="fixed top-3 left-1/2 transform -translate-x-1/2 bg-stone-900/95 text-rose-50 text-sm py-2.5 px-5 rounded-2xl shadow-xl border border-rose-200/20 z-[70] transition-all duration-300 opacity-0 pointer-events-none text-center font-bold">
     <span id="toastText">メッセージ</span>
   </div>
 
   <!-- 目標金額モーダル -->
   <div id="goalModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-4 w-full max-w-xs shadow-2xl border border-stone-200 space-y-3">
-      <h3 class="text-sm font-bold text-stone-900 text-center tracking-wide">給与対象期間の目標金額設定</h3>
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
+      <h3 class="text-base font-bold text-stone-900 text-center tracking-wide">給与対象期間の目標金額設定</h3>
       <div>
-        <input type="text" inputmode="numeric" id="modalGoalInput" oninput="formatInputNumber(this)" class="w-full p-2 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-sm focus:outline-none focus:border-stone-500" placeholder="例: 200,000">
+        <input type="text" inputmode="numeric" id="modalGoalInput" oninput="formatInputNumber(this)" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="例: 200,000">
       </div>
       <div class="flex space-x-2">
-        <button type="button" onclick="closeGoalModal()" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
-        <button type="button" onclick="submitGoalModal()" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">保存する</button>
+        <button type="button" onclick="closeGoalModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
+        <button type="button" onclick="submitGoalModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">保存する</button>
       </div>
     </div>
   </div>
 
   <!-- バイト名変更モーダル -->
   <div id="jobNameModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-4 w-full max-w-xs shadow-2xl border border-stone-200 space-y-3">
-      <h3 id="jobNameModalTitle" class="text-sm font-bold text-stone-900 text-center tracking-wide">バイト先名の変更</h3>
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
+      <h3 id="jobNameModalTitle" class="text-base font-bold text-stone-900 text-center tracking-wide">バイト先名の変更</h3>
       <div>
-        <input type="text" id="modalJobNameInput" class="w-full p-2.5 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-sm focus:outline-none focus:border-stone-500" placeholder="店名を入力">
+        <input type="text" id="modalJobNameInput" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="店名を入力">
       </div>
       <div class="flex space-x-2">
-        <button type="button" onclick="closeJobNameModal()" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
-        <button type="button" onclick="submitJobNameModal()" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">変更する</button>
+        <button type="button" onclick="closeJobNameModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
+        <button type="button" onclick="submitJobNameModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">変更する</button>
       </div>
     </div>
   </div>
 
-  <!-- 通知ポップアップ（重複など） -->
-  <div id="alertModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-4 w-full max-w-xs shadow-2xl border border-stone-200 space-y-3">
-      <h3 class="text-sm font-bold text-rose-900 text-center tracking-wide">⚠️ お知らせ</h3>
-      <p id="alertModalText" class="text-xs font-bold text-stone-800 text-center whitespace-pre-line leading-relaxed"></p>
-      <button type="button" onclick="closeAlertModal()" class="w-full py-2 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">OK</button>
+  <!-- 時給設定モーダル -->
+  <div id="jobWageModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-white rounded-3xl p-5 w-full max-w-md shadow-2xl border border-stone-200 space-y-4 max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="flex justify-between items-center border-b border-stone-200 pb-2.5 shrink-0">
+        <h3 id="jobWageModalTitle" class="text-sm font-bold text-stone-900 tracking-wide">バイト先の時給・詳細設定</h3>
+        <button type="button" onclick="closeJobWageModal()" class="text-stone-600 hover:text-stone-900 font-bold text-base px-2">✕</button>
+      </div>
+      <div id="jobWageModalBody" class="space-y-4 overflow-y-auto pr-1 flex-1 text-xs"></div>
+      <div class="pt-2 border-t border-stone-200 shrink-0">
+        <button type="button" onclick="saveJobWageModal()" class="w-full py-3 rounded-xl text-sm font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">設定を保存する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 通知ポップアップ -->
+  <div id="alertModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
+      <h3 class="text-base font-bold text-rose-900 text-center tracking-wide">⚠️ お知らせ</h3>
+      <p id="alertModalText" class="text-sm font-bold text-stone-800 text-center whitespace-pre-line leading-relaxed"></p>
+      <button type="button" onclick="closeAlertModal()" class="w-full py-3 rounded-xl text-sm font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">OK</button>
+    </div>
+  </div>
+
+  <!-- シフト入力・編集専用モーダル -->
+  <div id="shiftInputModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-stone-200 space-y-4 max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="flex justify-between items-center border-b border-stone-200 pb-2.5 shrink-0">
+        <h3 id="modalDateTitle" class="text-sm font-bold text-stone-900 tracking-wide">日付 のシフト入力</h3>
+        <button type="button" onclick="closeShiftInputModal()" class="text-stone-600 hover:text-stone-900 font-bold text-base px-2">✕</button>
+      </div>
+
+      <div class="space-y-3 overflow-y-auto pr-1 flex-1">
+        <div id="modalJobSelectContainer" class="flex space-x-1.5"></div>
+
+        <div class="flex space-x-2">
+          <button type="button" id="modalTypeWorkBtn" onclick="setModalShiftType(false)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-rose-100 text-rose-950 border-rose-400 shadow-sm">通常勤務</button>
+          <button type="button" id="modalTypePaidBtn" onclick="setModalShiftType(true)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50">☆ 有給休暇</button>
+        </div>
+
+        <div class="space-y-2">
+          <div id="modalRecentHeading" class="hidden text-xs font-extrabold text-stone-700 flex items-center justify-between">
+            <span>↻ 最近使ったシフト</span>
+            <span class="text-[10px] text-stone-400">過去の登録から</span>
+          </div>
+          <div id="modalRecentShiftContainer" class="hidden space-y-2"></div>
+          <div class="flex justify-between items-center pt-1">
+            <span class="text-xs font-extrabold text-stone-700">☆ よく使うシフト</span>
+            <span class="text-[10px] text-stone-400 font-bold">タップで登録</span>
+          </div>
+          <div id="modalPresetContainer" class="grid grid-cols-1 gap-2 text-xs"></div>
+        </div>
+
+        <div class="p-3 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-stone-700">☆ よく使うシフトを追加</span>
+            <button type="button" onclick="addModalCustomPresetRow()" class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 text-xs font-bold px-2.5 py-1 rounded-xl transition shadow-xs">+ 追加</button>
+          </div>
+          <div id="modalCustomPresetContainer" class="space-y-2"></div>
+        </div>
+
+        <div class="mt-2 p-3 bg-stone-50 rounded-2xl border border-stone-200 shadow-xs space-y-2">
+          <div class="text-xs font-bold text-stone-800 border-b border-stone-200 pb-1.5 flex justify-between items-center">
+            <span>📋 今日のシフト一覧</span>
+          </div>
+          <div id="modalSelectedDateSummaryContent" class="space-y-2 text-xs text-stone-700">
+            <span class="text-stone-400">シフトは登録されていません</span>
+          </div>
+          <div class="border-t border-stone-200 pt-2 flex justify-between items-baseline text-stone-900">
+            <div>
+              <span class="text-xs font-bold text-stone-500 mr-2">合計労働時間</span>
+              <span id="modalSummaryTotalHours" class="font-bold text-stone-900 text-sm">0 時間</span>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-bold text-stone-500 mr-2">合計見込み</span>
+              <span id="modalSummaryTotalPay" class="text-base font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- 給料見込の内訳モーダル -->
   <div id="breakdownModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-    <div class="bg-white rounded-3xl p-3 w-full max-w-sm shadow-2xl border border-stone-200 space-y-2 max-h-[92vh] flex flex-col overflow-hidden">
-      <div class="flex justify-between items-center border-b border-stone-200 pb-1.5 shrink-0">
-        <h3 class="text-xs font-bold text-stone-900 tracking-wide">📋 給料見込の内訳</h3>
-        <button type="button" onclick="closeBreakdownModal()" class="text-stone-600 hover:text-stone-900 font-bold text-xs px-2">✕</button>
+    <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-stone-200 space-y-3 max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="flex justify-between items-center border-b border-stone-200 pb-2.5 shrink-0">
+        <h3 class="text-sm font-bold text-stone-900 tracking-wide">📋 給料見込の内訳</h3>
+        <button type="button" onclick="closeBreakdownModal()" class="text-stone-600 hover:text-stone-900 font-bold text-base px-2">✕</button>
       </div>
-      <div id="breakdownJobTabs" class="flex space-x-1 shrink-0"></div>
-      <div id="breakdownContentArea" class="space-y-1 overflow-y-auto pr-1 text-xs text-stone-800 flex-1 divide-y divide-stone-100"></div>
-      <div class="pt-1 border-t border-stone-200 shrink-0">
-        <button type="button" onclick="closeBreakdownModal()" class="w-full py-2 rounded-xl text-xs font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">閉じる</button>
+      <div id="breakdownJobTabs" class="flex space-x-1.5 shrink-0"></div>
+      <div id="breakdownContentArea" class="space-y-2 overflow-y-auto pr-1 text-xs text-stone-800 flex-1 divide-y divide-stone-100"></div>
+      <div class="pt-2 border-t border-stone-200 shrink-0">
+        <button type="button" onclick="closeBreakdownModal()" class="w-full py-3 rounded-xl text-sm font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">閉じる</button>
       </div>
     </div>
   </div>
 
   <div class="w-full max-w-md bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl border border-stone-200 overflow-hidden flex flex-col h-[94vh] sm:h-auto max-h-[920px]">
 
-    <div class="p-2 sm:p-2.5 flex-1 space-y-1.5 overflow-y-auto pb-28">
+    <div class="p-3 sm:p-4 flex-1 space-y-3 overflow-y-auto pb-24">
       
       <!-- タブ1: 給与 -->
-      <div id="tab-clock" class="tab-content space-y-1.5">
-        <div id="trialBanner" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-bold px-3 py-1.5 rounded-xl flex items-center justify-between gap-2"></div>
+      <div id="tab-clock" class="tab-content space-y-3">
+        <div id="trialBanner" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold px-3.5 py-2.5 rounded-2xl flex items-center justify-between gap-2"></div>
 
-        <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-2 rounded-2xl text-center shadow-md border border-rose-800/40 space-y-0.5 relative overflow-hidden">
+        <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-3 rounded-2xl text-center shadow-md border border-rose-800/40 space-y-1 relative overflow-hidden">
           <div class="absolute -top-6 -left-6 w-16 h-16 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>
           <div class="flex justify-between items-center px-1">
             <span class="text-xs text-rose-300 tracking-widest">✦</span>
-            <p id="todayDate" class="text-xs sm:text-sm font-bold tracking-wider text-white font-serif-title"></p>
+            <p id="todayDate" class="text-base font-bold tracking-wider text-white font-serif-title"></p>
             <span class="text-xs text-rose-300 tracking-widest">✦</span>
           </div>
         </div>
 
-        <div class="bg-white p-2 rounded-2xl border border-stone-200 shadow-sm space-y-1.5 relative">
-          <div class="flex justify-end px-1">
-            <button onclick="editMonthlyGoal()" class="text-xs text-rose-900 font-bold bg-rose-50 hover:bg-rose-100 px-2.5 py-0.5 rounded-xl transition border border-rose-200 shadow-xs">
-              目標変更: <span id="goalTargetDisplay">未設定</span> ✏️
-            </button>
+        <!-- チャッピー提案：今日を最初に見るクイックホーム -->
+        <div class="bg-white rounded-2xl border border-rose-200 shadow-sm overflow-hidden">
+          <div class="px-4 py-3 bg-rose-50/70 border-b border-rose-100 flex items-center justify-between">
+            <div>
+              <div class="text-sm font-extrabold text-stone-900">今日のシフト</div>
+              <div class="text-[11px] font-bold text-stone-500 mt-0.5">「今日は何時から？」をここで確認</div>
+            </div>
+            <button type="button" onclick="openTodayShiftInput()" class="bg-rose-900 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm active:scale-95 transition">＋ シフト追加</button>
+          </div>
+          <div id="homeTodayShiftContainer" class="p-3.5"></div>
+        </div>
+
+        <div id="homeNextShiftCard" class="bg-gradient-to-r from-amber-50 to-white rounded-2xl border border-amber-200 shadow-sm p-3.5 hidden"></div>
+
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3 relative">
+          <div class="flex flex-col gap-1 px-1">
+            <span class="text-xs font-bold text-stone-500">※円グラフは今月の給与受取額を表しています</span>
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-stone-400">目標金額</span>
+              <button type="button" onclick="editMonthlyGoal()" class="text-xs text-rose-900 font-bold bg-rose-50 hover:bg-rose-100 px-3.5 py-1.5 rounded-xl transition border border-rose-200 shadow-xs flex items-center space-x-1">
+                <span>未設定</span> <span class="text-sm">✏️</span>
+              </button>
+            </div>
           </div>
 
-          <div class="flex items-center justify-between py-0.5 relative">
-            <button onclick="changePayPeriodOffset(-1)" class="w-7 h-7 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0">◀</button>
-            <div class="relative w-44 h-44 sm:w-48 sm:h-48 flex items-center justify-center shrink-0">
+          <div class="flex items-center justify-between py-1 relative">
+            <button type="button" onclick="changePayPeriodOffset(-1)" class="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0">◀</button>
+            <div class="relative w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center shrink-0">
               <svg class="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 36 36">
                 <path class="text-stone-100" stroke-width="4.2" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                 <path id="goalProgressCircle" class="text-rose-900 transition-all duration-700 ease-out" stroke-dasharray="0, 100" stroke-width="4.2" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -147,379 +227,169 @@
               <div id="progressIndicatorDot" class="absolute w-4 h-4 rounded-full bg-gradient-to-tr from-rose-900 via-rose-700 to-amber-400 shadow-md ring-2 ring-white transform -translate-x-1/2 -translate-y-1/2 transition-all duration-700 ease-out pointer-events-none hidden" style="top: 50%; left: 50%;"></div>
 
               <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span class="text-[11px] font-bold text-stone-500 tracking-wider">給料見込</span>
-                <span id="goalCurrentPay" class="text-2xl font-bold font-serif-title text-stone-900 tracking-tight">¥0</span>
-                <span id="goalPercentText" class="text-xs font-bold text-rose-50 bg-rose-900 px-2 py-0.5 rounded-full mt-0.5 shadow-xs">0%</span>
+                <span class="text-xs font-bold text-stone-500 tracking-wider">給料見込</span>
+                <span id="goalCurrentPay" class="text-3xl font-bold font-serif-title text-stone-900 tracking-tight">¥0</span>
+                <span id="goalPercentText" class="text-xs font-bold text-rose-50 bg-rose-900 px-3 py-0.5 rounded-full mt-1 shadow-xs">0%</span>
               </div>
             </div>
-            <button onclick="changePayPeriodOffset(1)" class="w-7 h-7 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0">▶</button>
+            <button type="button" onclick="changePayPeriodOffset(1)" class="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0">▶</button>
           </div>
 
-          <div class="px-1 pt-0.5">
-            <button onclick="openBreakdownModal()" class="w-full py-1.5 px-2 bg-rose-50/70 hover:bg-rose-100/70 text-rose-950 font-bold rounded-xl text-xs transition border border-rose-200 shadow-xs flex items-center justify-center space-x-1">
+          <div class="px-1">
+            <button type="button" onclick="openBreakdownModal()" class="w-full py-2.5 px-3 bg-rose-50/70 hover:bg-rose-100/70 text-rose-950 font-bold rounded-xl text-xs transition border border-rose-200 shadow-xs flex items-center justify-center space-x-1">
               <span>📋 給料見込の対象期間・内訳を確認する</span>
             </button>
           </div>
-
-          <div class="flex justify-between items-center text-xs text-stone-700 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-xs">
-            <span class="font-bold text-xs">期間の総労働時間</span>
-            <span id="monthlyProgressHours" class="font-bold text-stone-900 text-xs">0 時間</span>
-          </div>
         </div>
 
-        <!-- 本日のシフト予定 -->
-        <div class="bg-white p-2 rounded-2xl border border-stone-200 shadow-sm space-y-1">
-          <div class="text-xs font-bold text-stone-900 border-b border-stone-200 pb-1 flex items-center space-x-2 tracking-wide">
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-2">
+          <div class="text-xs font-bold text-stone-900 border-b border-stone-200 pb-2 flex items-center space-x-2 tracking-wide">
             <span>本日のシフト</span>
             <span id="todayShiftDateLabel" class="font-bold text-stone-500 text-xs"></span>
           </div>
-          <div id="todayBreakdownContainer" class="space-y-1 text-xs text-stone-700">
+          <div id="todayBreakdownContainer" class="space-y-2 text-xs text-stone-700">
             <span class="text-stone-400">本日のシフトはありません</span>
           </div>
-          <div class="border-t border-stone-200 pt-1 flex justify-between items-baseline text-stone-900">
+          <div class="border-t border-stone-200 pt-2 flex justify-between items-baseline text-stone-900">
             <div>
-              <span class="text-xs font-bold text-stone-500 mr-1.5">合計労働時間</span>
-              <span id="todayTotalHours" class="font-bold text-stone-900 text-xs">0 時間</span>
+              <span class="text-xs font-bold text-stone-500 mr-2">合計労働時間</span>
+              <span id="todayTotalHours" class="font-bold text-stone-900 text-sm">0 時間</span>
             </div>
             <div class="text-right">
-              <span class="text-xs font-bold text-stone-500 mr-1.5">合計見込み</span>
-              <span id="todayTotalPay" class="text-sm font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
+              <span class="text-xs font-bold text-stone-500 mr-2">合計見込み</span>
+              <span id="todayTotalPay" class="text-base font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
             </div>
           </div>
         </div>
 
-        <!-- 今月の給与受取り -->
-        <div class="bg-gradient-to-br from-rose-50/60 via-rose-50/30 to-amber-50/40 text-stone-900 p-2 rounded-2xl border border-rose-100 shadow-xs space-y-1">
-          <div class="text-xs font-bold text-rose-950 border-b border-rose-200/60 pb-1 flex justify-between items-center tracking-wide">
+        <div class="bg-gradient-to-br from-rose-50/60 via-rose-50/30 to-amber-50/40 text-stone-900 p-4 rounded-2xl border border-rose-100 shadow-xs space-y-2.5">
+          <div class="text-xs font-bold text-rose-950 border-b border-rose-200/60 pb-2 flex justify-between items-center tracking-wide">
             <span>今月の給与受取り</span>
           </div>
-          <div id="monthlyReceiveBreakdown" class="space-y-1 text-xs text-stone-700 font-medium"></div>
-          <div class="border-t border-rose-200/60 pt-1 flex justify-between items-baseline">
+          <div id="monthlyReceiveBreakdown" class="space-y-2 text-xs text-stone-700 font-medium"></div>
+          <div class="border-t border-rose-200/60 pt-2 flex justify-between items-baseline">
             <span class="text-xs font-bold text-rose-950">今月の受取総額 合計</span>
-            <span id="monthlyReceiveTotalPay" class="text-lg font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
+            <span id="monthlyReceiveTotalPay" class="text-xl font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
           </div>
-          <div id="monthlyReceiveCompare" class="text-right text-[10px] font-bold text-stone-500"></div>
         </div>
 
-        <!-- 年間収入合計 -->
-        <div class="bg-white p-2 rounded-2xl border border-stone-200 shadow-xs space-y-1">
-          <div class="text-xs font-bold text-stone-800 border-b border-stone-200 pb-1 flex justify-between items-center tracking-wide">
-            <span>年間収入合計 <span id="currentYearDisplay">2026</span>年 &nbsp;&nbsp;&nbsp;&nbsp; 1/1 〜 12/31</span>
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs space-y-2">
+          <div class="text-xs font-bold text-stone-800 border-b border-stone-200 pb-2 flex justify-between items-center tracking-wide">
+            <span id="yearlyTitleLabel">年間収入合計 2026年 &nbsp;&nbsp;&nbsp;&nbsp; 1/1 〜 12/31</span>
           </div>
-          <div class="flex justify-between items-baseline pt-0.5">
-            <span class="text-xs text-stone-600 font-bold">今年の総見込み収入</span>
-            <span id="yearlyTotalPay" class="text-sm font-bold font-serif-title tracking-tight text-stone-900">¥0</span>
+          <div class="flex justify-between items-baseline pt-1">
+            <span id="yearlySubLabel" class="text-xs text-stone-600 font-bold">10月までの収入</span>
+            <span id="yearlyTotalPay" class="text-base font-bold font-serif-title tracking-tight text-stone-900">¥0</span>
           </div>
         </div>
       </div>
 
       <!-- タブ2: シフト入力 -->
-      <div id="tab-calendar" class="tab-content hidden space-y-1.5">
-        <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-1.5 rounded-2xl shadow-md border border-rose-800/40 text-xs">
-          <button onclick="changeMonth(-1)" class="text-rose-100 font-bold px-2 py-0.5 hover:bg-white/10 rounded-lg transition">◀ 前月</button>
-          <div class="flex items-center gap-1.5"><span class="text-rose-300">✦</span><h2 id="currentMonthLabel" class="font-bold text-white text-xs sm:text-sm tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
-          <button onclick="changeMonth(1)" class="text-rose-100 font-bold px-2 py-0.5 hover:bg-white/10 rounded-lg transition">翌月 ▶</button>
+      <div id="tab-calendar" class="tab-content hidden space-y-3">
+        <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-3 rounded-2xl shadow-md border border-rose-800/40 text-xs">
+          <button type="button" onclick="changeMonth(-1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">◀ 前月</button>
+          <div class="flex items-center gap-2"><span class="text-rose-300">✦</span><h2 id="currentMonthLabel" class="font-bold text-white text-base tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
+          <button type="button" onclick="changeMonth(1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">翌月 ▶</button>
         </div>
 
-        <div class="bg-white border border-stone-200 rounded-2xl p-1.5 shadow-sm">
-          <div class="grid grid-cols-7 text-center text-xs font-bold text-stone-500 mb-0.5">
+        <div class="flex justify-end -mt-1">
+          <button type="button" onclick="jumpToTodayCalendar()" class="text-xs font-bold text-rose-900 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl shadow-xs">● 今日へ戻る</button>
+        </div>
+
+        <div class="bg-white border border-rose-200 rounded-3xl p-3.5 shadow-sm space-y-1.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-1.5 font-bold text-xs text-stone-900">
+              <span class="text-sm">📋</span>
+              <span>前月のシフトをすべてコピー</span>
+            </div>
+            <button type="button" onclick="copyLastMonthShifts()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-sm">一括コピーする</button>
+          </div>
+          <p class="text-[11px] text-stone-500 font-medium pl-1">※前月のシフトを一括で今月にコピーします。コピー後の修正も可能です。</p>
+        </div>
+
+        <div class="bg-white border border-stone-200 rounded-3xl p-3 shadow-sm space-y-2">
+          <div class="grid grid-cols-7 text-center text-sm font-bold text-stone-500 mb-1">
             <span class="text-rose-500">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-sky-600">土</span>
           </div>
-          <div id="calendarDays" class="grid grid-cols-7 gap-0.5 text-center text-xs"></div>
+          <div id="calendarDays" class="grid grid-cols-7 gap-1.5 text-center text-sm"></div>
         </div>
 
-        <div class="bg-gradient-to-br from-rose-50/30 to-stone-50 p-2 rounded-2xl border border-stone-200 shadow-sm space-y-1.5">
-          <p id="selectedDateTitle" class="text-xs font-bold text-stone-800 tracking-wide">日付を選択してください</p>
-
-          <div id="jobSelectContainer" class="flex space-x-1.5"></div>
-
-          <div class="flex space-x-2 pt-0.5">
-            <button type="button" id="typeWorkBtn" onclick="setShiftType(false)" class="flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-rose-100 text-rose-950 border-rose-400 shadow-sm">通常勤務</button>
-            <button type="button" id="typePaidBtn" onclick="setShiftType(true)" class="flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50">☆ 有給休暇</button>
-          </div>
-
-          <div class="space-y-1">
-            <span class="text-xs font-bold text-stone-500 uppercase tracking-wider block">ワンタッチ時間選択</span>
-            <div id="presetContainer" class="grid grid-cols-2 gap-1 text-xs"></div>
-          </div>
-
-          <!-- 今日のシフト一覧 -->
-          <div class="mt-1.5 p-2 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-1">
-            <div class="text-[11px] font-bold text-stone-800 border-b border-stone-100 pb-1 flex justify-between items-center">
-              <span>📋 今日のシフト一覧</span>
-            </div>
-            <div id="selectedDateSummaryContent" class="space-y-1 text-xs text-stone-700">
-              <span class="text-stone-400">シフトは登録されていません</span>
-            </div>
-            <div class="border-t border-stone-100 pt-1 flex justify-between items-baseline text-stone-900">
-              <div>
-                <span class="text-[11px] font-bold text-stone-500 mr-1.5">労働時間</span>
-                <span id="summaryTotalHours" class="font-bold text-stone-900 text-xs">0 時間</span>
-              </div>
-              <div class="text-right">
-                <span class="text-[11px] font-bold text-stone-500 mr-1.5">見込み</span>
-                <span id="summaryTotalPay" class="text-sm font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
-              </div>
-            </div>
-          </div>
-
+        <div class="bg-stone-50 border border-stone-200 rounded-2xl p-3 text-center space-y-0.5">
+          <p class="text-xs font-bold text-stone-600 leading-relaxed">📅 カレンダーの日付をタップすると、</p>
+          <p class="text-xs font-bold text-stone-600 leading-relaxed">その日のシフト入力・編集画面がひらきます♡</p>
         </div>
       </div>
 
-      <!-- タブ3: 予定表（15日までしっかり見えるよう高さを最適化） -->
-      <div id="tab-list" class="tab-content hidden space-y-1.5">
-        <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-1.5 rounded-2xl shadow-md border border-rose-800/40 text-xs">
-          <button onclick="changeListMonth(-1)" class="text-rose-100 font-bold px-2 py-0.5 hover:bg-white/10 rounded-lg transition">◀ 前月</button>
-          <div class="flex items-center gap-1.5"><span class="text-rose-300">✦</span><h2 id="currentListMonthLabel" class="font-bold text-white text-xs sm:text-sm tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
-          <button onclick="changeListMonth(1)" class="text-rose-100 font-bold px-2 py-0.5 hover:bg-white/10 rounded-lg transition">翌月 ▶</button>
+      <!-- タブ3: 予定表 -->
+      <div id="tab-list" class="tab-content hidden space-y-3">
+        <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-3 rounded-2xl shadow-md border border-rose-800/40 text-xs">
+          <button type="button" onclick="changeListMonth(-1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">◀ 前月</button>
+          <div class="flex items-center gap-2"><span class="text-rose-300">✦</span><h2 id="currentListMonthLabel" class="font-bold text-white text-base tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
+          <button type="button" onclick="changeListMonth(1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">翌月 ▶</button>
         </div>
 
-        <div class="bg-white p-2 rounded-2xl border border-stone-200 space-y-1 shadow-sm">
-          <div class="text-xs font-bold text-stone-700 border-b border-stone-100 pb-1 flex flex-col items-start tracking-wide leading-relaxed pl-1">
-            <span class="text-xs text-stone-700 font-bold">📅 をタップすると、その予定をGoogleカレンダーに登録できます。</span>
+        <div class="bg-white p-3.5 rounded-2xl border border-stone-200 space-y-2 shadow-sm">
+          <div class="text-xs font-bold text-stone-700 border-b border-stone-100 pb-2 flex flex-col items-start tracking-wide leading-relaxed pl-1">
+            <span class="text-xs text-stone-700 font-bold">📅 をタップすると、</span>
+            <span class="text-xs text-stone-700 font-bold">その予定をGoogleカレンダーに登録できます。</span>
           </div>
-          <!-- 高さを固定からビューポート連動にして15日まで確実に余裕を持って収まるように修正 -->
-          <div id="standaloneShiftListContainer" class="space-y-1 h-[54vh] min-h-[320px] max-h-[520px] overflow-y-auto pr-1 text-xs"></div>
+          <div id="standaloneShiftListContainer" class="space-y-2 h-[54vh] min-h-[320px] max-h-[520px] overflow-y-auto pr-1 text-xs"></div>
         </div>
       </div>
 
       <!-- タブ4: 設定 -->
-      <div id="tab-settings" class="tab-content hidden space-y-1.5">
-        <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-2 rounded-2xl text-center shadow-md border border-rose-800/40 relative overflow-hidden">
+      <div id="tab-settings" class="tab-content hidden space-y-3">
+        <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-3 rounded-2xl text-center shadow-md border border-rose-800/40 relative overflow-hidden">
           <div class="absolute -top-6 -left-6 w-16 h-16 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>
           <div class="flex justify-between items-center px-1">
-            <span class="text-xs text-rose-300 tracking-widest">✦</span>
+            <span class="text-xs text-rose-300 tracking-widest text-lg">🕒</span>
             <div>
-              <p class="text-xs sm:text-sm font-bold tracking-wider text-white">お仕事設定</p>
-              <p class="text-[10px] font-bold text-rose-200 tracking-wide">バイト先・時給・給料日をととのえよう</p>
+              <p class="text-base font-bold tracking-wider text-white">お仕事設定</p>
+              <p class="text-xs font-bold text-rose-200 tracking-wide">バイト先名をタップして時給や給料日を設定しよう</p>
             </div>
-            <span class="text-xs text-rose-300 tracking-widest">✦</span>
+            <span class="text-xs text-rose-300 tracking-widest text-lg">🕒</span>
           </div>
         </div>
-        <div class="bg-white p-2 rounded-2xl border border-stone-200 shadow-sm space-y-1.5">
+
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3">
           <div class="flex justify-between items-center">
             <label class="text-xs font-bold text-stone-800">バイトの登録数</label>
-            <select id="settingJobCount" onchange="onJobCountChange(this.value)" class="w-32 p-1 border rounded-xl border-stone-200 bg-white text-xs font-bold text-stone-900 text-center">
+            <select id="settingJobCount" onchange="onJobCountChange(this.value)" class="w-36 p-2 border rounded-xl border-stone-200 bg-white text-xs font-bold text-stone-900 text-center">
               <option value="1">単独</option>
               <option value="2">ダブル</option>
               <option value="3">トリプル</option>
             </select>
           </div>
 
-          <div class="pt-1 border-t border-stone-200 space-y-1">
+          <div class="pt-2 border-t border-stone-200 space-y-2">
             <div class="flex justify-between items-center mb-1">
-              <span class="text-xs font-bold text-stone-600">バイト先名</span>
+              <span class="text-xs font-bold text-stone-600">バイト先名（タップして詳細・時給設定）</span>
             </div>
-            <div id="settingsJobNameInputs" class="grid grid-cols-3 gap-1.5"></div>
+            <div id="settingsJobNameInputs" class="grid grid-cols-3 gap-2"></div>
           </div>
 
-          <div id="settingSubPaneWage" class="space-y-1.5 pt-1 border-t border-stone-200">
-            <div class="space-y-1 text-xs">
-              <div class="grid grid-cols-2 gap-1 pt-0.5">
-                <div class="bg-stone-50 p-1.5 rounded-xl border border-stone-200 flex items-center justify-between px-2">
-                  <span class="font-bold text-stone-700 text-xs">給与 締め日</span>
-                  <div class="flex items-center space-x-1">
-                    <select id="settingCloseDay" class="p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
-                      <option value="5">5日</option>
-                      <option value="10">10日</option>
-                      <option value="15">15日</option>
-                      <option value="20">20日</option>
-                      <option value="25">25日</option>
-                      <option value="月末">月末</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="bg-stone-50 p-1.5 rounded-xl border border-stone-200 flex items-center justify-between px-2">
-                  <span class="font-bold text-stone-700 text-xs">給与 支払日</span>
-                  <div class="flex items-center space-x-1">
-                    <select id="settingPayDay" class="p-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
-                      <option value="5">5日</option>
-                      <option value="10">10日</option>
-                      <option value="15">15日</option>
-                      <option value="20">20日</option>
-                      <option value="25">25日</option>
-                      <option value="月末">月末</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="pt-1 border-t border-stone-200 space-y-1">
-                <div class="text-xs font-bold text-stone-800">【時給入力】</div>
-                <div class="grid grid-cols-2 gap-1">
-                  <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-1 min-w-0">
-                    <div class="flex items-center gap-1 whitespace-nowrap min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] shrink-0">早朝</span>
-                      <input type="time" id="settingTimeMorningStart" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                      <span class="text-stone-400 font-bold text-[10px] shrink-0">〜</span>
-                      <input type="time" id="settingTimeMorningEnd" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                    </div>
-                    <div class="flex items-center gap-0.5 whitespace-nowrap min-w-0 mt-1">
-                      <span class="text-[9px] font-bold text-stone-500 shrink-0">時給</span>
-                      <input type="text" inputmode="numeric" id="settingWageMorning" oninput="formatInputNumber(this)" class="w-[42px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                      <select id="settingBonusTypeMorning" class="w-[48px] min-w-0 p-1 border rounded-lg border-stone-200 bg-white text-[9px] font-bold text-stone-800 shrink-0">
-                        <option value="weekday">平日</option><option value="weekend">土日</option><option value="holiday">日祝</option>
-                      </select>
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">＋</span>
-                      <input type="text" inputmode="numeric" id="settingBonusMorning" oninput="formatInputNumber(this)" class="w-[30px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                    </div>
-                  </div>
-                  <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-1 min-w-0">
-                    <div class="flex items-center gap-1 whitespace-nowrap min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] shrink-0">日中</span>
-                      <input type="time" id="settingTimeDayStart" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                      <span class="text-stone-400 font-bold text-[10px] shrink-0">〜</span>
-                      <input type="time" id="settingTimeDayEnd" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                    </div>
-                    <div class="flex items-center gap-0.5 whitespace-nowrap min-w-0 mt-1">
-                      <span class="text-[9px] font-bold text-stone-500 shrink-0">時給</span>
-                      <input type="text" inputmode="numeric" id="settingWageDay" oninput="formatInputNumber(this)" class="w-[42px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                      <select id="settingBonusTypeDay" class="w-[48px] min-w-0 p-1 border rounded-lg border-stone-200 bg-white text-[9px] font-bold text-stone-800 shrink-0">
-                        <option value="weekday">平日</option><option value="weekend">土日</option><option value="holiday">日祝</option>
-                      </select>
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">＋</span>
-                      <input type="text" inputmode="numeric" id="settingBonusDay" oninput="formatInputNumber(this)" class="w-[30px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                    </div>
-                  </div>
-                  <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-1 min-w-0">
-                    <div class="flex items-center gap-1 whitespace-nowrap min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] shrink-0">夕方</span>
-                      <input type="time" id="settingTimeEveningStart" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                      <span class="text-stone-400 font-bold text-[10px] shrink-0">〜</span>
-                      <input type="time" id="settingTimeEveningEnd" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                    </div>
-                    <div class="flex items-center gap-0.5 whitespace-nowrap min-w-0 mt-1">
-                      <span class="text-[9px] font-bold text-stone-500 shrink-0">時給</span>
-                      <input type="text" inputmode="numeric" id="settingWageEvening" oninput="formatInputNumber(this)" class="w-[42px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                      <select id="settingBonusTypeEvening" class="w-[48px] min-w-0 p-1 border rounded-lg border-stone-200 bg-white text-[9px] font-bold text-stone-800 shrink-0">
-                        <option value="weekday">平日</option><option value="weekend">土日</option><option value="holiday">日祝</option>
-                      </select>
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">＋</span>
-                      <input type="text" inputmode="numeric" id="settingBonusEvening" oninput="formatInputNumber(this)" class="w-[30px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                    </div>
-                  </div>
-                  <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-1 min-w-0">
-                    <div class="flex items-center gap-1 whitespace-nowrap min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] shrink-0">夜</span>
-                      <input type="time" id="settingTimeNightStart" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                      <span class="text-stone-400 font-bold text-[10px] shrink-0">〜</span>
-                      <input type="time" id="settingTimeNightEnd" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                    </div>
-                    <div class="flex items-center gap-0.5 whitespace-nowrap min-w-0 mt-1">
-                      <span class="text-[9px] font-bold text-stone-500 shrink-0">時給</span>
-                      <input type="text" inputmode="numeric" id="settingWageNight" oninput="formatInputNumber(this)" class="w-[42px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                      <select id="settingBonusTypeNight" class="w-[48px] min-w-0 p-1 border rounded-lg border-stone-200 bg-white text-[9px] font-bold text-stone-800 shrink-0">
-                        <option value="weekday">平日</option><option value="weekend">土日</option><option value="holiday">日祝</option>
-                      </select>
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">＋</span>
-                      <input type="text" inputmode="numeric" id="settingBonusNight" oninput="formatInputNumber(this)" class="w-[30px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                    </div>
-                  </div>
-                  <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-1 min-w-0">
-                    <div class="flex items-center gap-1 whitespace-nowrap min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] shrink-0">深夜</span>
-                      <input type="time" id="settingTimeMidnightStart" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                      <span class="text-stone-400 font-bold text-[10px] shrink-0">〜</span>
-                      <input type="time" id="settingTimeMidnightEnd" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                    </div>
-                    <div class="flex items-center gap-0.5 whitespace-nowrap min-w-0 mt-1">
-                      <span class="text-[9px] font-bold text-stone-500 shrink-0">時給</span>
-                      <input type="text" inputmode="numeric" id="settingWageMidnight" oninput="formatInputNumber(this)" class="w-[42px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                      <select id="settingBonusTypeMidnight" class="w-[48px] min-w-0 p-1 border rounded-lg border-stone-200 bg-white text-[9px] font-bold text-stone-800 shrink-0">
-                        <option value="weekday">平日</option><option value="weekend">土日</option><option value="holiday">日祝</option>
-                      </select>
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">＋</span>
-                      <input type="text" inputmode="numeric" id="settingBonusMidnight" oninput="formatInputNumber(this)" class="w-[30px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                    </div>
-                  </div>
-                  <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-1 min-w-0">
-                    <div class="flex items-center gap-1 whitespace-nowrap min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] shrink-0">追加</span>
-                      <input type="time" id="settingTimeExtraStart" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                      <span class="text-stone-400 font-bold text-[10px] shrink-0">〜</span>
-                      <input type="time" id="settingTimeExtraEnd" class="w-[64px] min-w-0 p-1 border rounded-lg text-center font-bold text-[10px] bg-white border-stone-200 text-stone-950">
-                    </div>
-                    <div class="flex items-center gap-0.5 whitespace-nowrap min-w-0 mt-1">
-                      <span class="text-[9px] font-bold text-stone-500 shrink-0">時給</span>
-                      <input type="text" inputmode="numeric" id="settingWageExtra" oninput="formatInputNumber(this)" class="w-[42px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                      <select id="settingBonusTypeExtra" class="w-[48px] min-w-0 p-1 border rounded-lg border-stone-200 bg-white text-[9px] font-bold text-stone-800 shrink-0">
-                        <option value="weekday">平日</option><option value="weekend">土日</option><option value="holiday">日祝</option>
-                      </select>
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">＋</span>
-                      <input type="text" inputmode="numeric" id="settingBonusExtra" oninput="formatInputNumber(this)" class="w-[30px] min-w-0 p-1 border rounded-lg font-bold text-[10px] bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                      <span class="text-[9px] font-bold text-stone-600 shrink-0">円</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="space-y-1 pt-1">
-                  <div class="grid grid-cols-[5fr_7fr] gap-1">
-                    <div class="p-1.5 rounded-xl border border-stone-200 bg-stone-50/50 flex items-center justify-between gap-1 min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] whitespace-nowrap shrink-0">有給 1日</span>
-                      <div class="flex items-center gap-0.5 whitespace-nowrap shrink-0">
-                        <input type="text" inputmode="numeric" id="settingWagePaid" oninput="formatInputNumber(this)" class="w-11 min-w-0 p-1 border rounded-lg font-bold text-xs bg-white border-stone-200 text-right text-stone-900" placeholder="0">
-                        <span class="text-[10px] font-bold text-stone-600 shrink-0">円</span>
-                      </div>
-                    </div>
-                    <div class="p-1.5 rounded-xl border border-stone-200 bg-stone-50/50 flex items-center gap-1 min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] whitespace-nowrap shrink-0">交通費</span>
-                      <div class="flex items-center gap-0.5 text-[9px] whitespace-nowrap min-w-0 flex-1">
-                        <span class="font-bold text-stone-500 shrink-0">月</span>
-                        <input type="text" inputmode="numeric" id="settingTransMonth" oninput="formatInputNumber(this)" class="w-10 min-w-0 p-1 border rounded text-center font-bold bg-white border-stone-200 text-stone-900" placeholder="0">
-                        <span class="font-bold text-stone-600 shrink-0">円</span>
-                        <span class="font-bold text-stone-500 shrink-0">日</span>
-                        <input type="text" inputmode="numeric" id="settingTransDay" oninput="formatInputNumber(this)" class="w-9 min-w-0 p-1 border rounded text-center font-bold bg-white border-stone-200 text-stone-900" placeholder="0">
-                        <span class="font-bold text-stone-600 shrink-0">円</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="grid grid-cols-[5fr_7fr] gap-1">
-                    <div class="p-1.5 rounded-xl border border-stone-200 bg-stone-50/50 flex items-center gap-1 min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] whitespace-nowrap shrink-0">その他</span>
-                      <div class="flex items-center gap-0.5 text-[9px] whitespace-nowrap min-w-0 flex-1">
-                        <span class="font-bold text-stone-500 shrink-0">月</span>
-                        <input type="text" inputmode="numeric" id="settingAllowanceMonth" oninput="formatInputNumber(this)" class="w-9 min-w-0 p-1 border rounded text-center font-bold bg-white border-stone-200 text-stone-900" placeholder="0">
-                        <span class="font-bold text-stone-600 shrink-0">円</span>
-                        <span class="font-bold text-stone-500 shrink-0">日</span>
-                        <input type="text" inputmode="numeric" id="settingAllowanceDay" oninput="formatInputNumber(this)" class="w-8 min-w-0 p-1 border rounded text-center font-bold bg-white border-stone-200 text-stone-900" placeholder="0">
-                        <span class="font-bold text-stone-600 shrink-0">円</span>
-                      </div>
-                    </div>
-                    <div class="p-1.5 rounded-xl border border-stone-200 bg-stone-50/50 flex items-center gap-1 min-w-0">
-                      <span class="font-bold text-stone-700 text-[10px] whitespace-nowrap shrink-0">メモ</span>
-                      <input type="text" id="settingAllowanceMemo" maxlength="7" class="flex-1 min-w-0 p-1 border rounded-lg text-xs bg-white border-stone-200 text-stone-900 font-medium" placeholder="6～7文字">
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="pt-1.5 border-t border-stone-200 space-y-1">
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-stone-800">ワンタッチ時間登録</span>
-                  <button type="button" onclick="addPresetRow()" class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 active:bg-rose-900 active:text-white text-[10px] font-bold px-2 py-1 rounded-lg transition shadow-xs">+ 時間を追加</button>
-                </div>
-                <div id="jobPresetSettingsList" class="space-y-1"></div>
+          <div class="pt-3 border-t border-stone-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold text-stone-800">☆ よく使うシフト</div>
+                <div class="text-[10px] text-stone-400 font-bold mt-0.5">ここで登録した時間が、シフト入力画面に表示されます</div>
               </div>
             </div>
+            <div id="settingsPresetSummary" class="space-y-2"></div>
           </div>
 
-          <div class="pt-1.5 border-t border-stone-200 space-y-1">
+          <div class="pt-3 border-t border-stone-200">
+            <button type="button" onclick="saveSettings()" class="w-full bg-rose-900 text-rose-50 font-bold py-3 rounded-xl text-xs hover:bg-rose-800 transition shadow-sm flex items-center justify-center space-x-1">
+              <span>💾 設定を保存する（入力したら必ず保存してね♡）</span>
+            </button>
+          </div>
+
+          <div class="pt-2.5 border-t border-stone-200 space-y-2">
             <div class="text-xs font-bold text-stone-800">【データのバックアップ】</div>
-            <p class="text-[10px] text-stone-500 font-bold leading-tight">※機種変更やアプリの再インストールに備えて、時々書き出しておくと安心です</p>
+            <p class="text-xs text-stone-500 font-bold leading-tight">※機種変更やアプリの再インストールに備えて、時々書き出しておくと安心です</p>
             <div class="flex space-x-2">
-              <button type="button" onclick="exportAppData(event)" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold py-1.5 rounded-xl text-[11px] transition border border-rose-200 shadow-xs">⬇️ 書き出す</button>
-              <button type="button" onclick="document.getElementById('importFileInput').click()" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold py-1.5 rounded-xl text-[11px] transition border border-rose-200 shadow-xs">⬆️ 読み込む</button>
+              <button type="button" onclick="exportAppData(event)" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold py-2.5 rounded-xl text-xs transition border border-rose-200 shadow-xs">⬇️ 書き出す</button>
+              <button type="button" onclick="document.getElementById('importFileInput').click()" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold py-2.5 rounded-xl text-xs transition border border-rose-200 shadow-xs">⬆ 読み込む</button>
             </div>
             <input type="file" id="importFileInput" accept="application/json" class="hidden" onchange="importAppData(event)">
           </div>
@@ -528,17 +398,13 @@
 
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-stone-100/95 border-t border-stone-200 p-1 space-y-1 shadow-lg">
-      <div id="settingSaveButtonContainer">
-        <button onclick="saveSettings()" class="w-full bg-rose-900 text-rose-50 font-bold py-1.5 rounded-xl text-[11px] hover:bg-rose-800 transition shadow-sm flex items-center justify-center space-x-1">
-          <span>💾 設定を保存する（入力したら必ず保存してね♡）</span>
-        </button>
-      </div>
+    <!-- 下部タブバー -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-stone-100/95 border-t border-stone-200 p-1.5 shadow-lg">
       <div class="grid grid-cols-4 gap-1">
-        <button onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-1.5 rounded-xl text-xs font-bold text-center transition shadow-xs">給与</button>
-        <button onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-stone-200 py-1.5 rounded-xl text-xs font-bold text-center transition shadow-xs">シフト入力</button>
-        <button onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-stone-200 py-1.5 rounded-xl text-xs font-bold text-center transition shadow-xs">予定表</button>
-        <button onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-white text-stone-700 border border-stone-200 py-1.5 rounded-xl text-xs font-bold text-center transition shadow-xs">設定</button>
+        <button type="button" onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-2.5 rounded-xl text-xs font-bold text-center transition shadow-xs">ホーム</button>
+        <button type="button" onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-xs font-bold text-center transition shadow-xs">シフト入力</button>
+        <button type="button" onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-xs font-bold text-center transition shadow-xs">予定表</button>
+        <button type="button" onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-xs font-bold text-center transition shadow-xs">設定</button>
       </div>
     </div>
 
@@ -554,7 +420,7 @@
     let currentSettingsJobKey = 'job1';
     let currentBreakdownJobKey = 'job1';
     let toastTimer = null;
-    let editingShift = null; // { jk, idx } 修正中のシフト
+    let editingShift = null;
 
     const defaultPresets1 = [
       { start: '06:45', end: '09:00', breakMins: 0 },
@@ -584,12 +450,12 @@
     let monthlyGoal = Number(savedWages.monthlyGoal) || 0;
 
     function buildConfigData(savedWages) {
-    return {
-      jobCount: savedWages.jobCount !== undefined ? Number(savedWages.jobCount) : 3,
-      job1: createDefaultJobConfig(savedWages.job1, 'まいばすけっと', defaultPresets1, 1650, 1890, 1520, 1570, 1900, 1900, 0, '00:00〜09:00', '09:00〜17:00', '17:00〜22:00', '22:00〜24:00', '22:00〜05:00', ''),
-      job2: createDefaultJobConfig(savedWages.job2, 'AS', defaultPresets2, 1650, 1100, 1100, 1100, 1375, 1375, 0, '00:00〜09:00', '09:00〜17:00', '17:00〜22:00', '22:00〜24:00', '22:00〜05:00', ''),
-      job3: createDefaultJobConfig(savedWages.job3, 'minani', defaultPresets2, 1650, 1100, 1100, 1100, 1375, 1375, 0, '00:00〜09:00', '09:00〜17:00', '17:00〜22:00', '22:00〜24:00', '22:00〜05:00', '')
-    };
+      return {
+        jobCount: savedWages.jobCount !== undefined ? Number(savedWages.jobCount) : 3,
+        job1: createDefaultJobConfig(savedWages.job1, 'まいばすけっと', defaultPresets1, 1650, 1890, 1520, 1570, 1900, 1900, 0, '00:00〜09:00', '09:00〜17:00', '17:00〜22:00', '22:00〜24:00', '22:00〜05:00', ''),
+        job2: createDefaultJobConfig(savedWages.job2, 'AS', defaultPresets2, 1650, 1100, 1100, 1100, 1375, 1375, 0, '00:00〜09:00', '09:00〜17:00', '17:00〜22:00', '22:00〜24:00', '22:00〜05:00', ''),
+        job3: createDefaultJobConfig(savedWages.job3, 'minani', defaultPresets2, 1650, 1100, 1100, 1100, 1375, 1375, 0, '00:00〜09:00', '09:00〜17:00', '17:00〜22:00', '22:00〜24:00', '22:00〜05:00', '')
+      };
     }
     let configData = buildConfigData(savedWages);
 
@@ -651,29 +517,15 @@
     }
 
     window.onload = function() {
-      const yearEl = document.getElementById('currentYearDisplay');
-      if (yearEl) yearEl.innerText = new Date().getFullYear();
-
-      document.getElementById('settingJobCount').value = configData.jobCount;
-
       renderSettingsJobNameInputs();
-      loadSettingsToUI(currentSettingsJobKey);
-      updateJobSelectUI();
       initOverviewPage();
       updateTrialBanner();
       
       const today = new Date();
       selectedCalendarDateStr = formatDateKey(today);
-      const [y, m, d] = selectedCalendarDateStr.split('-');
-      const titleEl = document.getElementById('selectedDateTitle');
-      if (titleEl) titleEl.innerText = `${y}年${m}月${d}日 の予定設定`;
-      
-      renderPresetButtons();
-      updateSelectedDateSummary();
 
       renderCalendar();
       renderStandaloneShiftList();
-      updateSaveButtonVisibility('clock');
     };
 
     function getDayShifts(dateStr, jobKey) {
@@ -712,10 +564,9 @@
       renderCalendar();
       renderStandaloneShiftList();
       initOverviewPage();
-      updateSelectedDateSummary();
+      updateModalSelectedDateSummary();
     }
 
-    // 1日・1バイト先分の労働時間と給与（交通費・手当は「日」に1回だけ加算）
     function calcJobDay(dateKey, jk, dateObj) {
       const job = configData[jk];
       const shifts = getDayShifts(dateKey, jk);
@@ -738,7 +589,6 @@
       return { mins, pay, worked };
     }
 
-    // 同じ日の全バイト先を対象に時間の重複を調べる（重複があれば相手のシフトを返す）
     function findOverlap(dateKey, newStart, newEnd, excludeJk = null, excludeIdx = -1) {
       if (!newStart || !newEnd) return null;
       let ns = timeStrToMins(newStart);
@@ -764,7 +614,7 @@
     }
 
     function showOverlapAlert(dup) {
-      showAlertModal(`時間が重複しています。\n${dup.jobName}　${dup.start}〜${dup.end}\nと重なっています。`);
+      showAlertModal(`時間が重複しています。\n${dup.jobName} ${dup.start}〜${dup.end}\nと重なっています。`);
     }
 
     function showAlertModal(msg) {
@@ -780,10 +630,68 @@
       if (modal) modal.classList.add('hidden');
     }
 
-    function updateSelectedDateSummary() {
-      const summaryContent = document.getElementById('selectedDateSummaryContent');
-      const summaryTotalHours = document.getElementById('summaryTotalHours');
-      const summaryTotalPay = document.getElementById('summaryTotalPay');
+    let modalCustomPresets = [];
+
+    function openShiftInputModal(dateStr) {
+      selectedCalendarDateStr = dateStr;
+      editingShift = null;
+      ensureValidSelectedJob();
+      modalCustomPresets = [];
+
+      const [y, m, d] = dateStr.split('-');
+      const titleEl = document.getElementById('modalDateTitle');
+      if (titleEl) titleEl.innerText = `${y}年${m}月${d}日 のシフト入力`;
+
+      renderModalJobTabs();
+      renderModalPresetButtons();
+      renderModalCustomPresets();
+      updateModalSelectedDateSummary();
+
+      const modal = document.getElementById('shiftInputModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeShiftInputModal() {
+      const modal = document.getElementById('shiftInputModal');
+      if (modal) modal.classList.add('hidden');
+      refreshAll();
+    }
+
+    function renderModalJobTabs() {
+      const container = document.getElementById('modalJobSelectContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const activeKeys = getActiveJobKeys();
+      activeKeys.forEach(jk => {
+        let name = configData[jk].name || 'バイト';
+        let isSelected = (jk === currentSelectedJobKey);
+        let styleClass = isSelected ? "bg-rose-100 text-rose-950 border border-rose-400 shadow-sm font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+
+        container.innerHTML += `
+          <button type="button" onclick="switchModalJobTab('${jk}')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition shadow-sm truncate px-1.5 ${styleClass}">
+            ${name}
+          </button>
+        `;
+      });
+    }
+
+    function switchModalJobTab(jobKey) {
+      currentSelectedJobKey = jobKey;
+      renderModalJobTabs();
+      renderModalPresetButtons();
+      updateModalSelectedDateSummary();
+    }
+
+    function isShiftAlreadyRegistered(start, end, breakMins) {
+      const shifts = getDayShifts(selectedCalendarDateStr, currentSelectedJobKey);
+      return shifts.some(sh => sh && !sh.isPaidLeave && sh.start === start && sh.end === end && Number(sh.breakMins || 0) === Number(breakMins || 0));
+    }
+
+    function updateModalSelectedDateSummary() {
+      const summaryContent = document.getElementById('modalSelectedDateSummaryContent');
+      const summaryTotalHours = document.getElementById('modalSummaryTotalHours');
+      const summaryTotalPay = document.getElementById('modalSummaryTotalPay');
       if (!summaryContent) return;
 
       const dateKey = selectedCalendarDateStr;
@@ -802,7 +710,6 @@
         });
       }
 
-      // 開始時間の早い順に並べる（有給は最後）
       entries.sort((a, b) => {
         const am = a.sh.isPaidLeave ? 99999 : timeStrToMins(a.sh.start);
         const bm = b.sh.isPaidLeave ? 99999 : timeStrToMins(b.sh.start);
@@ -817,11 +724,11 @@
         if (sh.isPaidLeave) {
           const pay = jobConf.paid || 1650;
           html += `
-            <div class="py-1 border-b border-stone-100 last:border-b-0 flex justify-between items-center text-xs">
+            <div class="py-2 border-b border-stone-200 last:border-b-0 flex justify-between items-center text-xs">
               <span class="font-bold text-stone-800">${jobName} (☆有給)</span>
-              <div class="flex items-center space-x-1.5">
+              <div class="flex items-center space-x-2">
                 <span class="font-bold text-stone-900">¥${pay.toLocaleString()}</span>
-                <button type="button" onclick="deleteJobShiftIndex('${jk}', ${idx})" class="text-stone-400 hover:text-stone-700 font-bold px-1 text-[10px]">削除</button>
+                <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-xs transition">削除</button>
               </div>
             </div>
           `;
@@ -829,39 +736,16 @@
         }
 
         if (!sh.start || !sh.end) return;
+        const breakText = (Number(sh.breakMins) > 0) ? ` 休憩あり` : '';
 
-        const isEditing = editingShift && editingShift.jk === jk && editingShift.idx === idx;
-        if (isEditing) {
-          html += `
-            <div class="py-1.5 px-1.5 my-0.5 border border-amber-200 bg-amber-50/60 rounded-xl space-y-1">
-              <div class="text-xs font-bold text-stone-800">${jobName} の時間を修正</div>
-              <div class="flex items-center gap-1">
-                <input type="time" id="edit_start" value="${sh.start}" class="flex-1 min-w-0 p-1 border rounded-lg border-stone-200 bg-white font-bold text-center">
-                <span class="font-bold text-stone-400 shrink-0">〜</span>
-                <input type="time" id="edit_end" value="${sh.end}" class="flex-1 min-w-0 p-1 border rounded-lg border-stone-200 bg-white font-bold text-center">
-                <div class="flex items-center shrink-0 gap-0.5">
-                  <span class="text-[9px] font-bold text-stone-500">休憩</span>
-                  <input type="text" inputmode="numeric" id="edit_break" value="${sh.breakMins ? sh.breakMins : ''}" oninput="formatInputNumber(this)" class="w-8 p-1 border rounded-lg border-stone-200 bg-white font-bold text-center" placeholder="0">
-                  <span class="text-[9px] font-bold text-stone-500">分</span>
-                </div>
-              </div>
-              <div class="flex justify-end gap-1">
-                <button type="button" onclick="saveEditShift('${jk}', ${idx})" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-3 py-1 rounded-lg text-[10px] transition">保存</button>
-                <button type="button" onclick="cancelEditShift()" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-3 py-1 rounded-lg text-[10px] transition">キャンセル</button>
-              </div>
+        html += `
+          <div class="py-2 border-b border-stone-200 last:border-b-0 flex justify-between items-center text-xs">
+            <span class="font-bold text-stone-800">${jobName}&nbsp;&nbsp;${sh.start}〜${sh.end}${breakText}</span>
+            <div class="flex items-center space-x-2">
+              <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-xs transition">削除</button>
             </div>
-          `;
-        } else {
-          html += `
-            <div class="py-1 border-b border-stone-100 last:border-b-0 flex justify-between items-center text-xs">
-              <span class="font-bold text-stone-800">${jobName}&nbsp;&nbsp;${sh.start}〜${sh.end}</span>
-              <div class="flex items-center space-x-1.5">
-                <button type="button" onclick="editShiftItem('${jk}', ${idx})" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-2 py-0.5 rounded text-[10px] transition">修正</button>
-                <button type="button" onclick="deleteJobShiftIndex('${jk}', ${idx})" class="text-stone-400 hover:text-stone-700 font-bold px-1 text-[10px]">削除</button>
-              </div>
-            </div>
-          `;
-        }
+          </div>
+        `;
       });
 
       if (html === '') {
@@ -874,52 +758,20 @@
       summaryContent.innerHTML = html;
       if (summaryTotalHours) summaryTotalHours.innerText = `${(totalDayMins / 60).toFixed(2)} 時間`;
       if (summaryTotalPay) summaryTotalPay.innerText = formatCurrency(totalDayPay);
+
+      renderModalPresetButtons();
+      renderModalCustomPresets();
     }
 
-    function deleteJobShiftIndex(jobKey, idx) {
+    function deleteJobShiftIndexModal(jobKey, idx) {
       let shifts = getDayShifts(selectedCalendarDateStr, jobKey);
       shifts.splice(idx, 1);
       setDayShifts(selectedCalendarDateStr, jobKey, shifts);
-      editingShift = null;
-      refreshAll();
+      updateModalSelectedDateSummary();
       showToast("シフトを削除しました");
     }
 
-    function editShiftItem(jobKey, idx) {
-      editingShift = { jk: jobKey, idx };
-      updateSelectedDateSummary();
-    }
-
-    function cancelEditShift() {
-      editingShift = null;
-      updateSelectedDateSummary();
-    }
-
-    function saveEditShift(jobKey, idx) {
-      const s = document.getElementById('edit_start')?.value || '';
-      const e = document.getElementById('edit_end')?.value || '';
-      const b = parseFormattedNumber(document.getElementById('edit_break')?.value);
-
-      if (!s || !e) { showToast("開始時間と終了時間を入力してください"); return; }
-      if (s === e) { showToast("開始と終了が同じ時間です"); return; }
-
-      let shifts = getDayShifts(selectedCalendarDateStr, jobKey);
-      const sh = shifts[idx];
-      if (!sh) { editingShift = null; updateSelectedDateSummary(); return; }
-
-      const dup = findOverlap(selectedCalendarDateStr, s, e, jobKey, idx);
-      if (dup) { showOverlapAlert(dup); return; }
-
-      sh.start = s;
-      sh.end = e;
-      sh.breakMins = b;
-      setDayShifts(selectedCalendarDateStr, jobKey, shifts);
-      editingShift = null;
-      refreshAll();
-      showToast("シフト時間を修正しました");
-    }
-
-        function getActiveJobKeys() {
+    function getActiveJobKeys() {
       let count = Number(configData.jobCount) || 1;
       let keys = ['job1'];
       if (count >= 2) keys.push('job2');
@@ -964,29 +816,20 @@
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(el => {
-        el.classList.remove('active', 'bg-rose-900', 'text-white');
+        el.classList.remove('active');
         el.classList.add('bg-white', 'text-stone-700');
       });
 
       const targetTab = document.getElementById(`tab-${tabName}`);
       if (targetTab) targetTab.classList.remove('hidden');
       const activeBtn = document.getElementById(`btn-${tabName}`);
-      if (activeBtn) activeBtn.classList.add('active');
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.classList.remove('bg-white', 'text-stone-700');
+      }
 
       if (tabName === 'list') {
         renderStandaloneShiftList('jump');
-      }
-
-      updateSaveButtonVisibility(tabName);
-    }
-
-    function updateSaveButtonVisibility(tabName) {
-      const container = document.getElementById('settingSaveButtonContainer');
-      if (!container) return;
-      if (tabName === 'settings') {
-        container.style.display = 'block';
-      } else {
-        container.style.display = 'none';
       }
     }
 
@@ -1021,22 +864,30 @@
       }
     }
 
-    function getJobPayPeriodRange(job, offset = 0) {
+    function getJobPayPeriodRangeForReceiveMonth(job, offset = 0) {
       const now = new Date();
       let year = now.getFullYear();
-      let month = now.getMonth() + offset;
-      
+      let receiveMonth = now.getMonth() + offset;
+
       let closeDayInput = String(job.closeDay || '20').trim();
+      let payDayInput = String(job.payDay || '5').trim();
+      
       let isEndMonth = (closeDayInput === '月末');
+      let closeNum = isEndMonth ? 31 : (Number(closeDayInput) || 20);
+      let payNum = (payDayInput === '月末') ? 31 : (Number(payDayInput) || 5);
+
+      let workMonth = receiveMonth - 1;
+      if (payNum > closeNum) {
+        workMonth = receiveMonth;
+      }
 
       let start, end;
       if (isEndMonth) {
-        start = new Date(year, month, 1);
-        end = new Date(year, month + 1, 0);
+        start = new Date(year, workMonth, 1);
+        end = new Date(year, workMonth + 1, 0);
       } else {
-        let closeDayNum = Number(closeDayInput) || 20;
-        start = new Date(year, month - 1, closeDayNum + 1);
-        end = new Date(year, month, closeDayNum);
+        start = new Date(year, workMonth - 1, closeNum + 1);
+        end = new Date(year, workMonth, closeNum);
       }
       return { start, end };
     }
@@ -1069,7 +920,7 @@
         let styleClass = isSelected ? "bg-rose-100 text-rose-950 border border-rose-400 shadow-sm font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
 
         container.innerHTML += `
-          <button type="button" onclick="switchBreakdownJob('${jk}')" class="flex-1 py-1.5 rounded-xl text-xs font-bold transition truncate px-1 ${styleClass}">
+          <button type="button" onclick="switchBreakdownJob('${jk}')" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition truncate px-1.5 ${styleClass}">
             ${name}
           </button>
         `;
@@ -1150,7 +1001,7 @@
       if (!contentArea) return;
 
       const job = configData[jobKey];
-      const { start, end } = getJobPayPeriodRange(job, payPeriodOffset);
+      const { start, end } = getJobPayPeriodRangeForReceiveMonth(job, payPeriodOffset);
 
       let startStr = `${start.getMonth()+1}月${start.getDate()}日`;
       let endStr = `${end.getMonth()+1}月${end.getDate()}日`;
@@ -1209,24 +1060,16 @@
         if (mins === 0) return "なし";
         let h = Math.floor(mins / 60);
         let m = mins % 60;
-        return `${h}h${m > 0 ? m + 'm' : ''}`;
+        return `${h}時間${m > 0 ? m + '分' : ''}`;
       }
 
-      function renderRow(label, rate, mins, subtotal) {
-        if (mins === 0 && subtotal === 0) {
-          return `
-            <div class="py-1 flex justify-between items-center text-xs">
-              <span class="font-bold text-stone-500 w-24">${label}</span>
-              <span class="text-stone-400 text-center flex-1 font-medium">なし</span>
-              <span class="text-stone-400 w-20 text-right pr-1"></span>
-            </div>
-          `;
-        }
+      function renderRow(label, mins, subtotal) {
+        if (mins === 0 && subtotal === 0) return '';
         return `
-          <div class="py-1 flex justify-between items-center text-xs">
+          <div class="py-2 flex justify-between items-center text-xs">
             <span class="font-bold text-stone-800 w-24">${label}</span>
-            <span class="text-stone-700 text-center flex-1 font-bold">ベース¥${rate.toLocaleString()} × ${formatHoursMin(mins)}</span>
-            <span class="font-bold text-stone-900 w-20 text-right pr-1">= ¥${Math.floor(subtotal).toLocaleString()}</span>
+            <span class="text-stone-700 text-center flex-1 font-bold">${formatHoursMin(mins)}</span>
+            <span class="font-bold text-stone-900 w-24 text-right pr-1">¥${Math.floor(subtotal).toLocaleString()}</span>
           </div>
         `;
       }
@@ -1236,55 +1079,68 @@
       let allowanceLabel = job.allowanceMemo ? `${job.allowanceMemo}` : 'その他手当';
       let grandTotal = mornPay + dayPay + evePay + nightPay + midnightPay + extraPay + paidPay + totalTrans + totalAllowance;
 
+      let rowsHtml = '';
+      if (paidDays > 0) {
+        rowsHtml += `
+          <div class="py-2 flex justify-between items-center text-xs">
+            <span class="font-bold text-stone-800 w-24">有給休暇</span>
+            <span class="text-stone-700 text-center flex-1 font-bold">${paidDays}日</span>
+            <span class="font-bold text-stone-900 w-24 text-right pr-1">¥${Math.floor(paidPay).toLocaleString()}</span>
+          </div>`;
+      }
+      rowsHtml += renderRow('早朝出勤', mornMins, mornPay);
+      rowsHtml += renderRow('日中出勤', dayMins, dayPay);
+      rowsHtml += renderRow('夕方出勤', eveMins, evePay);
+      rowsHtml += renderRow('夜出勤', nightMins, nightPay);
+      rowsHtml += renderRow('深夜出勤', midnightMins, midnightPay);
+      if (extraMins > 0) rowsHtml += renderRow('追加出勤', extraMins, extraPay);
+
+      if (totalTrans > 0) {
+        rowsHtml += `
+          <div class="py-2 flex justify-between items-center text-xs">
+            <span class="font-bold text-stone-800 w-24">交通費</span>
+            <span class="text-stone-700 text-center flex-1 font-bold">${workDaysCount}日</span>
+            <span class="font-bold text-stone-900 w-24 text-right pr-1">¥${Math.floor(totalTrans).toLocaleString()}</span>
+          </div>`;
+      }
+      if (totalAllowance > 0) {
+        rowsHtml += `
+          <div class="py-2 flex justify-between items-center text-xs">
+            <span class="font-bold text-stone-800 w-24 truncate" title="${allowanceLabel}">${allowanceLabel}</span>
+            <span class="text-stone-700 text-center flex-1 font-bold">${workDaysCount}日</span>
+            <span class="font-bold text-stone-900 w-24 text-right pr-1">¥${Math.floor(totalAllowance).toLocaleString()}</span>
+          </div>`;
+      }
+
+      if (rowsHtml === '') {
+        rowsHtml = `<div class="py-4 text-center text-stone-400 font-bold">対象期間のシフト登録はありません</div>`;
+      }
+
       contentArea.innerHTML = `
-        <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 space-y-0.5 mb-1">
-          <div class="text-center font-bold text-stone-800 text-[11px]">給料計算の対象期間：<span class="text-stone-600">${startStr} - ${endStr}</span></div>
-          <div class="flex justify-around text-[10px] font-bold text-stone-500">
+        <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-1 mb-2">
+          <div class="text-center font-bold text-stone-800 text-xs">給料計算の対象期間：<span class="text-stone-600">${startStr} - ${endStr}</span></div>
+          <div class="flex justify-around text-xs font-bold text-stone-500">
             <span>締め日: ${job.closeDay === '月末' ? '月末' : job.closeDay + '日'}</span>
             <span>給料日: ${job.payDay === '月末' ? '月末' : job.payDay + '日'}</span>
           </div>
         </div>
 
-        <div class="grid grid-cols-3 text-[10px] font-bold text-stone-500 border-b border-stone-200 pb-1 text-center whitespace-nowrap">
+        <div class="grid grid-cols-3 text-xs font-bold text-stone-500 border-b border-stone-200 pb-2 whitespace-nowrap">
           <span>項目</span>
-          <span class="tracking-tighter">単価 × 時間/日数</span>
-          <span class="text-right pr-1">給料見込</span>
+          <span class="text-center">労働時間</span>
+          <span class="text-right pr-1">給与見込額</span>
         </div>
 
-        ${paidDays > 0 ? `
-          <div class="py-1 flex justify-between items-center text-xs">
-            <span class="font-bold text-stone-800 w-24">有給休暇</span>
-            <span class="text-stone-700 text-center flex-1 font-bold">¥${(job.paid || 1650).toLocaleString()} × ${paidDays}日</span>
-            <span class="font-bold text-stone-900 w-20 text-right pr-1">= ¥${Math.floor(paidPay).toLocaleString()}</span>
-          </div>` : renderRow('有給休暇', job.paid || 1650, 0, 0)}
-        ${renderRow('早朝時給', job.morning || 1890, mornMins, mornPay)}
-        ${renderRow('日中時給', job.day || 1520, dayMins, dayPay)}
-        ${renderRow('夕方時給', job.evening || 1570, eveMins, evePay)}
-        ${renderRow('夜時給', job.night || 1900, nightMins, nightPay)}
-        ${renderRow('深夜時給', job.midnight || 1900, midnightMins, midnightPay)}
-        ${extraMins > 0 ? renderRow('追加時給', job.extraWage || 0, extraMins, extraPay) : ''}
+        ${rowsHtml}
 
-        <div class="py-1 flex justify-between items-center text-xs">
-          <span class="font-bold text-stone-800 w-24">交通費</span>
-          <span class="text-stone-700 text-center flex-1 font-bold">${totalTrans > 0 ? `¥${(job.transDay || 0).toLocaleString()}×${workDaysCount}日` : 'なし'}</span>
-          <span class="font-bold text-stone-900 w-20 text-right pr-1">${totalTrans > 0 ? `= ¥${Math.floor(totalTrans).toLocaleString()}` : '¥0'}</span>
-        </div>
-
-        <div class="py-1 flex justify-between items-center text-xs">
-          <span class="font-bold text-stone-800 w-24 truncate" title="${allowanceLabel}">${allowanceLabel}</span>
-          <span class="text-stone-700 text-center flex-1 font-bold">${totalAllowance > 0 ? `¥${(job.allowanceDay || 0).toLocaleString()}×${workDaysCount}日` : 'なし'}</span>
-          <span class="font-bold text-stone-900 w-20 text-right pr-1">${totalAllowance > 0 ? `= ¥${Math.floor(totalAllowance).toLocaleString()}` : '¥0'}</span>
-        </div>
-
-        <div class="pt-1 mt-0.5 border-t-2 border-stone-200 flex justify-between items-center bg-rose-950 text-rose-50 p-2 rounded-xl">
+        <div class="pt-2 mt-1 border-t-2 border-stone-200 flex justify-between items-center bg-rose-950 text-rose-50 p-3 rounded-2xl">
           <span class="font-bold text-xs">合計</span>
-          <span class="text-sm font-bold font-serif-title tracking-tight pr-1">¥${Math.floor(grandTotal).toLocaleString()}</span>
+          <span class="text-base font-bold font-serif-title tracking-tight pr-1">¥${Math.floor(grandTotal).toLocaleString()}</span>
         </div>
       `;
     }
 
     function openJobNameModal(jobKey) {
-      syncUIFormToConfig(currentSettingsJobKey);
       currentSettingsJobKey = jobKey;
       const modal = document.getElementById('jobNameModal');
       const input = document.getElementById('modalJobNameInput');
@@ -1311,8 +1167,6 @@
           configData[currentSettingsJobKey].name = newName;
           saveAllDataStorage();
           renderSettingsJobNameInputs();
-          loadSettingsToUI(currentSettingsJobKey);
-          updateJobSelectUI();
           initOverviewPage();
           showToast("バイト先名を変更しました");
           closeJobNameModal();
@@ -1322,103 +1176,399 @@
       }
     }
 
-    function updateJobSelectUI() {
-      const container = document.getElementById('jobSelectContainer');
-      if (!container) return;
-      container.innerHTML = '';
+    function openJobWageModal(jobKey) {
+      currentSettingsJobKey = jobKey;
+      const modal = document.getElementById('jobWageModal');
+      const title = document.getElementById('jobWageModalTitle');
+      const body = document.getElementById('jobWageModalBody');
+      if (!modal || !body) return;
 
-      const activeKeys = getActiveJobKeys();
-      activeKeys.forEach(jk => {
-        let name = configData[jk].name || `バイト`;
-        let isSelected = (jk === currentSelectedJobKey);
-        let styleClass = isSelected ? "bg-rose-100 text-rose-950 border border-rose-400 shadow-sm font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+      title.innerText = `${configData[jobKey].name || 'バイト'} の時給・詳細設定`;
+      body.innerHTML = getJobWageModalFormHtml(jobKey);
+      loadSettingsToUIForModal(jobKey);
+      modal.classList.remove('hidden');
+    }
 
-        container.innerHTML += `
-          <button type="button" id="jobTabBtn_${jk}" onclick="switchJobTab('${jk}')" class="flex-1 py-1.5 rounded-xl text-xs font-bold transition shadow-sm truncate px-1 ${styleClass}">
-            ${name}
-          </button>
+    function closeJobWageModal() {
+      syncJobWageModalToConfig(currentSettingsJobKey);
+      saveAllDataStorage();
+      const modal = document.getElementById('jobWageModal');
+      if (modal) modal.classList.add('hidden');
+      refreshAll();
+    }
+
+    function saveJobWageModal() {
+      closeJobWageModal();
+      showToast("設定を保存しました");
+    }
+
+    const WAGE_SLOT_DEFS = [
+      { key: 'Morning', label: '早朝', timeKey: 'timeMorning', wageKey: 'morning', bTypeKey: 'bonusTypeMorning', bValKey: 'bonusMorning' },
+      { key: 'Day', label: '日中', timeKey: 'timeDay', wageKey: 'day', bTypeKey: 'bonusTypeDay', bValKey: 'bonusDay' },
+      { key: 'Evening', label: '夕方', timeKey: 'timeEvening', wageKey: 'evening', bTypeKey: 'bonusTypeEvening', bValKey: 'bonusEvening' },
+      { key: 'Night', label: '夜', timeKey: 'timeNight', wageKey: 'night', bTypeKey: 'bonusTypeNight', bValKey: 'bonusNight' },
+      { key: 'Midnight', label: '深夜', timeKey: 'timeMidnight', wageKey: 'midnight', bTypeKey: 'bonusTypeMidnight', bValKey: 'bonusMidnight' },
+      { key: 'Extra', label: '追加', timeKey: 'timeExtra', wageKey: 'extraWage', bTypeKey: 'bonusTypeExtra', bValKey: 'bonusExtra' }
+    ];
+
+    function getJobWageModalFormHtml(jk) {
+      let slotsHtml = '';
+      WAGE_SLOT_DEFS.forEach(s => {
+        slotsHtml += `
+          <div id="modal_wageSlot_${jk}_${s.key}" class="p-3 rounded-2xl border border-stone-200 bg-stone-50/60 space-y-2">
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-stone-700 text-xs w-9 shrink-0">${s.label}</span>
+              <input type="time" id="modal_time_${s.key}_start" class="flex-1 p-1.5 border rounded-lg text-center font-bold text-xs bg-white border-stone-200">
+              <span class="text-stone-400 font-bold">〜</span>
+              <input type="time" id="modal_time_${s.key}_end" class="flex-1 p-1.5 border rounded-lg text-center font-bold text-xs bg-white border-stone-200">
+              <button type="button" onclick="removeModalWageSlot('${s.key}')" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-2.5 py-1.5 rounded-lg text-[11px]">削除</button>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-stone-500 font-bold text-xs w-9 shrink-0">時給</span>
+              <input type="text" inputmode="numeric" id="modal_wage_${s.key}" oninput="formatInputNumber(this)" class="w-20 p-1.5 border rounded-lg font-bold text-xs bg-white text-right" placeholder="0">
+              <span class="text-stone-600 text-xs">円</span>
+              <select id="modal_btype_${s.key}" class="p-1.5 border rounded-lg bg-white text-xs font-bold text-stone-800">
+                <option value="weekday">平日</option><option value="weekend">土日</option><option value="holiday">日祝</option>
+              </select>
+              <span class="text-stone-600 text-xs">＋</span>
+              <input type="text" inputmode="numeric" id="modal_bval_${s.key}" oninput="formatInputNumber(this)" class="w-16 p-1.5 border rounded-lg font-bold text-xs bg-white text-right" placeholder="0">
+              <span class="text-stone-600 text-xs">円</span>
+            </div>
+          </div>
         `;
       });
-      updateJobTabUI();
+
+      return `
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 flex items-center justify-between px-3">
+              <span class="font-bold text-stone-700 text-xs">締め日</span>
+              <select id="modal_closeDay" class="p-1.5 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
+                <option value="5">5日</option><option value="10">10日</option><option value="15">15日</option><option value="20">20日</option><option value="25">25日</option><option value="月末">月末</option>
+              </select>
+            </div>
+            <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 flex items-center justify-between px-3">
+              <span class="font-bold text-stone-700 text-xs">支払日</span>
+              <select id="modal_payDay" class="p-1.5 border rounded-lg text-center font-bold text-xs bg-white border-stone-200 text-stone-900">
+                <option value="5">5日</option><option value="10">10日</option><option value="15">15日</option><option value="20">20日</option><option value="25">25日</option><option value="月末">月末</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-1 border-t border-stone-200">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-stone-800">【時給入力】</span>
+              <button type="button" onclick="addModalWageSlot()" class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 text-xs font-bold px-3 py-1.5 rounded-xl transition shadow-xs">+ 時間帯を追加</button>
+            </div>
+            <div id="modalWageSlotsContainer" class="space-y-2.5">
+              ${slotsHtml}
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-stone-200 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-stone-800">ワンタッチ時間登録</span>
+              <button type="button" onclick="addModalPresetRow()" class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 text-xs font-bold px-3 py-1.5 rounded-xl transition shadow-xs">+ 時間を追加</button>
+            </div>
+            <div id="jobPresetSettingsList" class="space-y-2"></div>
+          </div>
+
+          <div class="pt-2 border-t border-stone-200 space-y-2">
+            <span class="text-xs font-bold text-stone-800">【有給・交通費・手当】</span>
+            <div class="grid grid-cols-1 gap-2">
+              <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 flex items-center justify-between">
+                <span class="font-bold text-stone-700">有給1日分</span>
+                <div class="flex items-center gap-1"><input type="text" inputmode="numeric" id="modal_wagePaid" oninput="formatInputNumber(this)" class="w-24 p-1.5 border rounded text-right font-bold bg-white"><span class="font-bold">円</span></div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 space-y-1">
+                <span class="font-bold text-stone-700 block">交通費</span>
+                <div class="flex items-center gap-1 text-[11px]">月<input type="text" inputmode="numeric" id="modal_transMonth" oninput="formatInputNumber(this)" class="w-12 p-1 border rounded text-center bg-white font-bold">円</div>
+                <div class="flex items-center gap-1 text-[11px]">日<input type="text" inputmode="numeric" id="modal_transDay" oninput="formatInputNumber(this)" class="w-12 p-1 border rounded text-center bg-white font-bold">円</div>
+              </div>
+              <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 space-y-1">
+                <span class="font-bold text-stone-700 block">その他手当</span>
+                <div class="flex items-center gap-1 text-[11px]">月<input type="text" inputmode="numeric" id="modal_allowanceMonth" oninput="formatInputNumber(this)" class="w-12 p-1 border rounded text-center bg-white font-bold">円</div>
+                <div class="flex items-center gap-1 text-[11px]">日<input type="text" inputmode="numeric" id="modal_allowanceDay" oninput="formatInputNumber(this)" class="w-12 p-1 border rounded text-center bg-white font-bold">円</div>
+              </div>
+            </div>
+            <div>
+              <span class="font-bold text-stone-600 text-[11px]">手当のメモ（6〜7文字）</span>
+              <input type="text" id="modal_allowanceMemo" maxlength="7" class="w-full p-2 border rounded-lg bg-white font-medium text-xs mt-0.5" placeholder="例: 役職手当">
+            </div>
+          </div>
+        </div>
+      `;
     }
 
-    function switchJobTab(jobKey) {
-      currentSelectedJobKey = jobKey;
-      updateJobSelectUI();
-      renderPresetButtons();
-      updateSelectedDateSummary();
-    }
+    let activeModalWageSlots = { job1: ['Morning', 'Day', 'Evening', 'Night'], job2: ['Morning', 'Day', 'Evening', 'Night'], job3: ['Morning', 'Day', 'Evening', 'Night'] };
 
-    function updateJobTabUI() {
-      const activeKeys = getActiveJobKeys();
-      activeKeys.forEach(jk => {
-        let btn = document.getElementById(`jobTabBtn_${jk}`);
-        if (!btn) return;
-        let isSelected = (jk === currentSelectedJobKey);
-        let styleClass = isSelected ? "bg-rose-100 text-rose-950 border border-rose-400 shadow-sm font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
-        btn.className = `flex-1 py-1.5 rounded-xl text-xs font-bold transition shadow-sm truncate px-1 ${styleClass}`;
+    function updateModalWageSlotsVisibility(jk) {
+      let shown = activeModalWageSlots[jk] || ['Morning', 'Day', 'Evening', 'Night'];
+      WAGE_SLOT_DEFS.forEach(s => {
+        let el = document.getElementById(`modal_wageSlot_${jk}_${s.key}`);
+        if (el) el.classList.toggle('hidden', !shown.includes(s.key));
       });
     }
 
-    function setShiftTypeUIOnly(isPaid) {
+    function addModalWageSlot() {
+      let shown = activeModalWageSlots[currentSettingsJobKey];
+      let next = WAGE_SLOT_DEFS.find(s => !shown.includes(s.key));
+      if (next) {
+        shown.push(next.key);
+        updateModalWageSlotsVisibility(currentSettingsJobKey);
+      }
+    }
+
+    function removeModalWageSlot(key) {
+      let shown = activeModalWageSlots[currentSettingsJobKey];
+      activeModalWageSlots[currentSettingsJobKey] = shown.filter(k => k !== key);
+      updateModalWageSlotsVisibility(currentSettingsJobKey);
+      showToast("時給枠を非表示にしました");
+    }
+
+    function loadSettingsToUIForModal(jk) {
+      const j = configData[jk];
+      document.getElementById('modal_closeDay').value = j.closeDay || '20';
+      document.getElementById('modal_payDay').value = j.payDay || '5';
+      document.getElementById('modal_wagePaid').value = j.paid ? j.paid.toLocaleString() : '';
+
+      WAGE_SLOT_DEFS.forEach(s => {
+        const startEl = document.getElementById(`modal_time_${s.key}_start`);
+        if (startEl) startEl.value = parseTimeRangeString(j[s.timeKey], false);
+        const endEl = document.getElementById(`modal_time_${s.key}_end`);
+        if (endEl) endEl.value = parseTimeRangeString(j[s.timeKey], true);
+        const wageVal = j[s.wageKey];
+        const wageEl = document.getElementById(`modal_wage_${s.key}`);
+        if (wageEl) wageEl.value = wageVal ? wageVal.toLocaleString() : '';
+        const btypeEl = document.getElementById(`modal_btype_${s.key}`);
+        if (btypeEl) btypeEl.value = j[s.bTypeKey] || 'weekday';
+        const bVal = j[s.bValKey];
+        const bvalEl = document.getElementById(`modal_bval_${s.key}`);
+        if (bvalEl) bvalEl.value = bVal ? bVal.toLocaleString() : '';
+      });
+
+      document.getElementById('modal_transMonth').value = j.transMonth ? j.transMonth.toLocaleString() : '';
+      document.getElementById('modal_transDay').value = j.transDay ? j.transDay.toLocaleString() : '';
+      document.getElementById('modal_allowanceMonth').value = j.allowanceMonth ? j.allowanceMonth.toLocaleString() : '';
+      document.getElementById('modal_allowanceDay').value = j.allowanceDay ? j.allowanceDay.toLocaleString() : '';
+      document.getElementById('modal_allowanceMemo').value = j.allowanceMemo || '';
+
+      updateModalWageSlotsVisibility(jk);
+      renderModalPresetSettingsList(jk);
+    }
+
+    function parseTimeRangeString(rangeStr, isEnd) {
+      if (!rangeStr || !rangeStr.includes('〜')) return '';
+      let parts = rangeStr.split('〜');
+      return isEnd ? (parts[1] || '') : (parts[0] || '');
+    }
+
+    function renderModalPresetSettingsList(jk) {
+      const container = document.getElementById('jobPresetSettingsList');
+      if (!container) return;
+      container.innerHTML = '';
+      const presets = configData[jk].presets || [];
+
+      presets.forEach((p, idx) => {
+        let isReg = p.start && p.end;
+        let btnBg = isReg ? "bg-rose-900 text-rose-50 hover:bg-rose-800" : "bg-stone-200 text-stone-700 hover:bg-stone-300";
+
+        container.innerHTML += `
+          <div class="flex items-center bg-stone-50 p-2 rounded-xl border border-stone-200 text-xs gap-1.5">
+            <span class="text-stone-400 font-bold shrink-0 w-4">${idx+1}.</span>
+            <input type="time" id="modal_preset_start_${idx}" value="${p.start || ''}" class="flex-1 min-w-0 p-1.5 border rounded bg-white text-center font-bold">
+            <span class="font-bold text-stone-400">〜</span>
+            <input type="time" id="modal_preset_end_${idx}" value="${p.end || ''}" class="flex-1 min-w-0 p-1.5 border rounded bg-white text-center font-bold">
+            <div class="flex items-center gap-0.5 shrink-0">
+              <input type="text" inputmode="numeric" id="modal_preset_break_${idx}" value="${p.breakMins ? p.breakMins : ''}" oninput="formatInputNumber(this)" class="w-10 p-1.5 border rounded bg-white text-center font-bold" placeholder="0">
+              <span class="text-[10px]">分</span>
+            </div>
+            <button type="button" onclick="saveModalPresetRow('${jk}', ${idx})" class="${btnBg} font-bold px-2.5 py-1 rounded text-[11px] transition shadow-xs">登録</button>
+            <button type="button" onclick="deleteModalPresetRow('${jk}', ${idx})" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-2 py-1 rounded text-[11px]">削除</button>
+          </div>
+        `;
+      });
+    }
+
+    function saveModalPresetRow(jk, idx) {
+      syncJobWageModalToConfig(jk);
+      renderModalPresetSettingsList(jk);
+      showToast("ワンタッチ時間を登録しました");
+    }
+
+    function addModalPresetRow() {
+      syncJobWageModalToConfig(currentSettingsJobKey);
+      configData[currentSettingsJobKey].presets.push({ start: '', end: '', breakMins: 0 });
+      renderModalPresetSettingsList(currentSettingsJobKey);
+    }
+
+    function deleteModalPresetRow(jk, idx) {
+      syncJobWageModalToConfig(jk);
+      configData[jk].presets.splice(idx, 1);
+      renderModalPresetSettingsList(jk);
+      showToast("時間を削除しました");
+    }
+
+    function syncJobWageModalToConfig(jk) {
+      const j = configData[jk];
+      if (!j) return;
+      const getVal = id => document.getElementById(id)?.value || '';
+      const getNum = id => parseFormattedNumber(getVal(id));
+
+      j.closeDay = getVal('modal_closeDay') || '20';
+      j.payDay = getVal('modal_payDay') || '5';
+      j.paid = getNum('modal_wagePaid');
+
+      WAGE_SLOT_DEFS.forEach(s => {
+        const st = document.getElementById(`modal_time_${s.key}_start`)?.value || '';
+        const ed = document.getElementById(`modal_time_${s.key}_end`)?.value || '';
+        j[s.timeKey] = (st && ed) ? `${st}〜${ed}` : '';
+        j[s.wageKey] = getNum(`modal_wage_${s.key}`);
+        j[s.bTypeKey] = getVal(`modal_btype_${s.key}`) || 'weekday';
+        j[s.bValKey] = getNum(`modal_bval_${s.key}`);
+      });
+
+      j.transMonth = getNum('modal_transMonth');
+      j.transDay = getNum('modal_transDay');
+      j.allowanceMonth = getNum('modal_allowanceMonth');
+      j.allowanceDay = getNum('modal_allowanceDay');
+      j.allowanceMemo = getVal('modal_allowanceMemo');
+
+      const presets = j.presets || [];
+      presets.forEach((p, idx) => {
+        const s = document.getElementById(`modal_preset_start_${idx}`);
+        const e = document.getElementById(`modal_preset_end_${idx}`);
+        const b = document.getElementById(`modal_preset_break_${idx}`);
+        if (s) p.start = s.value;
+        if (e) p.end = e.value;
+        if (b) p.breakMins = parseFormattedNumber(b.value);
+      });
+    }
+
+    function setModalShiftTypeUIOnly(isPaid) {
       isPaidLeaveMode = isPaid;
-      const workBtn = document.getElementById('typeWorkBtn');
-      const paidBtn = document.getElementById('typePaidBtn');
+      const workBtn = document.getElementById('modalTypeWorkBtn');
+      const paidBtn = document.getElementById('modalTypePaidBtn');
 
       if (paidBtn && workBtn) {
         if (isPaid) {
-          paidBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-rose-100 text-rose-950 border-rose-400 shadow-sm";
-          workBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
+          paidBtn.className = "flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-rose-100 text-rose-950 border-rose-400 shadow-sm";
+          workBtn.className = "flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
         } else {
-          workBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-rose-100 text-rose-950 border-rose-400 shadow-sm";
-          paidBtn.className = "flex-1 py-1.5 rounded-xl text-xs font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
+          workBtn.className = "flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-rose-100 text-rose-950 border-rose-400 shadow-sm";
+          paidBtn.className = "flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
         }
       }
     }
 
-    function setShiftType(isPaid) {
-      setShiftTypeUIOnly(isPaid);
+    function setModalShiftType(isPaid) {
+      setModalShiftTypeUIOnly(isPaid);
       if (isPaid) {
         if (!selectedCalendarDateStr) return;
         let shifts = getDayShifts(selectedCalendarDateStr, currentSelectedJobKey);
         if (shifts.some(s => s && s.isPaidLeave)) {
           showToast("この日は既に有給休暇が登録されています");
-          setShiftTypeUIOnly(false);
+          setModalShiftTypeUIOnly(false);
           return;
         }
         shifts.push({ start: '', end: '', breakMins: 0, isPaidLeave: true });
         setDayShifts(selectedCalendarDateStr, currentSelectedJobKey, shifts);
-        renderCalendar();
-        renderStandaloneShiftList();
-        initOverviewPage();
-        updateSelectedDateSummary();
+        updateModalSelectedDateSummary();
         showToast("有給休暇を登録しました");
-        setShiftTypeUIOnly(false);
+        setModalShiftTypeUIOnly(false);
       }
     }
 
-    function renderPresetButtons() {
-      const container = document.getElementById('presetContainer');
+    function renderModalPresetButtons() {
+      const container = document.getElementById('modalPresetContainer');
       if (!container) return;
       container.innerHTML = '';
 
+      renderModalRecentShiftHistory();
       const currentJob = configData[currentSelectedJobKey] || configData.job1;
       const presets = currentJob.presets || [];
 
       presets.forEach((p, idx) => {
         if (p.start && p.end) {
+          const isReg = isShiftAlreadyRegistered(p.start, p.end, p.breakMins || 0);
+          const btnBg = isReg ? "bg-rose-900 text-rose-50" : "bg-stone-200 text-stone-700 hover:bg-stone-300";
+          const breakDisplay = (Number(p.breakMins) > 0) ? ` 休憩あり` : '';
+
           container.innerHTML += `
-            <div class="bg-white border border-stone-200 py-1 px-1.5 rounded-xl shadow-xs flex items-center justify-between gap-1 min-w-0">
-              <span class="text-[11px] font-bold text-stone-800 tracking-tighter whitespace-nowrap">${p.start}〜${p.end}</span>
-              <button type="button" onclick="registerPresetTime('${p.start}', '${p.end}', ${p.breakMins || 0})"
-                      class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 active:bg-rose-900 active:text-white py-1 px-1.5 rounded-lg text-[10px] font-bold shadow-xs transition active:scale-95 whitespace-nowrap shrink-0">シフトに登録</button>
+            <div class="bg-white border border-stone-200 py-2.5 px-3.5 rounded-2xl shadow-xs flex items-center justify-between gap-2 min-w-0">
+              <span class="text-sm font-bold text-stone-800 tracking-tight whitespace-nowrap">${p.start}〜${p.end}${breakDisplay}</span>
+              <button type="button" onclick="registerModalPresetTime('${p.start}', '${p.end}', ${p.breakMins || 0})"
+                      class="${btnBg} py-2.5 px-3.5 rounded-xl text-sm font-extrabold shadow-xs transition active:scale-95 whitespace-nowrap shrink-0">登録</button>
             </div>
           `;
         }
       });
     }
 
-    function registerPresetTime(start, end, breakMins) {
+    function renderModalCustomPresets() {
+      const container = document.getElementById('modalCustomPresetContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      modalCustomPresets.forEach((cp, idx) => {
+        const isReg = isShiftAlreadyRegistered(cp.start, cp.end, cp.breakMins || 0);
+        const btnBg = isReg ? "bg-rose-900 text-rose-50" : "bg-stone-200 text-stone-700 hover:bg-stone-300";
+
+        container.innerHTML += `
+          <div class="flex items-center gap-1.5 bg-white p-2 border rounded-xl border-stone-200">
+            <input type="time" id="mcp_start_${idx}" value="${cp.start}" onchange="updateModalCustomPreset(${idx})" class="flex-1 min-w-0 p-1.5 border rounded-lg border-stone-200 bg-white font-bold text-center text-xs">
+            <span class="font-bold text-stone-400">〜</span>
+            <input type="time" id="mcp_end_${idx}" value="${cp.end}" onchange="updateModalCustomPreset(${idx})" class="flex-1 min-w-0 p-1.5 border rounded-lg border-stone-200 bg-white font-bold text-center text-xs">
+            <div class="flex items-center shrink-0 gap-0.5">
+              <span class="text-[10px] font-bold text-stone-500">休憩</span>
+              <input type="text" inputmode="numeric" id="mcp_break_${idx}" value="${cp.breakMins ? cp.breakMins : ''}" oninput="formatInputNumber(this); updateModalCustomPreset(${idx})" class="w-9 p-1.5 border rounded-lg border-stone-200 bg-white font-bold text-center text-xs" placeholder="0">
+              <span class="text-[10px] font-bold text-stone-500">分</span>
+            </div>
+            <button type="button" onclick="registerModalCustomPresetItem(${idx})" class="${btnBg} py-1.5 px-2.5 rounded-lg text-xs font-bold transition">シフト登録</button>
+            <button type="button" onclick="deleteModalCustomPresetItem(${idx})" class="text-stone-400 hover:text-stone-700 font-bold px-1.5 py-1 text-xs">削除</button>
+          </div>
+        `;
+      });
+    }
+
+    function addModalCustomPresetRow() {
+      modalCustomPresets.push({ start: '09:00', end: '17:00', breakMins: 0 });
+      renderModalCustomPresets();
+    }
+
+    function updateModalCustomPreset(idx) {
+      const s = document.getElementById(`mcp_start_${idx}`)?.value || '';
+      const e = document.getElementById(`mcp_end_${idx}`)?.value || '';
+      const b = parseFormattedNumber(document.getElementById(`mcp_break_${idx}`)?.value);
+      modalCustomPresets[idx] = { start: s, end: e, breakMins: b };
+    }
+
+    function registerModalCustomPresetItem(idx) {
+      updateModalCustomPreset(idx);
+      const cp = modalCustomPresets[idx];
+      if (!cp.start || !cp.end) { showToast("開始と終了時間を入力してください"); return; }
+      if (cp.start === cp.end) { showToast("開始と終了が同じ時間です"); return; }
+
+      const dup = findOverlap(selectedCalendarDateStr, cp.start, cp.end);
+      if (dup) { showOverlapAlert(dup); return; }
+
+      let shifts = getDayShifts(selectedCalendarDateStr, currentSelectedJobKey);
+      shifts.push({ start: cp.start, end: cp.end, breakMins: cp.breakMins, isPaidLeave: false });
+      setDayShifts(selectedCalendarDateStr, currentSelectedJobKey, shifts);
+      updateModalSelectedDateSummary();
+      renderModalRecentShiftHistory();
+      showToast("シフトを登録しました");
+    }
+
+    function deleteModalCustomPresetItem(idx) {
+      modalCustomPresets.splice(idx, 1);
+      renderModalCustomPresets();
+    }
+
+    function registerModalPresetTime(start, end, breakMins) {
       if (!selectedCalendarDateStr) {
         showToast("カレンダーから日付を選択してください");
         return;
@@ -1439,78 +1589,44 @@
       });
 
       setDayShifts(selectedCalendarDateStr, currentSelectedJobKey, shifts);
-      editingShift = null;
-      refreshAll();
-      showToast("今日のシフト一覧に登録しました");
+      updateModalSelectedDateSummary();
+      renderModalRecentShiftHistory();
+      showToast("シフトを登録しました");
     }
 
-        function renderPresetInputs(jobKey) {
-      const container = document.getElementById('jobPresetSettingsList');
-      if (!container) return;
-      container.innerHTML = '';
+    function copyLastMonthShifts() {
+      let y = currentPeriodDate.getFullYear();
+      let m = currentPeriodDate.getMonth();
 
-      const job = configData[jobKey];
-      const presets = job.presets || [];
-
-      presets.forEach((p, idx) => {
-        container.innerHTML += `
-          <div class="flex items-center bg-stone-50 p-1.5 rounded-xl border border-stone-200 text-xs gap-1.5">
-            <span class="text-[10px] text-stone-400 font-bold shrink-0 w-4 text-center">${idx+1}.</span>
-            <input type="time" id="preset_start_${idx}" value="${p.start || ''}" class="flex-1 min-w-0 p-1 border rounded-lg border-stone-200 bg-white text-[11px] font-bold text-stone-900 text-center">
-            <span class="font-bold text-stone-400 shrink-0">〜</span>
-            <input type="time" id="preset_end_${idx}" value="${p.end || ''}" class="flex-1 min-w-0 p-1 border rounded-lg border-stone-200 bg-white text-[11px] font-bold text-stone-900 text-center">
-            <div class="flex items-center shrink-0 gap-0.5">
-              <input type="text" inputmode="numeric" id="preset_break_${idx}" value="${p.breakMins ? p.breakMins.toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-8 p-1 border rounded-lg border-stone-200 bg-white text-[10px] font-bold text-stone-900 text-center" placeholder="0">
-              <span class="text-[9px] font-bold text-stone-500">分</span>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" onclick="savePresetRow(${idx})" class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 active:bg-rose-900 active:text-white font-bold px-2 py-1 rounded-lg text-[10px] transition">登録</button>
-              <button type="button" onclick="deletePresetRow(${idx})" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-2 py-1 rounded-lg text-[10px] transition">削除</button>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-        function savePresetRow(idx) {
-      syncPresetInputsToConfig(currentSettingsJobKey);
-      const p = configData[currentSettingsJobKey].presets[idx];
-      if (!p.start || !p.end) {
-        showToast('開始時間と終了時間を入力してください');
-        return;
+      let prevYear = y;
+      let prevMonth = m - 1;
+      if (prevMonth < 0) {
+        prevMonth = 11;
+        prevYear--;
       }
-      saveAllDataStorage();
-      renderPresetInputs(currentSettingsJobKey);
-      renderPresetButtons();
-      showToast('ワンタッチ時間を登録しました');
-    }
 
-    function deletePresetRow(idx) {
-      syncPresetInputsToConfig(currentSettingsJobKey);
-      configData[currentSettingsJobKey].presets.splice(idx, 1);
-      saveAllDataStorage();
-      renderPresetInputs(currentSettingsJobKey);
-      renderPresetButtons();
-      showToast('時間を削除しました');
-    }
+      let copiedCount = 0;
+      let targetDaysInMonth = new Date(y, m + 1, 0).getDate();
+      let prevDaysInMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
 
-    function addPresetRow() {
-      syncPresetInputsToConfig(currentSettingsJobKey);
-      configData[currentSettingsJobKey].presets.push({ start: '', end: '', breakMins: 0 });
-      renderPresetInputs(currentSettingsJobKey);
-    }
+      for (let day = 1; day <= targetDaysInMonth; day++) {
+        let prevDay = Math.min(day, prevDaysInMonth);
+        let prevDateStr = `${prevYear}-${prevMonth + 1}-${prevDay}`;
+        let targetDateStr = `${y}-${m + 1}-${day}`;
 
-    function syncPresetInputsToConfig(jobKey) {
-      const presets = configData[jobKey].presets;
-      if (presets) {
-        presets.forEach((p, idx) => {
-          const s = document.getElementById(`preset_start_${idx}`);
-          const e = document.getElementById(`preset_end_${idx}`);
-          const b = document.getElementById(`preset_break_${idx}`);
-          if (s) p.start = s.value;
-          if (e) p.end = e.value;
-          if (b) p.breakMins = parseFormattedNumber(b.value);
-        });
+        let prevDayData = shiftsData[prevDateStr];
+        if (prevDayData && Object.keys(prevDayData).length > 0) {
+          shiftsData[targetDateStr] = JSON.parse(JSON.stringify(prevDayData));
+          copiedCount++;
+        }
+      }
+
+      if (copiedCount > 0) {
+        localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
+        refreshAll();
+        showToast(`前月のシフトを今月に一括コピーしました♡`);
+      } else {
+        showToast(`コピー元の前月にシフトが登録されていません`);
       }
     }
 
@@ -1520,6 +1636,129 @@
       let start = new Date(year, month, 1);
       let end = new Date(year, month + 1, 0);
       return { start, end };
+    }
+
+    function openTodayShiftInput() {
+      const today = formatDateKey(new Date());
+      currentPeriodDate = new Date();
+      openShiftInputModal(today);
+    }
+
+    function jumpToTodayCalendar() {
+      currentPeriodDate = new Date();
+      selectedCalendarDateStr = formatDateKey(new Date());
+      renderCalendar();
+      const todayRow = document.querySelector('#calendarDays [data-date="' + selectedCalendarDateStr + '"]');
+      if (todayRow) todayRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function getRecentShiftHistory(jobKey, limit = 4) {
+      const seen = new Set();
+      const items = [];
+      const today = new Date();
+      for (let offset = 1; offset <= 120 && items.length < limit; offset++) {
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - offset);
+        const key = formatDateKey(d);
+        const shifts = getDayShifts(key, jobKey);
+        for (const sh of shifts) {
+          if (!sh || sh.isPaidLeave || !sh.start || !sh.end) continue;
+          const breakMins = Number(sh.breakMins || 0);
+          const sig = `${sh.start}|${sh.end}|${breakMins}`;
+          if (seen.has(sig)) continue;
+          seen.add(sig);
+          items.push({ start: sh.start, end: sh.end, breakMins });
+          if (items.length >= limit) break;
+        }
+      }
+      return items;
+    }
+
+    function renderModalRecentShiftHistory() {
+      const container = document.getElementById('modalRecentShiftContainer');
+      const heading = document.getElementById('modalRecentHeading');
+      if (!container || !heading) return;
+      const items = getRecentShiftHistory(currentSelectedJobKey, 4);
+      if (!items.length) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        heading.classList.add('hidden');
+        return;
+      }
+      heading.classList.remove('hidden');
+      container.classList.remove('hidden');
+      container.innerHTML = items.map(item => {
+        const already = isShiftAlreadyRegistered(item.start, item.end, item.breakMins);
+        const cls = already ? 'bg-rose-900 text-white' : 'bg-white text-stone-800 hover:bg-rose-50 border-stone-200';
+        const breakText = item.breakMins > 0 ? ` <span class="text-[10px] text-stone-400">休憩${item.breakMins}分</span>` : '';
+        return `<button type="button" onclick="registerModalPresetTime('${item.start}','${item.end}',${item.breakMins})" class="w-full text-left ${cls} border rounded-xl px-3.5 py-3 shadow-xs flex items-center justify-between transition active:scale-[0.99]">
+          <span class="font-extrabold text-base tracking-tight">${item.start}〜${item.end}${breakText}</span>
+          <span class="text-xs font-bold">${already ? '登録済み' : '＋ 登録'}</span>
+        </button>`;
+      }).join('');
+    }
+
+    function renderHomeTodayPanel(dateStr, activeKeys, todayTotalMins, todayTotalPay) {
+      const container = document.getElementById('homeTodayShiftContainer');
+      if (!container) return;
+      const today = parseDateKey(dateStr);
+      const entries = [];
+      activeKeys.forEach(jk => {
+        const jobName = configData[jk]?.name || 'バイト先';
+        getDayShifts(dateStr, jk).forEach(sh => {
+          if (!sh) return;
+          if (sh.isPaidLeave) {
+            entries.push({ jk, jobName, sh, order: 99999, label: '☆ 有給休暇', pay: configData[jk]?.paid || 1650 });
+          } else if (sh.start && sh.end) {
+            const r = calculateJobShiftMinutesAndPay(sh, configData[jk], today);
+            entries.push({ jk, jobName, sh, order: timeStrToMins(sh.start), label: `${sh.start}〜${sh.end}`, pay: r.totalPay });
+          }
+        });
+      });
+      entries.sort((a,b) => a.order - b.order);
+
+      if (!entries.length) {
+        container.innerHTML = `
+          <button type="button" onclick="openTodayShiftInput()" class="w-full border-2 border-dashed border-stone-200 rounded-2xl py-4 px-3 text-center hover:bg-stone-50 transition">
+            <div class="text-2xl mb-1">＋</div>
+            <div class="text-sm font-extrabold text-stone-700">今日のシフトを登録する</div>
+            <div class="text-[11px] font-bold text-stone-400 mt-1">よく使うシフトならワンタップで登録できます</div>
+          </button>`;
+      } else {
+        container.innerHTML = entries.map((e, idx) => {
+          const dot = e.jk === 'job1' ? 'bg-sky-500' : (e.jk === 'job2' ? 'bg-amber-500' : 'bg-purple-500');
+          const breakText = Number(e.sh.breakMins || 0) > 0 ? `・休憩${Number(e.sh.breakMins)}分` : '';
+          return `<button type="button" onclick="openTodayShiftInput()" class="w-full text-left flex items-center gap-3 py-2.5 ${idx ? 'border-t border-stone-100' : ''} active:bg-stone-50">
+            <span class="w-3 h-3 rounded-full ${dot} shrink-0"></span>
+            <span class="flex-1 min-w-0"><span class="block text-sm font-extrabold text-stone-900 truncate">${e.jobName}</span><span class="block text-xs font-bold text-stone-500 mt-0.5">${e.label}${breakText}</span></span>
+            <span class="text-sm font-extrabold text-rose-950 shrink-0">${formatCurrency(e.pay)}</span>
+          </button>`;
+        }).join('') + `<button type="button" onclick="openTodayShiftInput()" class="w-full mt-2 pt-2 border-t border-stone-100 text-xs font-bold text-rose-900 text-center">＋ 今日のシフトを編集・追加</button>`;
+      }
+
+      const nextCard = document.getElementById('homeNextShiftCard');
+      if (!nextCard) return;
+      const now = new Date();
+      let next = null;
+      for (let offset = 0; offset <= 31 && !next; offset++) {
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+        const key = formatDateKey(d);
+        activeKeys.forEach(jk => {
+          getDayShifts(key, jk).forEach(sh => {
+            if (!sh || sh.isPaidLeave || !sh.start) return;
+            const order = offset * 1440 + timeStrToMins(sh.start);
+            if (!next || order < next.order) next = { order, key, date: d, jk, sh, jobName: configData[jk]?.name || 'バイト先' };
+          });
+        });
+      }
+      if (next) {
+        const w = ['日','月','火','水','木','金','土'][next.date.getDay()];
+        const dayLabel = next.key === dateStr ? '今日' : `${next.date.getMonth()+1}/${next.date.getDate()}(${w})`;
+        nextCard.classList.remove('hidden');
+        nextCard.innerHTML = `<div class="flex items-center justify-between gap-3"><div><div class="text-[11px] font-extrabold text-amber-700">次のシフト</div><div class="text-sm font-extrabold text-stone-900 mt-0.5">${dayLabel}　${next.jobName}</div></div><div class="text-right"><div class="text-lg font-extrabold text-stone-900">${next.sh.start}〜${next.sh.end}</div><div class="text-[10px] font-bold text-stone-500">タップして編集</div></div></div><button type="button" onclick="openShiftInputModal('${next.key}')" class="w-full mt-2.5 py-2 rounded-xl bg-white border border-amber-200 text-xs font-bold text-amber-900">このシフトを開く</button>`;
+      } else {
+        nextCard.classList.add('hidden');
+        nextCard.innerHTML = '';
+      }
     }
 
     function initOverviewPage() {
@@ -1532,14 +1771,14 @@
       const todayDateLabelEl = document.getElementById('todayShiftDateLabel');
       if (todayDateLabelEl) todayDateLabelEl.innerText = `${now.getMonth()+1}/${now.getDate()}`;
 
-let todayTotalMins = 0;
+      let todayTotalMins = 0;
       let todayTotalPay = 0;
       let breakdownHtml = '';
       const activeKeys = getActiveJobKeys();
       let hasAnyTodayShift = false;
 
       const rowHtml = (name, time, right) => `
-        <div class="py-1 border-b border-stone-100 last:border-b-0 flex justify-between items-center text-xs">
+        <div class="py-2 border-b border-stone-100 last:border-b-0 flex justify-between items-center text-xs">
           <span class="font-bold text-stone-800">${name} &nbsp;<span class="text-stone-500 font-normal">${time}</span></span>
           <span class="font-bold text-stone-900">${right}</span>
         </div>
@@ -1561,7 +1800,8 @@ let todayTotalMins = 0;
             if (res.totalMins <= 0) return;
             jobMins = res.totalMins;
             jobPay = res.totalPay;
-            timeDisplay = `${jobShift.start}〜${jobShift.end}`;
+            const breakBadge = (Number(jobShift.breakMins) > 0) ? ` <span class="text-stone-600 font-bold text-xs ml-1">休憩あり</span>` : '';
+            timeDisplay = `${jobShift.start}〜${jobShift.end}${breakBadge}`;
           }
           hasAnyTodayShift = true;
           breakdownHtml += rowHtml(jobName, timeDisplay, `${(jobMins / 60).toFixed(2)}時間 / ${formatCurrency(jobPay)}`);
@@ -1575,6 +1815,8 @@ let todayTotalMins = 0;
           breakdownHtml += rowHtml(jobName, '交通費・手当', formatCurrency(extra));
         }
       });
+
+      renderHomeTodayPanel(dateStr, activeKeys, todayTotalMins, todayTotalPay);
 
       const breakdownContainer = document.getElementById('todayBreakdownContainer');
       if (breakdownContainer) {
@@ -1596,37 +1838,28 @@ let todayTotalMins = 0;
     }
 
     function updatePeriodProgressWidget() {
-      const firstActiveKey = getFirstActiveJobKey();
-      const firstJob = configData[firstActiveKey];
-      const { start, end } = getJobPayPeriodRange(firstJob, payPeriodOffset);
-
       let totalMins = 0;
       let totalPay = 0;
 
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const key = formatDateKey(d);
-        getActiveJobKeys().forEach(jk => {
+      const activeKeys = getActiveJobKeys();
+      activeKeys.forEach(jk => {
+        const job = configData[jk];
+        const { start, end } = getJobPayPeriodRangeForReceiveMonth(job, payPeriodOffset);
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          const key = formatDateKey(d);
           const r = calcJobDay(key, jk, new Date(d));
           totalMins += r.mins;
           totalPay += r.pay;
-        });
-      }
-
-      getActiveJobKeys().forEach(jk => {
-        let jConf = configData[jk];
-        totalPay += (jConf.transMonth || 0) + (jConf.allowanceMonth || 0);
+        }
+        totalPay += (job.transMonth || 0) + (job.allowanceMonth || 0);
       });
 
-      const goalTargetDisplay = document.getElementById('goalTargetDisplay');
       const goalCurrentPay = document.getElementById('goalCurrentPay');
       const goalPercentText = document.getElementById('goalPercentText');
       const goalProgressCircle = document.getElementById('goalProgressCircle');
       const progressIndicatorDot = document.getElementById('progressIndicatorDot');
-      const monthlyProgressHours = document.getElementById('monthlyProgressHours');
 
-      if (goalTargetDisplay) goalTargetDisplay.innerText = monthlyGoal > 0 ? formatCurrency(monthlyGoal) : '未設定';
       if (goalCurrentPay) goalCurrentPay.innerText = formatCurrency(totalPay);
-      if (monthlyProgressHours) monthlyProgressHours.innerText = `${(totalMins / 60).toFixed(2)} 時間`;
 
       let rawPercent = monthlyGoal > 0 ? (totalPay / monthlyGoal) * 100 : 0;
       let percent = Math.min(Math.round(rawPercent), 100);
@@ -1641,9 +1874,9 @@ let todayTotalMins = 0;
           progressIndicatorDot.classList.remove('hidden');
           let angle = (rawPercent / 100) * 360 - 90;
           let rad = angle * (Math.PI / 180);
-          let radiusPx = 76;
-          let cx = 80;
-          let cy = 80;
+          let radiusPx = 82;
+          let cx = 90;
+          let cy = 90;
           let x = cx + radiusPx * Math.cos(rad);
           let y = cy + radiusPx * Math.sin(rad);
           progressIndicatorDot.style.left = `${x}px`;
@@ -1697,32 +1930,13 @@ let todayTotalMins = 0;
 
     function calculateMonthlyReceivePay() {
       const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth();
-
       let totalReceivePay = 0;
       let breakdownHtml = '';
       const activeKeys = getActiveJobKeys();
 
       activeKeys.forEach(jk => {
         let job = configData[jk];
-        let payDayInput = String(job.payDay || '5').trim();
-        let closeDayInput = String(job.closeDay || '20').trim();
-        
-        let isEndMonth = (closeDayInput === '月末');
-        let closeNum = isEndMonth ? 31 : (Number(closeDayInput) || 20);
-        let payNum = (payDayInput === '月末') ? 31 : (Number(payDayInput) || 5);
-        // 支払日が締め日より後 → 同月払い / それ以外 → 翌月払い
-        let workMonth = (payNum > closeNum) ? currentMonth : (currentMonth - 1);
-        let periodStart, periodEnd;
-        
-        if (isEndMonth) {
-          periodStart = new Date(currentYear, workMonth, 1);
-          periodEnd = new Date(currentYear, workMonth + 1, 0);
-        } else {
-          periodStart = new Date(currentYear, workMonth - 1, closeNum + 1);
-          periodEnd = new Date(currentYear, workMonth, closeNum);
-        }
+        const { start: periodStart, end: periodEnd } = getJobPayPeriodRangeForReceiveMonth(job, 0);
 
         let jobReceivePay = 0;
         let jobWorkDays = 0;
@@ -1741,14 +1955,11 @@ let todayTotalMins = 0;
 
         totalReceivePay += jobReceivePay;
 
-        let rawPaydayDate = getAdjustedPaydayDate(currentYear, currentMonth, payDayInput);
-        let paydayStr = `${rawPaydayDate.getDate()}日支払`;
-
         breakdownHtml += `
-          <div class="flex justify-between items-center py-1 border-b border-rose-100 last:border-b-0 font-bold px-1">
-            <span class="text-stone-800">${job.name || 'バイト'}</span>
-            <span class="text-stone-500 font-bold pr-3">${paydayStr}</span>
-            <span class="font-bold text-rose-950">${formatCurrency(jobReceivePay)}</span>
+          <div class="grid grid-cols-[1.5fr_1fr_1fr] items-center gap-1.5 py-2 border-b border-rose-100 last:border-b-0 font-bold px-1 text-xs">
+            <span class="text-stone-800 truncate">${job.name || 'バイト'}</span>
+            <span class="text-stone-500 font-bold text-center">受取り</span>
+            <span class="font-bold text-rose-950 text-right">${formatCurrency(jobReceivePay)}</span>
           </div>
         `;
       });
@@ -1762,10 +1973,11 @@ let todayTotalMins = 0;
     function calculateYearlyTotalPay() {
       const now = new Date();
       const currentYear = now.getFullYear();
+      const currentMonthIndex = now.getMonth();
       let totalYearPay = 0;
 
       let yearStart = new Date(currentYear, 0, 1);
-      let yearEnd = new Date(currentYear, 11, 31);
+      let yearEnd = new Date(currentYear, currentMonthIndex, new Date().getDate());
 
       for (let d = new Date(yearStart); d <= yearEnd; d.setDate(d.getDate() + 1)) {
         let key = formatDateKey(d);
@@ -1778,11 +1990,14 @@ let todayTotalMins = 0;
       activeKeys.forEach(jk => {
         let jConf = configData[jk];
         let monthlyAdd = (jConf.transMonth || 0) + (jConf.allowanceMonth || 0);
-        totalYearPay += (monthlyAdd * 12);
+        let passedMonths = currentMonthIndex + 1;
+        totalYearPay += (monthlyAdd * passedMonths);
       });
 
       const yearlyEl = document.getElementById('yearlyTotalPay');
+      const yearlySubLabel = document.getElementById('yearlySubLabel');
       if (yearlyEl) yearlyEl.innerText = formatCurrency(totalYearPay);
+      if (yearlySubLabel) yearlySubLabel.innerText = `${currentMonthIndex + 1}月までの収入`;
     }
 
     function getPaydayJobs(d) {
@@ -1841,12 +2056,11 @@ let todayTotalMins = 0;
 
     function gcalPad(n) { return String(n).padStart(2, '0'); }
 
-    // 時間指定の予定: タイトル「店名 19:00〜21:00」、説明欄なし
     function generateShiftGoogleCalendarUrl(title, dateStr, start, end) {
       const [y, m, d] = dateStr.split('-').map(Number);
       const sM = timeStrToMins(start);
       let eM = timeStrToMins(end);
-      if (eM <= sM) eM += 24 * 60; // 日またぎは終了を翌日に
+      if (eM <= sM) eM += 24 * 60;
       const toIso = mins => {
         const dt = new Date(y, m - 1, d + Math.floor(mins / 1440));
         const mm = mins % 1440;
@@ -1855,7 +2069,6 @@ let todayTotalMins = 0;
       return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${toIso(sM)}/${toIso(eM)}`;
     }
 
-    // 終日の予定（有給・お給料日）
     function generateAllDayGoogleCalendarUrl(title, dateStr) {
       const [y, m, d] = dateStr.split('-').map(Number);
       const next = new Date(y, m - 1, d + 1);
@@ -1864,7 +2077,7 @@ let todayTotalMins = 0;
       return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${s}/${e}`;
     }
 
-        function renderCalendar() {
+    function renderCalendar() {
       const { start, end } = getMonthCalendarRange(currentPeriodDate);
       
       const monthLabelEl = document.getElementById('currentMonthLabel');
@@ -1883,12 +2096,10 @@ let todayTotalMins = 0;
 
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         const dateStr = formatDateKey(d);
-        let isSelected = (dateStr === selectedCalendarDateStr);
 
         let activeJobKeys = getActiveJobKeys();
         let dotsHtml = '';
         let registeredJobs = [];
-        let hasPaid = false;
 
         activeJobKeys.forEach(jk => {
           let shifts = getDayShifts(dateStr, jk);
@@ -1897,16 +2108,14 @@ let todayTotalMins = 0;
             shifts.forEach(jobShift => {
               let hasTime = !!(jobShift.start && jobShift.end);
               let dotBg = jk === 'job1' ? 'bg-sky-500' : (jk === 'job2' ? 'bg-amber-500' : 'bg-purple-500');
-              if (hasTime) dotsHtml += `<span class="w-1.5 h-1.5 rounded-full ${dotBg} inline-block shadow-xs"></span>`;
+              if (hasTime) dotsHtml += `<span class="w-2 h-2 rounded-full ${dotBg} inline-block shadow-xs"></span>`;
               if (!hasTime && jobShift.isPaidLeave) {
-                dotsHtml += `<span class="text-[8px] leading-none text-stone-700 font-bold">☆</span>`;
-                hasPaid = true;
+                dotsHtml += `<span class="text-[11px] leading-none text-stone-700 font-bold">☆</span>`;
               }
             });
           }
         });
 
-        let hasShift = registeredJobs.length > 0;
         let paydayJobs = getPaydayJobs(d);
         let isPayday = paydayJobs.length > 0;
 
@@ -1914,35 +2123,33 @@ let todayTotalMins = 0;
         if (isPayday) {
           paydayHtml = `
             <div class="payday-pin-container ml-0.5">
-              <span class="text-[9px] leading-none text-red-500 font-bold">❤</span>
+              <span class="text-xs leading-none text-red-500 font-bold">❤</span>
             </div>
           `;
         }
 
-        let iconHtml = `<div class="min-h-[8px] flex items-center justify-center space-x-0.5">${dotsHtml}</div>`;
+        let iconHtml = `<div class="min-h-[14px] flex items-center justify-center space-x-1">${dotsHtml}</div>`;
 
         const isToday = (dateStr === formatDateKey(new Date()));
         const isSunHol = (d.getDay() === 0 || isJapaneseHoliday(d));
         const isSat = (d.getDay() === 6);
         const colorCls = isSunHol ? "text-rose-600" : (isSat ? "text-sky-600" : "text-stone-800");
-        let dayClass = `p-0.5 rounded-xl transition-all cursor-pointer font-bold flex flex-col items-center justify-center min-h-[38px] ${colorCls} `;
-        if (isSelected) dayClass += "bg-amber-100 shadow-xs scale-105 border border-amber-300 font-extrabold";
-        else if (isToday) dayClass += "bg-rose-50 border border-rose-300";
-        else dayClass += "bg-white hover:bg-stone-50";
+        
+        let dayClass = `p-1.5 rounded-2xl transition-all cursor-pointer font-bold flex flex-col items-center justify-center min-h-[58px] ${colorCls} `;
+        if (isToday) dayClass += "bg-rose-50 border-2 border-rose-300 shadow-sm";
+        else dayClass += "bg-stone-50/70 hover:bg-stone-100 border border-stone-200/70";
 
         let dayNumDisplay = isPayday 
-          ? `<div class="flex items-center justify-center"><span class="text-xs font-bold leading-tight">${d.getDate()}</span>${paydayHtml}</div>`
-          : `<span class="text-xs font-bold leading-tight">${d.getDate()}</span>`;
+          ? `<div class="flex items-center justify-center"><span class="text-base font-extrabold leading-tight">${d.getDate()}</span>${paydayHtml}</div>`
+          : `<span class="text-base font-extrabold leading-tight">${d.getDate()}</span>`;
 
         calendarDays.innerHTML += `
-          <div onclick="selectCalendarDate('${dateStr}')" class="${dayClass}">
+          <div data-date="${dateStr}" onclick="openShiftInputModal('${dateStr}')" class="${dayClass}">
             ${dayNumDisplay}
             ${iconHtml}
           </div>
         `;
       }
-
-      calculatePeriodTotalPay(start, end);
     }
 
     function changeListMonth(delta) {
@@ -1973,16 +2180,15 @@ let todayTotalMins = 0;
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         const dateStr = formatDateKey(d);
         const dayData = shiftsData[dateStr] || {};
-        let isSelected = (dateStr === selectedCalendarDateStr);
 
         let hasPaid = false;
         let allDayShiftsList = [];
         let lineItems = [];
 
         const lineHtml = (label, url) => `
-          <div class="flex items-center justify-between gap-1 text-xs">
+          <div class="flex items-center justify-between gap-2 text-xs py-1">
             <span class="font-bold text-stone-800 whitespace-nowrap truncate">${label}</span>
-            <a href="${url.replace(/&/g, '&amp;')}" target="_blank" rel="noopener" onclick="event.stopPropagation();" class="text-sm hover:scale-110 transition shrink-0" title="Googleカレンダーに登録">📅</a>
+            <a href="${url.replace(/&/g, '&amp;')}" target="_blank" rel="noopener" onclick="event.stopPropagation();" class="text-base hover:scale-110 transition shrink-0" title="Googleカレンダーに登録">📅</a>
           </div>`;
 
         activeKeys.forEach(jk => {
@@ -2024,37 +2230,30 @@ let todayTotalMins = 0;
         if (isSunday || isHol) dayColor = "text-rose-600 font-extrabold";
         if (isSaturday) dayColor = "text-sky-600 font-extrabold";
 
-        let bgStyle = "bg-stone-50 hover:bg-stone-100";
-        if (isSelected) {
-          bgStyle = "bg-stone-100 text-stone-900 font-bold shadow-xs border border-stone-300";
-        } else {
-          bgStyle = "bg-stone-50 border border-stone-200 hover:bg-stone-100";
-        }
-
-        if (isToday && !isSelected) {
-          bgStyle = "bg-amber-50 border border-amber-300 hover:bg-amber-100";
+        let bgStyle = "bg-stone-50 border border-stone-200 hover:bg-stone-100";
+        if (isToday) {
+          bgStyle = "bg-amber-100/80 border border-amber-300 hover:bg-amber-200/70";
         }
 
         let badgeHtml = '';
         if (hasShift) {
           if (hasPaid) {
-            badgeHtml = `<span class="text-[10px] text-stone-700 font-bold">☆ 有給</span>`;
+            badgeHtml = `<span class="text-xs text-stone-700 font-bold">☆ 有給</span>`;
           } else if (isAllFinished) {
-            badgeHtml = `<span class="text-[12px] text-rose-900 font-bold">♡</span>`;
+            badgeHtml = `<span class="text-base text-rose-900 font-bold">♡</span>`;
           }
         }
 
         container.innerHTML += `
-          <div id="list-row-${dateStr}" onclick="selectCalendarDate('${dateStr}'); switchTab('calendar');" 
-               class="flex items-center p-1.5 rounded-xl border transition cursor-pointer ${bgStyle} space-x-2 overflow-hidden">
-            <div class="w-16 shrink-0 font-bold ${isSelected ? 'text-stone-900' : dayColor}">
-              ${d.getMonth()+1}/${d.getDate()} (${dayOfWeek})
+          <div id="list-row-${dateStr}" onclick="openShiftInputModal('${dateStr}')" 
+               class="flex items-center p-2.5 rounded-2xl border transition cursor-pointer ${bgStyle} space-x-2.5 overflow-hidden">
+            <div class="w-16 shrink-0 font-bold text-xs ${dayColor}">
+              ${d.getDate()}日 (${dayOfWeek})
             </div>
             <div class="flex-1 space-y-0.5 overflow-hidden">
               ${hasShift ? linesHtml : `<div class="text-xs text-stone-400 font-bold">予定なし</div>`}
             </div>
             <div class="flex items-center space-x-1 shrink-0">
-              ${isToday ? '<span class="text-[9px] font-bold text-amber-800 bg-amber-100 rounded px-1 py-0.5">今日</span>' : ''}
               ${badgeHtml}
             </div>
           </div>
@@ -2064,7 +2263,6 @@ let todayTotalMins = 0;
       if (scrollMode === 'keep') {
         container.scrollTop = prevScroll;
       } else {
-        // 選択中の日 → 今日 → 先頭 の順で、その日が見える位置へ
         const monthPrefix = `${year}-${month + 1}-`;
         let targetKey = null;
         if (selectedCalendarDateStr && selectedCalendarDateStr.startsWith(monthPrefix)) targetKey = selectedCalendarDateStr;
@@ -2078,22 +2276,6 @@ let todayTotalMins = 0;
       }
     }
 
-    function selectCalendarDate(dateStr) {
-      selectedCalendarDateStr = dateStr;
-      editingShift = null;
-      const [selY, selM] = dateStr.split('-').map(Number);
-      currentPeriodDate = new Date(selY, selM - 1, 1);
-      renderCalendar();
-      renderStandaloneShiftList();
-
-      const [y, m, d] = dateStr.split('-');
-      const titleEl = document.getElementById('selectedDateTitle');
-      if (titleEl) titleEl.innerText = `${y}年${m}月${d}日 の予定設定`;
-      
-      renderPresetButtons();
-      updateSelectedDateSummary();
-    }
-
     function getRateForMinuteDetailed(min, currentJob, dateObj, isPaid) {
       if (isPaid) return { rate: currentJob.paid || 1650, category: 'paid' };
 
@@ -2104,31 +2286,31 @@ let todayTotalMins = 0;
       let mStart = parseTimeStringToMinutes(currentJob.timeMorning, false);
       let mEnd = parseTimeStringToMinutes(currentJob.timeMorning, true);
       if (isMinuteInRange(curMins, mStart, mEnd)) {
-        return { rate: currentJob.morning || 1890, category: 'morning' };
+        return { rate: currentJob.morning || 0, category: 'morning' };
       }
 
       let dStart = parseTimeStringToMinutes(currentJob.timeDay, false);
       let dEnd = parseTimeStringToMinutes(currentJob.timeDay, true);
       if (isMinuteInRange(curMins, dStart, dEnd)) {
-        return { rate: currentJob.day || 1520, category: 'day' };
+        return { rate: currentJob.day || 0, category: 'day' };
       }
 
       let eStart = parseTimeStringToMinutes(currentJob.timeEvening, false);
       let eEnd = parseTimeStringToMinutes(currentJob.timeEvening, true);
       if (isMinuteInRange(curMins, eStart, eEnd)) {
-        return { rate: currentJob.evening || 1570, category: 'evening' };
+        return { rate: currentJob.evening || 0, category: 'evening' };
       }
 
       let nStart = parseTimeStringToMinutes(currentJob.timeNight, false);
       let nEnd = parseTimeStringToMinutes(currentJob.timeNight, true);
       if (isMinuteInRange(curMins, nStart, nEnd)) {
-        return { rate: currentJob.night || 1900, category: 'night' };
+        return { rate: currentJob.night || 0, category: 'night' };
       }
 
       let midStart = parseTimeStringToMinutes(currentJob.timeMidnight, false);
       let midEnd = parseTimeStringToMinutes(currentJob.timeMidnight, true);
       if (isMinuteInRange(curMins, midStart, midEnd)) {
-        return { rate: currentJob.midnight || 1900, category: 'midnight' };
+        return { rate: currentJob.midnight || 0, category: 'midnight' };
       }
 
       let exStart = parseTimeStringToMinutes(currentJob.timeExtra, false);
@@ -2137,14 +2319,13 @@ let todayTotalMins = 0;
         return { rate: currentJob.extraWage || 0, category: 'extra' };
       }
 
-      let defaultRate = currentJob.day || 1520;
-      let category = 'day';
-      if (hour < 9) { defaultRate = currentJob.morning || 1890; category = 'morning'; }
-      else if (hour < 17) { defaultRate = currentJob.day || 1520; category = 'day'; }
-      else if (hour < 22) { defaultRate = currentJob.evening || 1570; category = 'evening'; }
-      else { defaultRate = currentJob.night || 1900; category = 'night'; }
-
-      return { rate: defaultRate, category };
+      const wageOf = { morning: currentJob.morning, day: currentJob.day, evening: currentJob.evening, night: currentJob.night, midnight: currentJob.midnight, extra: currentJob.extraWage };
+      let pref = hour < 9 ? 'morning' : (hour < 17 ? 'day' : (hour < 22 ? 'evening' : 'night'));
+      if (wageOf[pref] > 0) return { rate: wageOf[pref], category: pref };
+      for (const cat of ['morning', 'day', 'evening', 'night', 'midnight', 'extra']) {
+        if (wageOf[cat] > 0) return { rate: wageOf[cat], category: cat };
+      }
+      return { rate: 0, category: 'day' };
     }
 
     function isMinuteInRange(curMins, startMins, endMins) {
@@ -2156,7 +2337,7 @@ let todayTotalMins = 0;
       return c >= s && c < e;
     }
 
-    function parseTimeStringToMinutes(timeStr, isEnd) {
+    function parseTimeStringToMinutes(timeStr, isEnd = false) {
       if (!timeStr || !timeStr.includes('〜')) return null;
       let parts = timeStr.split('〜');
       let target = isEnd ? parts[1] : parts[0];
@@ -2165,36 +2346,16 @@ let todayTotalMins = 0;
       return h * 60 + m;
     }
 
-    function calculatePeriodTotalPay(start, end) {
-      let totalMins = 0;
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const key = formatDateKey(d);
-        getActiveJobKeys().forEach(jk => {
-          let shifts = getDayShifts(key, jk);
-          let jobConf = configData[jk];
-          shifts.forEach(jobShift => {
-            if (jobShift && !jobShift.isPaidLeave) {
-              let res = calculateJobShiftMinutesAndPay(jobShift, jobConf, new Date(d));
-              if (res.totalMins > 0) totalMins += res.totalMins;
-            }
-          });
-        });
-      }
-      const totalHoursEl = document.getElementById('monthlyTotalHours');
-      if (totalHoursEl) totalHoursEl.innerText = `${(totalMins / 60).toFixed(2)} 時間`;
-    }
-
     function changeMonth(delta) {
       currentPeriodDate = new Date(currentPeriodDate.getFullYear(), currentPeriodDate.getMonth() + delta, 1);
       renderCalendar();
     }
 
     function onJobCountChange(val) {
-      syncUIFormToConfig(currentSettingsJobKey);
       configData.jobCount = Number(val);
       ensureValidSelectedJob();
       renderSettingsJobNameInputs();
-      loadSettingsToUI(currentSettingsJobKey);
+      saveAllDataStorage();
     }
 
     function renderSettingsJobNameInputs() {
@@ -2207,23 +2368,48 @@ let todayTotalMins = 0;
 
       keys.forEach((jk) => {
         let jobName = configData[jk].name || '';
-        let isSelected = (jk === currentSettingsJobKey);
-        let styleClass = isSelected ? "bg-rose-100 text-rose-950 border border-rose-400 shadow-sm font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
 
         container.innerHTML += `
-          <div class="p-1 rounded-xl transition font-bold text-xs truncate flex items-center justify-between px-2 shadow-xs ${styleClass}">
-            <span class="truncate cursor-pointer flex-1 font-bold" onclick="selectSettingsJob('${jk}');">${jobName}</span>
-            <button type="button" class="ml-1 hover:scale-110 transition shrink-0 font-bold opacity-80" onclick="openJobNameModal('${jk}');" title="名前を変更">✏️</button>
+          <div class="p-2.5 rounded-xl transition font-bold text-xs truncate flex items-center justify-between px-3 shadow-xs bg-white text-stone-700 border border-stone-200 hover:bg-stone-50">
+            <span class="truncate cursor-pointer flex-1 font-bold" onclick="openJobWageModal('${jk}');">${jobName}</span>
+            <button type="button" class="ml-1.5 hover:scale-110 transition shrink-0 font-bold opacity-80 text-sm" onclick="openJobNameModal('${jk}');" title="名前を変更">✏</button>
           </div>
         `;
       });
+
+      renderSettingsPresetSummary(keys);
     }
 
-    function selectSettingsJob(jobKey) {
-      syncUIFormToConfig(currentSettingsJobKey);
-      currentSettingsJobKey = jobKey;
-      renderSettingsJobNameInputs();
-      loadSettingsToUI(jobKey);
+    function renderSettingsPresetSummary(keys) {
+      const summary = document.getElementById('settingsPresetSummary');
+      if (!summary) return;
+      summary.innerHTML = '';
+
+      keys.forEach((jk) => {
+        const job = configData[jk];
+        const presets = (job && job.presets ? job.presets : []).filter(p => p && p.start && p.end);
+        const visible = presets.slice(0, 4);
+        const moreCount = Math.max(0, presets.length - visible.length);
+        const chips = visible.length
+          ? visible.map(p => {
+              const breakText = Number(p.breakMins) > 0 ? ` 休憩${Number(p.breakMins)}分` : '';
+              return `<span class="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-[11px] font-bold text-stone-700">${p.start}〜${p.end}${breakText}</span>`;
+            }).join('')
+          : `<span class="text-[11px] text-stone-400 font-bold">まだ登録されていません</span>`;
+
+        summary.innerHTML += `
+          <div class="bg-white rounded-2xl border border-stone-200 p-3 shadow-xs">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="text-xs font-extrabold text-stone-800 truncate">${job?.name || jk}</span>
+              <button type="button" onclick="openJobWageModal('${jk}')" class="shrink-0 bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 font-bold text-[11px] px-2.5 py-1.5 rounded-xl transition">＋ 編集・追加</button>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              ${chips}
+              ${moreCount > 0 ? `<span class="inline-flex items-center px-2 py-1.5 rounded-lg bg-stone-100 text-[10px] font-bold text-stone-500">＋${moreCount}件</span>` : ''}
+            </div>
+          </div>
+        `;
+      });
     }
 
     function formatInputNumber(input) {
@@ -2241,154 +2427,7 @@ let todayTotalMins = 0;
       return Number(clean) || 0;
     }
 
-    function syncUIFormToConfig(jobKey) {
-      if (!configData[jobKey]) return;
-      const j = configData[jobKey];
-
-      const countEl = document.getElementById('settingJobCount');
-      const closeEl = document.getElementById('settingCloseDay');
-      const payEl = document.getElementById('settingPayDay');
-
-      const paidEl = document.getElementById('settingWagePaid');
-      const mornEl = document.getElementById('settingWageMorning');
-      const dayEl = document.getElementById('settingWageDay');
-      const eveEl = document.getElementById('settingWageEvening');
-      const nightEl = document.getElementById('settingWageNight');
-      const midnightEl = document.getElementById('settingWageMidnight');
-      const extraEl = document.getElementById('settingWageExtra');
-
-      const timeMornStart = document.getElementById('settingTimeMorningStart');
-      const timeMornEnd = document.getElementById('settingTimeMorningEnd');
-      const timeDayStart = document.getElementById('settingTimeDayStart');
-      const timeDayEnd = document.getElementById('settingTimeDayEnd');
-      const timeEveStart = document.getElementById('settingTimeEveningStart');
-      const timeEveEnd = document.getElementById('settingTimeEveningEnd');
-      const timeNightStart = document.getElementById('settingTimeNightStart');
-      const timeNightEnd = document.getElementById('settingTimeNightEnd');
-      const timeMidnightStart = document.getElementById('settingTimeMidnightStart');
-      const timeMidnightEnd = document.getElementById('settingTimeMidnightEnd');
-      const timeExtraStart = document.getElementById('settingTimeExtraStart');
-      const timeExtraEnd = document.getElementById('settingTimeExtraEnd');
-
-      const bTypeMorn = document.getElementById('settingBonusTypeMorning');
-      const bMorn = document.getElementById('settingBonusMorning');
-      const bTypeDay = document.getElementById('settingBonusTypeDay');
-      const bDay = document.getElementById('settingBonusDay');
-      const bTypeEve = document.getElementById('settingBonusTypeEvening');
-      const bEve = document.getElementById('settingBonusEvening');
-      const bTypeNight = document.getElementById('settingBonusTypeNight');
-      const bNight = document.getElementById('settingBonusNight');
-      const bTypeMid = document.getElementById('settingBonusTypeMidnight');
-      const bMid = document.getElementById('settingBonusMidnight');
-      const bTypeEx = document.getElementById('settingBonusTypeExtra');
-      const bEx = document.getElementById('settingBonusExtra');
-
-      const transMonth = document.getElementById('settingTransMonth');
-      const transDay = document.getElementById('settingTransDay');
-      const allowanceMonth = document.getElementById('settingAllowanceMonth');
-      const allowanceDay = document.getElementById('settingAllowanceDay');
-      const allowanceMemo = document.getElementById('settingAllowanceMemo');
-
-      if (countEl) configData.jobCount = Number(countEl.value);
-      if (closeEl) j.closeDay = closeEl.value;
-      if (payEl) j.payDay = payEl.value;
-
-      if (paidEl) j.paid = parseFormattedNumber(paidEl.value);
-      if (mornEl) j.morning = parseFormattedNumber(mornEl.value);
-      if (dayEl) j.day = parseFormattedNumber(dayEl.value);
-      if (eveEl) j.evening = parseFormattedNumber(eveEl.value);
-      if (nightEl) j.night = parseFormattedNumber(nightEl.value);
-      if (midnightEl) j.midnight = parseFormattedNumber(midnightEl.value);
-      if (extraEl) j.extraWage = parseFormattedNumber(extraEl.value);
-
-      if (timeMornStart && timeMornEnd) j.timeMorning = (timeMornStart.value && timeMornEnd.value) ? `${timeMornStart.value}〜${timeMornEnd.value}` : '';
-      if (timeDayStart && timeDayEnd) j.timeDay = (timeDayStart.value && timeDayEnd.value) ? `${timeDayStart.value}〜${timeDayEnd.value}` : '';
-      if (timeEveStart && timeEveEnd) j.timeEvening = (timeEveStart.value && timeEveEnd.value) ? `${timeEveStart.value}〜${timeEveEnd.value}` : '';
-      if (timeNightStart && timeNightEnd) j.timeNight = (timeNightStart.value && timeNightEnd.value) ? `${timeNightStart.value}〜${timeNightEnd.value}` : '';
-      if (timeMidnightStart && timeMidnightEnd) j.timeMidnight = (timeMidnightStart.value && timeMidnightEnd.value) ? `${timeMidnightStart.value}〜${timeMidnightEnd.value}` : '';
-      if (timeExtraStart && timeExtraEnd) j.timeExtra = (timeExtraStart.value && timeExtraEnd.value) ? `${timeExtraStart.value}〜${timeExtraEnd.value}` : '';
-
-      if (bTypeMorn) j.bonusTypeMorning = bTypeMorn.value;
-      if (bMorn) j.bonusMorning = parseFormattedNumber(bMorn.value);
-      if (bTypeDay) j.bonusTypeDay = bTypeDay.value;
-      if (bDay) j.bonusDay = parseFormattedNumber(bDay.value);
-      if (bTypeEve) j.bonusTypeEvening = bTypeEve.value;
-      if (bEve) j.bonusEvening = parseFormattedNumber(bEve.value);
-      if (bTypeNight) j.bonusTypeNight = bTypeNight.value;
-      if (bNight) j.bonusNight = parseFormattedNumber(bNight.value);
-      if (bTypeMid) j.bonusTypeMidnight = bTypeMid.value;
-      if (bMid) j.bonusMidnight = parseFormattedNumber(bMid.value);
-      if (bTypeEx) j.bonusTypeExtra = bTypeEx.value;
-      if (bEx) j.bonusExtra = parseFormattedNumber(bEx.value);
-
-      j.transMonth = parseFormattedNumber(transMonth?.value);
-      j.transDay = parseFormattedNumber(transDay?.value);
-      j.allowanceMonth = parseFormattedNumber(allowanceMonth?.value);
-      j.allowanceDay = parseFormattedNumber(allowanceDay?.value);
-      j.allowanceMemo = allowanceMemo ? allowanceMemo.value : '';
-
-      syncPresetInputsToConfig(jobKey);
-    }
-
-    function loadSettingsToUI(jobKey) {
-      const j = configData[jobKey];
-      document.getElementById('settingJobCount').value = configData.jobCount;
-      renderSettingsJobNameInputs();
-
-      document.getElementById('settingCloseDay').value = j.closeDay !== undefined ? j.closeDay : '20';
-      document.getElementById('settingPayDay').value = j.payDay !== undefined ? j.payDay : '5';
-
-      document.getElementById('settingWagePaid').value = j.paid ? j.paid.toLocaleString() : '';
-      document.getElementById('settingWageMorning').value = j.morning ? j.morning.toLocaleString() : '';
-      document.getElementById('settingWageDay').value = j.day ? j.day.toLocaleString() : '';
-      document.getElementById('settingWageEvening').value = j.evening ? j.evening.toLocaleString() : '';
-      document.getElementById('settingWageNight').value = j.night ? j.night.toLocaleString() : '';
-      document.getElementById('settingWageMidnight').value = j.midnight ? j.midnight.toLocaleString() : '';
-      document.getElementById('settingWageExtra').value = j.extraWage ? j.extraWage.toLocaleString() : '';
-
-      document.getElementById('settingTimeMorningStart').value = parseTimeRangeString(j.timeMorning, false);
-      document.getElementById('settingTimeMorningEnd').value = parseTimeRangeString(j.timeMorning, true);
-      document.getElementById('settingTimeDayStart').value = parseTimeRangeString(j.timeDay, false);
-      document.getElementById('settingTimeDayEnd').value = parseTimeRangeString(j.timeDay, true);
-      document.getElementById('settingTimeEveningStart').value = parseTimeRangeString(j.timeEvening, false);
-      document.getElementById('settingTimeEveningEnd').value = parseTimeRangeString(j.timeEvening, true);
-      document.getElementById('settingTimeNightStart').value = parseTimeRangeString(j.timeNight, false);
-      document.getElementById('settingTimeNightEnd').value = parseTimeRangeString(j.timeNight, true);
-      document.getElementById('settingTimeMidnightStart').value = parseTimeRangeString(j.timeMidnight, false);
-      document.getElementById('settingTimeMidnightEnd').value = parseTimeRangeString(j.timeMidnight, true);
-      document.getElementById('settingTimeExtraStart').value = parseTimeRangeString(j.timeExtra, false);
-      document.getElementById('settingTimeExtraEnd').value = parseTimeRangeString(j.timeExtra, true);
-
-      if (document.getElementById('settingBonusTypeMorning')) document.getElementById('settingBonusTypeMorning').value = j.bonusTypeMorning || 'weekday';
-      if (document.getElementById('settingBonusMorning')) document.getElementById('settingBonusMorning').value = j.bonusMorning ? j.bonusMorning.toLocaleString() : '';
-      if (document.getElementById('settingBonusTypeDay')) document.getElementById('settingBonusTypeDay').value = j.bonusTypeDay || 'weekday';
-      if (document.getElementById('settingBonusDay')) document.getElementById('settingBonusDay').value = j.bonusDay ? j.bonusDay.toLocaleString() : '';
-      if (document.getElementById('settingBonusTypeEvening')) document.getElementById('settingBonusTypeEvening').value = j.bonusTypeEvening || 'weekday';
-      if (document.getElementById('settingBonusEvening')) document.getElementById('settingBonusEvening').value = j.bonusEvening ? j.bonusEvening.toLocaleString() : '';
-      if (document.getElementById('settingBonusTypeNight')) document.getElementById('settingBonusTypeNight').value = j.bonusTypeNight || 'weekday';
-      if (document.getElementById('settingBonusNight')) document.getElementById('settingBonusNight').value = j.bonusNight ? j.bonusNight.toLocaleString() : '';
-      if (document.getElementById('settingBonusTypeMidnight')) document.getElementById('settingBonusTypeMidnight').value = j.bonusTypeMidnight || 'weekday';
-      if (document.getElementById('settingBonusMidnight')) document.getElementById('settingBonusMidnight').value = j.bonusMidnight ? j.bonusMidnight.toLocaleString() : '';
-      if (document.getElementById('settingBonusTypeExtra')) document.getElementById('settingBonusTypeExtra').value = j.bonusTypeExtra || 'weekday';
-      if (document.getElementById('settingBonusExtra')) document.getElementById('settingBonusExtra').value = j.bonusExtra ? j.bonusExtra.toLocaleString() : '';
-
-      document.getElementById('settingTransMonth').value = j.transMonth ? j.transMonth.toLocaleString() : '';
-      document.getElementById('settingTransDay').value = j.transDay ? j.transDay.toLocaleString() : '';
-      document.getElementById('settingAllowanceMonth').value = j.allowanceMonth ? j.allowanceMonth.toLocaleString() : '';
-      document.getElementById('settingAllowanceDay').value = j.allowanceDay ? j.allowanceDay.toLocaleString() : '';
-      document.getElementById('settingAllowanceMemo').value = j.allowanceMemo !== undefined ? j.allowanceMemo : '';
-
-      renderPresetInputs(jobKey);
-    }
-
-    function parseTimeRangeString(rangeStr, isEnd = false) {
-      if (!rangeStr || !rangeStr.includes('〜')) return '';
-      let parts = rangeStr.split('〜');
-      return isEnd ? (parts[1] || '') : (parts[0] || '');
-    }
-
     function saveAllDataStorage() {
-      syncUIFormToConfig(currentSettingsJobKey);
       let payload = JSON.parse(JSON.stringify(configData));
       payload.monthlyGoal = monthlyGoal;
       localStorage.setItem('mybasket_wages_v77', JSON.stringify(payload));
@@ -2398,13 +2437,9 @@ let todayTotalMins = 0;
       saveAllDataStorage();
       showToast("設定しました");
       ensureValidSelectedJob();
-      loadSettingsToUI(currentSettingsJobKey);
-      updateJobSelectUI();
-      renderPresetButtons();
       renderCalendar();
       renderStandaloneShiftList();
       initOverviewPage();
-      updateSelectedDateSummary();
     }
 
     function formatCurrency(val) {
@@ -2510,19 +2545,12 @@ let todayTotalMins = 0;
           localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
           ensureValidSelectedJob();
           document.getElementById('settingJobCount').value = configData.jobCount;
-          loadSettingsToUI(currentSettingsJobKey);
+          renderSettingsJobNameInputs();
           saveAllDataStorage();
 
-          ensureValidSelectedJob();
-          document.getElementById('settingJobCount').value = configData.jobCount;
-          renderSettingsJobNameInputs();
-          loadSettingsToUI(currentSettingsJobKey);
-          updateJobSelectUI();
-          renderPresetButtons();
           renderCalendar();
           renderStandaloneShiftList();
           initOverviewPage();
-          updateSelectedDateSummary();
 
           showToast('バックアップから読み込みました♡');
         } catch (err) {
