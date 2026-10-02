@@ -67,9 +67,9 @@
       border-radius: 50%;
       filter: blur(0.5px);
     }
-    .glass-orb-sky { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); }
-    .glass-orb-emerald { background: linear-gradient(135deg, #34d399 0%, #059669 100%); }
-    .glass-orb-rose { background: linear-gradient(135deg, #fb7185 0%, #e11d48 100%); }
+    .glass-orb-sky { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); } /* はっきりした青 */
+    .glass-orb-emerald { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); } /* はっきりした緑 */
+    .glass-orb-rose { background: linear-gradient(135deg, #db2777 0%, #be185d 100%); } /* はっきりした濃いピンク */
     .glass-orb-stone { background: linear-gradient(135deg, #a8a29e 0%, #57534e 100%); }
 
   </style>
@@ -299,6 +299,7 @@
           </div>
         </div>
       </div>
+
 <!-- タブ3: 予定表 -->
       <div id="tab-list" class="tab-content hidden space-y-3">
         <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-3 rounded-2xl shadow-md border border-rose-800/40 text-xs">
@@ -316,7 +317,7 @@
         </div>
       </div>
 
-      <!-- タブ4: 設定 -->
+      <!-- タブ5: 設定 -->
       <div id="tab-settings" class="tab-content hidden space-y-3">
         <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-3 rounded-2xl text-center shadow-md border border-rose-800/40 relative overflow-hidden">
           <div class="absolute -top-6 -left-6 w-16 h-16 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>
@@ -356,6 +357,12 @@
           </div>
 
           <div class="pt-2.5 border-t border-stone-200 space-y-2">
+            <div class="text-xs font-bold text-stone-800">【Lステップ決済URL設定】</div>
+            <p class="text-xs text-stone-500 font-bold leading-tight">※「続けて使うには？」から飛ばしたいLステップのURLをここに入力してね</p>
+            <input type="text" id="set_lstepUrl" onchange="saveLstepUrlInput(this)" class="w-full p-2 border rounded-xl border-stone-200 bg-stone-50 text-xs font-bold text-stone-900" placeholder="https://step.lme.jp/..., 留保用URLなど">
+          </div>
+
+          <div class="pt-2.5 border-t border-stone-200 space-y-2">
             <div class="text-xs font-bold text-stone-800">【データのバックアップ】</div>
             <p class="text-xs text-stone-500 font-bold leading-tight">※機種変更やアプリの再インストールに備えて、時々書き出しておくと安心です</p>
             <div class="flex space-x-2">
@@ -367,15 +374,86 @@
         </div>
       </div>
 
+      <!-- タブ4: その他 -->
+      <div id="tab-guide" class="tab-content hidden space-y-3">
+        <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-3 rounded-2xl text-center shadow-md border border-rose-800/40 relative overflow-hidden">
+          <div class="absolute -top-6 -left-6 w-16 h-16 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>
+          <div class="flex justify-between items-center px-1">
+            <span class="text-xs text-rose-300 tracking-widest text-lg">📖</span>
+            <div>
+              <p class="text-base font-bold tracking-wider text-white">その他</p>
+              <p class="text-xs font-bold text-rose-200 tracking-wide">アプリの使い方や大切なお知らせ</p>
+            </div>
+            <span class="text-xs text-rose-300 tracking-widest text-lg">📖</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3 text-xs text-stone-800 leading-relaxed">
+          <div class="space-y-1.5 border-b border-stone-200 pb-3">
+            <h3 class="font-bold text-stone-900 text-sm flex items-center gap-1.5">
+              <span>✨</span><span>このアプリについて</span>
+            </h3>
+            <p class="text-stone-600 font-medium">
+              シフトの管理や給料計算をいつでも手軽に行える専用アプリです。スマホのホーム画面に追加していただくと、アドレスバー（URL）が非表示になり、本物のアプリのように全画面で快適にご利用いただけます。
+            </p>
+          </div>
+
+          <div class="space-y-1.5 border-b border-stone-200 pb-3">
+            <h3 class="font-bold text-stone-900 text-sm flex items-center gap-1.5">
+              <span>📱</span><span>スマホ画面（ホーム画面）への登録方法</span>
+            </h3>
+            <p class="text-stone-600 font-medium">
+              ブラウザのURLやアドレスバーを非表示にしてアプリ風に使う方法です：
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-stone-600 font-medium pl-1">
+              <li><strong class="text-stone-800">iPhone (Safari) の場合</strong>：画面下の共有ボタン（四角から矢印が出ているアイコン）をタップし、メニューから「ホーム画面に追加」を選択します。</li>
+              <li><strong class="text-stone-800">Android (Chrome) の場合</strong>：画面右上のメニュー（縦の3点リーダー）をタップし、「ホーム画面に追加」または「アプリをインストール」を選択します。</li>
+            </ul>
+          </div>
+
+          <div class="space-y-1.5 border-b border-stone-200 pb-3">
+            <h3 class="font-bold text-stone-900 text-sm flex items-center gap-1.5">
+              <span>📌</span><span>基本的な使い方</span>
+            </h3>
+            <ul class="list-disc list-inside space-y-1 text-stone-600 font-medium">
+              <li><strong class="text-stone-800">お給料タブ</strong>：今月の給料見込や年間収入、目標金額を確認できます。</li>
+              <li><strong class="text-stone-800">カレンダータブ</strong>：月ごとのシフトや給料日（❤）が一目でわかります。</li>
+              <li><strong class="text-stone-800">シフト入力タブ</strong>：日付をタップしてシフトの追加や有給の登録ができます。</li>
+              <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日、バイト先の登録数を自由に変更できます。</li>
+            </ul>
+          </div>
+
+          <div class="space-y-1.5 border-b border-stone-200 pb-3">
+            <h3 class="font-bold text-stone-900 text-sm flex items-center gap-1.5">
+              <span>💡</span><span>データの保存・バックアップ</span>
+            </h3>
+            <p class="text-stone-600 font-medium">
+              入力したデータはお使いのスマホ（ブラウザ）の内部ストレージに自動保存されます。ブラウザの履歴やキャッシュを完全に削除するとデータが消える恐れがあるため、機種変更や万が一に備えて「設定」タブから定期的に「バックアップの書き出し」を行ってください。
+            </p>
+          </div>
+
+          <div class="space-y-1.5">
+            <h3 class="font-bold text-stone-900 text-sm flex items-center gap-1.5">
+              <span>⚖️</span><span>著作権・免責事項について</span>
+            </h3>
+            <p class="text-stone-600 font-medium">
+              当アプリのプログラム、デザイン、構成等の著作権は制作者に帰属します。無断での転載、再配布、商用利用等は禁止されています。<br>
+              また、給料計算やシフト管理の結果については万全を期しておりますが、計算結果の正確性を完全に保証するものではありません。実際の給与明細や雇用契約の内容を必ずご確認ください。本アプリの利用によって生じたいかなる損害についても責任を負いかねますのでご了承ください。
+            </p>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- 下部タブバー -->
     <div class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-stone-100/95 border-t border-stone-200 p-1.5 shadow-lg">
-      <div class="grid grid-cols-4 gap-1">
-        <button type="button" onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-2.5 rounded-xl text-xs font-bold text-center transition shadow-xs">お給料</button>
-        <button type="button" onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-xs font-bold text-center transition shadow-xs">カレンダー</button>
-        <button type="button" onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-xs font-bold text-center transition shadow-xs">シフト入力</button>
-        <button type="button" onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-xs font-bold text-center transition shadow-xs">設定</button>
+      <div class="grid grid-cols-5 gap-1">
+        <button type="button" onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-xs px-0.5">お給料</button>
+        <button type="button" onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-xs px-0.5">カレンダー</button>
+        <button type="button" onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-xs px-0.5">シフト入力</button>
+        <button type="button" onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-xs px-0.5">設定</button>
+        <button type="button" onclick="switchTab('guide')" id="btn-guide" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-xs px-0.5">その他</button>
       </div>
     </div>
 
@@ -419,6 +497,7 @@
     } catch (e) { savedWages = {}; }
 
     let monthlyGoal = Number(savedWages.monthlyGoal) || 0;
+    let lstepUrl = savedWages.lstepUrl || '';
 
     function buildConfigData(savedWages) {
       return {
@@ -1344,6 +1423,8 @@
         checkWageSlotInputState(s.key);
       });
 
+      const lstepInput = document.getElementById('set_lstepUrl');
+      if (lstepInput) lstepInput.value = lstepUrl || '';
       document.getElementById('set_transMonth').value = j.transMonth ? j.transMonth.toLocaleString() : '';
       document.getElementById('set_transDay').value = j.transDay ? j.transDay.toLocaleString() : '';
       document.getElementById('set_allowanceMonth').value = j.allowanceMonth ? j.allowanceMonth.toLocaleString() : '';
@@ -1891,9 +1972,9 @@
 
 
     const JOB_VISUALS = {
-      job1: { bg: 'bg-sky-50', border: 'border-sky-200', text: 'text-sky-800', dot: 'bg-sky-500', orbClass: 'glass-orb glass-orb-sky' },
-      job2: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800', dot: 'bg-emerald-500', orbClass: 'glass-orb glass-orb-emerald' },
-      job3: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', dot: 'bg-rose-500', orbClass: 'glass-orb glass-orb-rose' }
+      job1: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', dot: 'bg-blue-600', orbClass: 'glass-orb glass-orb-sky' },
+      job2: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-800', dot: 'bg-green-600', orbClass: 'glass-orb glass-orb-emerald' },
+      job3: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', dot: 'bg-pink-600', orbClass: 'glass-orb glass-orb-rose' }
     };
 
     function getJobVisual(jk) {
@@ -2033,7 +2114,7 @@
 
           html += `
             <div class="py-1.5 flex justify-between items-center text-sm">
-              <span class="font-bold text-stone-800 flex items-center">${getJobLabelHtml(jk, "", true)}<span class="text-stone-700 font-bold job-time ml-1">${timeDisplay}</span></span>
+              <span class="font-bold text-stone-800 flex items-center gap-1">${getJobLabelHtml(jk)}<span class="text-stone-700 font-bold job-time ml-1">${timeDisplay}</span></span>
               <span class="font-bold text-rose-950">${formatCurrency(payVal)}</span>
             </div>
           `;
@@ -2267,6 +2348,7 @@
       syncSettingsFormToConfig(currentSettingsJobKey);
       let payload = JSON.parse(JSON.stringify(configData));
       payload.monthlyGoal = monthlyGoal;
+      payload.lstepUrl = lstepUrl;
       localStorage.setItem('mybasket_wages_v77', JSON.stringify(payload));
     }
 
@@ -2355,6 +2437,22 @@
       URL.revokeObjectURL(url);
 
       showToast('バックアップファイルを書き出しました♡');
+    }
+
+    function saveLstepUrlInput(input) {
+      if (!input) return;
+      lstepUrl = input.value.trim();
+      saveAllDataStorage();
+      showToast("LステップURLを保存しました♡");
+      updateTrialBanner();
+    }
+
+    function handleTrialLinkClick(event) {
+      if (!lstepUrl) {
+        event.preventDefault();
+        switchTab('settings');
+        showToast("「設定」タブのLステップURL欄に入力してね♡");
+      }
     }
 
     function importAppData(event) {
