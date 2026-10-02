@@ -186,15 +186,13 @@
         </div>
 
         <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3 relative">
-          <div class="flex flex-col gap-1 px-1">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-1">
             <span class="text-xs font-bold text-stone-500">※円グラフは今月の給与受取額を表しています</span>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2 w-full">
-                <span class="text-xs font-bold text-stone-500 shrink-0">目標金額</span>
-                <div class="flex items-center gap-1 flex-1 max-w-[130px]">
-                  <span class="text-sm font-bold text-stone-700">¥</span>
-                  <input type="text" inputmode="numeric" id="goalAmountHeader" oninput="formatInputNumber(this)" onblur="saveInlineMonthlyGoal(this)" onkeydown="if(event.key==='Enter'){this.blur();}" class="w-full min-w-0 h-8 px-2 py-1 border border-stone-200 bg-stone-50 rounded-lg text-sm font-bold text-stone-900 focus:outline-none focus:border-rose-300 focus:bg-white" placeholder="未設定">
-                </div>
+            <div class="flex items-center gap-1.5 self-end sm:self-auto">
+              <span class="text-xs font-bold text-stone-600 shrink-0">目標金額</span>
+              <div class="flex items-center gap-1 bg-stone-50 border border-stone-200 rounded-xl px-2.5 py-1 shadow-2xs">
+                <span class="text-xs font-bold text-stone-700">¥</span>
+                <input type="text" inputmode="numeric" id="goalAmountHeader" oninput="formatInputNumber(this)" onblur="saveInlineMonthlyGoal(this)" onkeydown="if(event.key==='Enter'){this.blur();}" class="w-24 bg-transparent text-sm font-bold text-stone-900 text-right focus:outline-none" placeholder="未設定">
               </div>
             </div>
           </div>
@@ -304,8 +302,9 @@
           <div class="text-xs font-bold text-stone-700 border-b border-stone-100 pb-2 flex flex-col items-start tracking-wide leading-relaxed pl-1 space-y-1">
             <span class="text-[11px] text-stone-700 font-bold">📅 タップするとGoogleカレンダーに登録されます</span>
             <span class="text-[11px] text-rose-900 font-bold whitespace-nowrap">日付をタップすると「シフトの入力画面に切り替わります♡」</span>
+            <div id="standaloneJobLegend" class="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5"></div>
           </div>
-          <div id="standaloneShiftListContainer" class="space-y-2 h-[54vh] min-h-[320px] max-h-[520px] overflow-y-auto pr-1 text-xs"></div>
+          <div id="standaloneShiftListContainer" class="space-y-2 h-[50vh] min-h-[300px] max-h-[480px] overflow-y-auto pr-1 text-xs"></div>
         </div>
       </div>
 
@@ -710,18 +709,47 @@
       container.innerHTML = '';
 
       const activeKeys = getActiveJobKeys();
-      activeKeys.forEach(jk => {
-        let name = configData[jk].name || 'バイト';
-        let isSelected = (jk === currentSelectedJobKey);
-        let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-xs font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
-
-        container.innerHTML += `
-          <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip flex-1 py-2 rounded-lg text-xs font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
-            ${getJobLabelHtml(jk)}
-            <span onclick="event.stopPropagation(); renameJobPrompt('${jk}')" class="text-stone-400 hover:text-stone-700 text-[11px] px-1" title="バイト先名を変更">✏️</span>
-          </button>
+      
+      if (activeKeys.length === 3) {
+        // 2 rows: Row 1 (job1, job2), Row 2 (job3)
+        let htmlRow1 = '';
+        let htmlRow2 = '';
+        activeKeys.forEach((jk, idx) => {
+          let isSelected = (jk === currentSelectedJobKey);
+          let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-xs font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+          
+          let btnHtml = `
+            <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip w-full py-2 rounded-lg text-xs font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
+              ${getJobLabelHtml(jk)}
+            </button>
+          `;
+          if (idx < 2) {
+            htmlRow1 += btnHtml;
+          } else {
+            htmlRow2 += btnHtml;
+          }
+        });
+        container.innerHTML = `
+          <div class="space-y-1.5 w-full">
+            <div class="grid grid-cols-2 gap-1.5">${htmlRow1}</div>
+            <div class="w-full">${htmlRow2}</div>
+          </div>
         `;
-      });
+      } else {
+        // 1 row for 1 or 2 jobs
+        let rowHtml = '';
+        activeKeys.forEach(jk => {
+          let isSelected = (jk === currentSelectedJobKey);
+          let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-xs font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+
+          rowHtml += `
+            <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip flex-1 py-2 rounded-lg text-xs font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
+              ${getJobLabelHtml(jk)}
+            </button>
+          `;
+        });
+        container.innerHTML = `<div class="flex space-x-1.5 w-full">${rowHtml}</div>`;
+      }
     }
 
     function renameJobPrompt(jk) {
@@ -1514,10 +1542,13 @@
           const breakDisplay = ` 休憩${breakMins}分`;
 
           container.innerHTML += `
-            <div class="bg-white border border-stone-200 py-2.5 px-3.5 rounded-2xl shadow-xs flex items-center justify-between gap-2 min-w-0">
-              <span class="text-sm font-bold text-stone-800 job-time">${p.start}〜${p.end}${breakDisplay}</span>
-              <button type="button" onclick="registerModalPresetTime('${p.start}', '${p.end}', ${breakMins}, 'select')"
-                      class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 py-1.5 px-3 rounded-xl text-xs font-bold transition">選択</button>
+            <div class="bg-white border border-stone-200 py-2 px-3 rounded-xl shadow-xs grid grid-cols-3 items-center gap-2 text-xs">
+              <span class="font-bold text-stone-800 job-time truncate">${p.start}〜${p.end}</span>
+              <span class="font-bold text-stone-600 text-center truncate">休憩${breakMins}分</span>
+              <div class="text-right">
+                <button type="button" onclick="registerModalPresetTime('${p.start}', '${p.end}', ${breakMins}, 'select')"
+                        class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 py-1 px-3 rounded-lg font-bold transition inline-block">選択</button>
+              </div>
             </div>
           `;
         }
@@ -2153,6 +2184,15 @@
       const listMonthLabelEl = document.getElementById('currentListMonthLabel');
       if (listMonthLabelEl) {
         listMonthLabelEl.innerText = `${year}年${month + 1}月`;
+      }
+
+      const legendEl = document.getElementById('standaloneJobLegend');
+      if (legendEl) {
+        let legendHtml = '';
+        getActiveJobKeys().forEach(jk => {
+          legendHtml += `<div class="bg-stone-50 border border-stone-200 px-2 py-1 rounded-lg text-[11px] font-bold text-stone-800 flex items-center gap-1">${getJobLabelHtml(jk)}</div>`;
+        });
+        legendEl.innerHTML = legendHtml;
       }
 
       const container = document.getElementById('standaloneShiftListContainer');
