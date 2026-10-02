@@ -45,6 +45,33 @@
       gap: 1px;
       line-height: 1;
     }
+  
+    .glass-orb {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: inset -1px -1px 2px rgba(0,0,0,0.3), inset 1px 1px 2px rgba(255,255,255,0.7), 0 1px 2px rgba(0,0,0,0.15);
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+    .glass-orb::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 4px;
+      height: 3px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 50%;
+      filter: blur(0.5px);
+    }
+    .glass-orb-sky { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); }
+    .glass-orb-emerald { background: linear-gradient(135deg, #34d399 0%, #059669 100%); }
+    .glass-orb-rose { background: linear-gradient(135deg, #fb7185 0%, #e11d48 100%); }
+    .glass-orb-stone { background: linear-gradient(135deg, #a8a29e 0%, #57534e 100%); }
+
   </style>
 </head>
 <body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
@@ -172,7 +199,7 @@
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2 w-full">
                 <span class="text-xs font-bold text-stone-500 shrink-0">目標金額</span>
-                <div class="flex items-center gap-1 flex-1 max-w-[190px]">
+                <div class="flex items-center gap-1 flex-1 max-w-[130px]">
                   <span class="text-sm font-bold text-stone-700">¥</span>
                   <input type="text" inputmode="numeric" id="goalAmountHeader" oninput="formatInputNumber(this)" onblur="saveInlineMonthlyGoal(this)" onkeydown="if(event.key==='Enter'){this.blur();}" class="w-full min-w-0 h-8 px-2 py-1 border border-stone-200 bg-stone-50 rounded-lg text-sm font-bold text-stone-900 focus:outline-none focus:border-rose-300 focus:bg-white" placeholder="未設定">
                 </div>
@@ -252,7 +279,7 @@
         </div>
 
         <div class="bg-stone-50 border border-stone-200 rounded-2xl p-2.5 text-center space-y-0.5">
-          <p class="text-sm font-bold text-stone-600 leading-relaxed">シフトの追加・変更は、「シフト入力」からしてね♡</p>
+          <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡</p>
         </div>
 
         <!-- 今日のシフト & 明日のシフト 確認エリア -->
@@ -281,9 +308,9 @@
         </div>
 
         <div class="bg-white p-3.5 rounded-2xl border border-stone-200 space-y-2 shadow-sm">
-          <div class="text-xs font-bold text-stone-700 border-b border-stone-100 pb-2 flex flex-col items-start tracking-wide leading-relaxed pl-1">
-            <span class="text-sm text-stone-700 font-bold">カレンダーをタップするとGoogleカレンダーに登録されます</span>
-            <span class="text-sm text-rose-900 font-bold mt-1">シフトの追加・変更は、「シフト入力」からしてね♡</span>
+          <div class="text-xs font-bold text-stone-700 border-b border-stone-100 pb-2 flex flex-col items-start tracking-wide leading-relaxed pl-1 space-y-1">
+            <span class="text-sm text-stone-700 font-bold">📅 タップするとGoogleカレンダーに登録されます</span>
+            <span class="text-xs text-rose-900 font-bold whitespace-nowrap">日付をタップすると「シフトの入力画面に切り替わります♡」</span>
           </div>
           <div id="standaloneShiftListContainer" class="space-y-2 h-[54vh] min-h-[320px] max-h-[520px] overflow-y-auto pr-1 text-xs"></div>
         </div>
@@ -614,7 +641,7 @@
       activeKeys.forEach(jk => {
         let name = configData[jk].name || 'バイト';
         let isSelected = (jk === currentSelectedJobKey);
-        let styleClass = isSelected ? "bg-stone-100 text-stone-900 border border-stone-300 shadow-sm font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+        let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-xs font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
 
         container.innerHTML += `
           <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip flex-1 py-2 rounded-lg text-xs font-bold transition shadow-sm truncate px-1.5 ${styleClass}">
@@ -882,7 +909,7 @@
       activeKeys.forEach(jk => {
         let name = configData[jk].name || 'バイト';
         let isSelected = (jk === currentBreakdownJobKey);
-        let styleClass = isSelected ? "bg-stone-100 text-stone-900 border border-stone-300 shadow-sm font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+        let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-xs font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
 
         container.innerHTML += `
           <button type="button" onclick="switchBreakdownJob('${jk}')" class="job-chip flex-1 py-2 rounded-lg text-xs font-bold transition truncate px-1.5 ${styleClass}">
@@ -1110,7 +1137,7 @@
       activeKeys.forEach(jk => {
         let name = configData[jk].name || 'バイト';
         let isSelected = (jk === currentSettingsJobKey);
-        let styleClass = isSelected ? "bg-stone-100 text-stone-900 border border-stone-300 shadow-sm font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+        let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-xs font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
 
         container.innerHTML += `
           <button type="button" onclick="switchSettingsJobTab('${jk}')" class="job-chip flex-1 py-2 rounded-lg text-xs font-bold transition truncate px-1.5 ${styleClass}">
@@ -1864,19 +1891,23 @@
 
 
     const JOB_VISUALS = {
-      job1: { bg: 'bg-sky-50', border: 'border-sky-200', text: 'text-sky-800', dot: 'bg-sky-500' },
-      job2: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800', dot: 'bg-emerald-500' },
-      job3: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', dot: 'bg-rose-500' }
+      job1: { bg: 'bg-sky-50', border: 'border-sky-200', text: 'text-sky-800', dot: 'bg-sky-500', orbClass: 'glass-orb glass-orb-sky' },
+      job2: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800', dot: 'bg-emerald-500', orbClass: 'glass-orb glass-orb-emerald' },
+      job3: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', dot: 'bg-rose-500', orbClass: 'glass-orb glass-orb-rose' }
     };
 
     function getJobVisual(jk) {
       return JOB_VISUALS[jk] || { bg: 'bg-stone-50', border: 'border-stone-200', text: 'text-stone-800', dot: 'bg-stone-500' };
     }
 
-    function getJobLabelHtml(jk, extraClass = '') {
+    function getJobLabelHtml(jk, extraClass = '', iconOnly = false) {
       const visual = getJobVisual(jk);
       const name = configData[jk]?.name || 'バイト';
-      return `<span class="inline-flex items-center gap-1 ${extraClass}"><span aria-hidden="true" class="inline-block w-2 h-2 rounded-full shrink-0 ${visual.dot}"></span><span>${name}</span></span>`;
+      const orb = `<span class="${visual.orbClass || 'glass-orb glass-orb-stone'}"></span>`;
+      if (iconOnly) {
+        return `<span class="inline-flex items-center ${extraClass}" title="${name}">${orb}</span>`;
+      }
+      return `<span class="inline-flex items-center gap-1 ${extraClass}">${orb}<span>${name}</span></span>`;
     }
     function renderCalendar() {
       const { start, end } = getMonthCalendarRange(currentPeriodDate);
@@ -1909,7 +1940,7 @@
             shifts.forEach(jobShift => {
               let hasTime = !!(jobShift.start && jobShift.end);
               let dotBg = getJobVisual(jk).dot;
-              if (hasTime) dotsHtml += `<span class="w-1.5 h-1.5 rounded-full ${dotBg} inline-block shadow-xs"></span>`;
+              if (hasTime) { const v = getJobVisual(jk); dotsHtml += `<span class="${v.orbClass || "glass-orb glass-orb-stone"}" style="width:9px; height:9px; margin:0 1px;"></span>`; }
               if (!hasTime && jobShift.isPaidLeave) {
                 dotsHtml += `<span class="text-[10px] leading-none text-stone-700 font-bold">☆</span>`;
               }
@@ -2002,7 +2033,7 @@
 
           html += `
             <div class="py-1.5 flex justify-between items-center text-sm">
-              <span class="font-bold text-stone-800">${getJobLabelHtml(jk)}&nbsp;&nbsp;<span class="text-stone-500 font-normal job-time">${timeDisplay}</span></span>
+              <span class="font-bold text-stone-800 flex items-center">${getJobLabelHtml(jk, "", true)}<span class="text-stone-700 font-bold job-time ml-1">${timeDisplay}</span></span>
               <span class="font-bold text-rose-950">${formatCurrency(payVal)}</span>
             </div>
           `;
@@ -2060,18 +2091,18 @@
             if (!jobShift) return;
             if (jobShift.start && jobShift.end) {
               const title = `${jName} ${jobShift.start}〜${jobShift.end}`;
-              lineItems.push({ order: timeStrToMins(jobShift.start), html: lineHtml(`${getJobLabelHtml(jk)} <span class="job-time">${jobShift.start}〜${jobShift.end}</span>`, generateShiftGoogleCalendarUrl(title, dateStr, jobShift.start, jobShift.end)) });
+              lineItems.push({ order: timeStrToMins(jobShift.start), html: lineHtml(`${getJobLabelHtml(jk, "", true)}<span class="job-time">${jobShift.start}〜${jobShift.end}</span>`, generateShiftGoogleCalendarUrl(title, dateStr, jobShift.start, jobShift.end)) });
             } else if (jobShift.isPaidLeave) {
               hasPaid = true;
               const title = `${jName} 有給休暇`;
-              lineItems.push({ order: 9000, html: lineHtml(`${getJobLabelHtml(jk)} <span>有給休暇</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)) });
+              lineItems.push({ order: 9000, html: lineHtml(`${getJobLabelHtml(jk, "", true)}<span>有給休暇</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)) });
             }
           });
         });
 
         getPaydayJobs(d).forEach(jk => {
           const title = `${configData[jk]?.name || 'バイト'} お給料日`;
-          lineItems.push({ order: 9500, html: lineHtml(`${getJobLabelHtml(jk)} <span>お給料日</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)).replace('text-stone-800', 'text-rose-950') });
+          lineItems.push({ order: 9500, html: lineHtml(`${getJobLabelHtml(jk, "", true)}<span>お給料日</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)).replace('text-stone-800', 'text-rose-950') });
         });
 
         lineItems.sort((a, b) => a.order - b.order);
