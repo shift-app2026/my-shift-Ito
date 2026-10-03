@@ -187,7 +187,7 @@
 
         <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3 relative">
           <div class="flex flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
-            <span class="text-[11px] font-bold text-stone-500 leading-tight">※円グラフは今月の給与受取額を表しています</span>
+            <span class="text-[11px] font-bold text-stone-500 leading-tight">※円グラフは上に表示した月の給与受取額です</span>
             <div class="flex items-center gap-1.5 self-end sm:self-auto shrink-0">
               <span class="text-[11px] font-bold text-stone-500 shrink-0">目標金額</span>
               <div class="flex items-center gap-1 bg-stone-50 border border-stone-200 rounded-lg px-2 py-0.5 shadow-2xs">
@@ -223,11 +223,11 @@
 
         <div class="bg-gradient-to-br from-rose-50/60 via-rose-50/30 to-amber-50/40 text-stone-900 p-4 rounded-2xl border border-rose-100 shadow-xs space-y-2.5">
           <div class="text-xs font-bold text-rose-950 border-b border-rose-200/60 pb-2 flex justify-between items-center tracking-wide">
-            <span>今月のお給料</span>
+            <span id="monthlyReceiveTitle">今月のお給料</span>
           </div>
           <div id="monthlyReceiveBreakdown" class="space-y-2 text-xs text-stone-700 font-medium"></div>
           <div class="border-t border-rose-200/60 pt-2 flex justify-between items-baseline">
-            <span class="text-xs font-bold text-rose-950">今月の受取総額 合計</span>
+            <span id="monthlyReceiveTotalLabel" class="text-xs font-bold text-rose-950">今月の受取総額 合計</span>
             <span id="monthlyReceiveTotalPay" class="text-xl font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
           </div>
         </div>
@@ -266,6 +266,7 @@
             <span class="text-rose-500">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-sky-600">土</span>
           </div>
           <div id="calendarDays" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
+          <div id="calendarJobLegend" class="flex flex-wrap items-center justify-center gap-2.5 pt-2"></div>
         </div>
 
         <div class="bg-stone-50 border border-stone-200 rounded-2xl p-2.5 text-center space-y-0.5">
@@ -1259,6 +1260,7 @@
             <button type="button" onclick="switchSettingsJobTab('${jk}')" class="job-chip w-full py-2 rounded-lg text-xs font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
               ${getJobLabelHtml(jk)}
               <span class="text-stone-400 hover:text-stone-700 text-[11px] shrink-0" onclick="event.stopPropagation(); renameJobPrompt('${jk}');" title="名称を変更">✏️</span>
+              ${jobDeleteChipHtml(jk)}
             </button>
           `;
           if (idx < 2) {
@@ -1283,11 +1285,57 @@
             <button type="button" onclick="switchSettingsJobTab('${jk}')" class="job-chip flex-1 py-2 rounded-lg text-xs font-bold transition truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
               ${getJobLabelHtml(jk)}
               <span class="text-stone-400 hover:text-stone-700 text-[11px] shrink-0" onclick="event.stopPropagation(); renameJobPrompt('${jk}');" title="名称を変更">✏️</span>
+              ${jobDeleteChipHtml(jk)}
             </button>
           `;
         });
         container.innerHTML = `<div class="flex space-x-1.5 w-full">${rowHtml}</div>`;
       }
+    }
+
+    function jobDeleteChipHtml(jk) {
+      if (getActiveJobKeys().length <= 1) return '';
+      return `<span role="button" tabindex="0" class="shrink-0 ml-0.5 text-[10px] leading-none font-bold text-stone-500 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-md px-1.5 py-1" onclick="event.stopPropagation(); deleteJob('${jk}');" title="このバイト先を削除">削除</span>`;
+    }
+
+    // バイト先を削除し、後ろのバイト先を前に詰めて登録数（トリプル→ダブル→単独）を1つ減らす
+    function deleteJob(jk) {
+      const keys = getActiveJobKeys();
+      const idx = keys.indexOf(jk);
+      if (idx === -1 || keys.length <= 1) return;
+      const name = configData[jk]?.name || 'バイト';
+      if (!confirm(`「${name}」を削除しますか？\nこのバイト先のシフト・設定もすべて削除されます。`)) return;
+
+      syncSettingsFormToConfig(currentSettingsJobKey);
+
+      for (const dateKey of Object.keys(shiftsData)) {
+        const day = shiftsData[dateKey];
+        for (let i = idx; i < keys.length; i++) {
+          const nextKey = keys[i + 1];
+          if (nextKey && day[nextKey]) day[keys[i]] = day[nextKey];
+          else delete day[keys[i]];
+        }
+        if (Object.keys(day).length === 0) delete shiftsData[dateKey];
+      }
+      for (let i = idx; i < keys.length - 1; i++) {
+        configData[keys[i]] = configData[keys[i + 1]];
+      }
+      const lastKey = keys[keys.length - 1];
+      configData[lastKey] = createDefaultJobConfig(undefined, 'バイト', defaultPresets2, 1650, 1100, 1100, 1100, 1375, 1375, 0, '00:00〜09:00', '09:00〜17:00', '17:00〜22:00', '22:00〜24:00', '22:00〜05:00', '');
+
+      configData.jobCount = keys.length - 1;
+      localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
+
+      const countSelect = document.getElementById('settingJobCount');
+      if (countSelect) countSelect.value = configData.jobCount;
+
+      ensureValidSelectedJob();
+      // 削除後のフォーム内容で上書きされないよう、先に表示を作り直してから保存する
+      renderSettingsJobTabs();
+      renderSettingsJobContent(currentSettingsJobKey);
+      saveAllDataStorage();
+      refreshAll();
+      showToast(`「${name}」を削除しました`);
     }
 
     function switchSettingsJobTab(jk) {
@@ -1381,7 +1429,7 @@
             <span class="font-bold text-stone-900 text-sm">【有給・交通費・その他】</span>
             <div class="grid grid-cols-1 gap-2">
               <div class="bg-stone-50 p-2 rounded-xl border border-stone-200 flex items-center justify-between">
-                <span class="font-bold text-stone-700">1時間</span>
+                <span class="font-bold text-stone-700">有給休暇<span class="ml-3 text-stone-500">1時間</span></span>
                 <div class="flex items-center gap-1"><input type="text" inputmode="numeric" id="set_wagePaid" oninput="formatInputNumber(this)" class="w-24 p-1.5 border rounded text-right font-bold bg-white"><span class="font-bold">円</span></div>
               </div>
             </div>
@@ -1576,15 +1624,16 @@
       presets.forEach((p, idx) => {
         if (p.start && p.end) {
           const breakMins = Number(p.breakMins) || 0;
-          const breakDisplay = ` 休憩${breakMins}分`;
 
           container.innerHTML += `
-            <div class="bg-white border border-stone-200 py-2 px-3 rounded-xl shadow-xs grid grid-cols-3 items-center gap-2 text-xs">
-              <span class="font-bold text-stone-800 job-time truncate">${p.start}〜${p.end}</span>
-              <span class="font-bold text-stone-600 text-center truncate">休憩${breakMins}分</span>
-              <div class="text-right">
+            <div class="bg-white border border-stone-200 py-2 px-3 rounded-xl shadow-xs flex items-center gap-2 text-xs">
+              <span class="font-bold text-stone-800 job-time">${p.start}〜${p.end}</span>
+              <span class="font-bold text-stone-600 flex-1 text-center whitespace-nowrap">休憩${breakMins}分</span>
+              <div class="flex items-center gap-1.5 shrink-0">
                 <button type="button" onclick="registerModalPresetTime('${p.start}', '${p.end}', ${breakMins}, 'select')"
-                        class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 py-1 px-3 rounded-lg font-bold transition inline-block">選択</button>
+                        class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 py-1 px-3 rounded-lg font-bold transition">選択</button>
+                <button type="button" onclick="deleteModalPresetRow(${idx})"
+                        class="bg-stone-200 text-stone-700 hover:bg-stone-300 py-1 px-2.5 rounded-lg font-bold transition">削除</button>
               </div>
             </div>
           `;
@@ -1603,7 +1652,9 @@
 
     function deleteModalPresetRow(idx) {
       const currentJob = configData[currentSelectedJobKey] || configData.job1;
-      if (currentJob && currentJob.presets) {
+      if (currentJob && currentJob.presets && currentJob.presets[idx]) {
+        const p = currentJob.presets[idx];
+        if (!confirm(`${p.start}〜${p.end} 休憩${Number(p.breakMins) || 0}分\nこのワンタッチ時間を削除しますか？`)) return;
         currentJob.presets.splice(idx, 1);
         saveAllDataStorage();
         renderModalPresetButtons();
@@ -1780,10 +1831,9 @@
     }
 
     function initOverviewPage() {
-      const now = new Date();
+      const viewMonth = getPayViewMonthDate();
       const todayDateEl = document.getElementById('todayDate');
-      const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
-      if (todayDateEl) todayDateEl.innerText = `${now.getFullYear()}年${now.getMonth()+1}月`;
+      if (todayDateEl) todayDateEl.innerText = `${viewMonth.getFullYear()}年${viewMonth.getMonth()+1}月`;
 
       const goalAmountHeader = document.getElementById('goalAmountHeader');
       if (goalAmountHeader) {
@@ -1884,14 +1934,25 @@
       return adjustPaydayIfHoliday(paydayObj);
     }
 
+    function getPayViewMonthDate() {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth() + payPeriodOffset, 1);
+    }
+
     function calculateMonthlyReceivePay() {
       let totalReceivePay = 0;
       let breakdownHtml = '';
       const activeKeys = getActiveJobKeys();
+      const viewMonth = getPayViewMonthDate();
+      const monthLabel = `${viewMonth.getFullYear()}年${viewMonth.getMonth() + 1}月`;
+      const titleEl = document.getElementById('monthlyReceiveTitle');
+      const totalLabelEl = document.getElementById('monthlyReceiveTotalLabel');
+      if (titleEl) titleEl.innerText = `${monthLabel}のお給料`;
+      if (totalLabelEl) totalLabelEl.innerText = `${monthLabel}の受取総額 合計`;
 
       activeKeys.forEach(jk => {
         const job = configData[jk];
-        const { start: periodStart, end: periodEnd } = getJobPayPeriodRangeForReceiveMonth(job, 0);
+        const { start: periodStart, end: periodEnd } = getJobPayPeriodRangeForReceiveMonth(job, payPeriodOffset);
 
         let jobReceivePay = 0;
         let jobWorkDays = 0;
@@ -1909,9 +1970,8 @@
 
         totalReceivePay += jobReceivePay;
 
-        const now = new Date();
-        const payday = getAdjustedPaydayDate(now.getFullYear(), now.getMonth(), String(job.payDay || '5').trim());
-        const paydayText = `${payday.getDate()}日`;
+        const payday = getAdjustedPaydayDate(viewMonth.getFullYear(), viewMonth.getMonth(), String(job.payDay || '5').trim());
+        const paydayText = `${payday.getDate()}日支払い`;
 
         breakdownHtml += `
           <div class="grid grid-cols-[1.25fr_auto_1fr] items-center gap-2 py-2 border-b border-rose-100 last:border-b-0 font-bold px-1 text-sm">
@@ -1925,7 +1985,7 @@
       const container = document.getElementById('monthlyReceiveBreakdown');
       const totalEl = document.getElementById('monthlyReceiveTotalPay');
       if (container) {
-        container.innerHTML = breakdownHtml || `<span class="text-stone-400 font-bold">今月受取予定の給料はありません</span>`;
+        container.innerHTML = breakdownHtml || `<span class="text-stone-400 font-bold">この月に受取予定の給料はありません</span>`;
         const note = document.createElement('div');
         note.className = 'text-[11px] text-stone-500 font-medium pt-1';
         note.textContent = '※給料日は土日・祝日などにより、その月によって変動するので注意してね';
@@ -2146,7 +2206,16 @@
         `;
       }
 
+      const calLegendEl = document.getElementById('calendarJobLegend');
+      if (calLegendEl) calLegendEl.innerHTML = buildJobLegendHtml();
+
       renderCalendarTodayTomorrowSummary();
+    }
+
+    function buildJobLegendHtml() {
+      return getActiveJobKeys().map(jk =>
+        `<div class="bg-stone-50 border border-stone-200 px-2 py-1 rounded-lg text-[11px] font-bold text-stone-800 flex items-center gap-1">${getJobLabelHtml(jk)}</div>`
+      ).join('');
     }
 
     function renderCalendarTodayTomorrowSummary() {
@@ -2224,13 +2293,7 @@
       }
 
       const legendEl = document.getElementById('standaloneJobLegend');
-      if (legendEl) {
-        let legendHtml = '';
-        getActiveJobKeys().forEach(jk => {
-          legendHtml += `<div class="bg-stone-50 border border-stone-200 px-2 py-1 rounded-lg text-[11px] font-bold text-stone-800 flex items-center gap-1">${getJobLabelHtml(jk)}</div>`;
-        });
-        legendEl.innerHTML = legendHtml;
-      }
+      if (legendEl) legendEl.innerHTML = buildJobLegendHtml();
 
       const container = document.getElementById('standaloneShiftListContainer');
       if (!container) return;
