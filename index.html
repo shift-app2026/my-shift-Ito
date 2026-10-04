@@ -179,9 +179,9 @@
         <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 p-3 rounded-2xl text-center shadow-md border border-rose-800/40 space-y-1 relative overflow-hidden">
           <div class="absolute -top-6 -left-6 w-16 h-16 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>
           <div class="flex justify-between items-center px-1">
-            <span class="text-xs text-rose-300 tracking-widest">✦</span>
+            <button type="button" onclick="changePayPeriodOffset(-1)" aria-label="前月" title="前月" class="w-10 h-10 flex items-center justify-center rounded-full text-rose-100 text-sm bg-white/10 shadow-xs hover:bg-white/10 active:scale-90 transition">◀</button>
             <p id="todayDate" class="text-base font-bold tracking-wider text-white font-serif-title"></p>
-            <span class="text-xs text-rose-300 tracking-widest">✦</span>
+            <button type="button" onclick="changePayPeriodOffset(1)" aria-label="翌月" title="翌月" class="w-10 h-10 flex items-center justify-center rounded-full text-rose-100 text-sm bg-white/10 shadow-xs hover:bg-white/10 active:scale-90 transition">▶</button>
           </div>
         </div>
 
@@ -197,8 +197,7 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between py-1 relative">
-            <button type="button" onclick="changePayPeriodOffset(-1)" class="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0">◀</button>
+          <div class="flex items-center justify-center py-1 relative">
             <div class="relative w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center shrink-0">
               <svg class="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 36 36">
                 <path class="text-stone-100" stroke-width="4.2" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -206,13 +205,13 @@
               </svg>
               
               <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span id="goalMonthLabel" class="text-2xl font-bold text-rose-900 tracking-wider leading-tight">〇月</span>
                 <span class="text-xs font-bold text-stone-500 tracking-wider">給料見込</span>
                 <span id="goalCurrentPay" class="text-3xl font-bold font-serif-title text-stone-900 tracking-tight">¥0</span>
                 <span id="goalPercentText" class="text-xs font-bold text-rose-50 bg-rose-900 px-3 py-0.5 rounded-full mt-1 shadow-xs">0%</span>
               </div>
             </div>
-            <button type="button" onclick="changePayPeriodOffset(1)" class="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold shadow-xs transition active:scale-95 text-xs z-10 shrink-0">▶</button>
-          </div>
+            </div>
 
           <div class="px-1">
             <button type="button" onclick="openBreakdownModal()" class="w-full py-2.5 px-3 bg-rose-50/70 hover:bg-rose-100/70 text-rose-950 font-bold rounded-xl text-xs transition border border-rose-200 shadow-xs flex items-center justify-center space-x-1">
@@ -276,17 +275,17 @@
         <!-- 今日のシフト & 明日のシフト 確認エリア -->
         <div class="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm space-y-3">
           <div class="text-sm font-bold text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
-            <span>📌 今日のシフト <span id="calendarTodayDateLabel" class="text-stone-500 font-bold text-xs ml-1"></span></span>
+            <span>📌 <span id="calendarTodayDateLabel"></span> のシフト</span>
           </div>
           <div id="calendarTodaySummaryContent" class="space-y-2 text-sm text-stone-700">
-            <span class="text-stone-400">本日のシフトはありません</span>
+            <span class="text-stone-400">予定なし</span>
           </div>
 
           <div class="text-sm font-bold text-stone-900 border-b border-stone-200 pt-2 pb-2 flex items-center justify-between tracking-wide">
-            <span>📌 明日のシフト <span id="calendarTomorrowDateLabel" class="text-stone-500 font-bold text-xs ml-1"></span></span>
+            <span>📌 次の日のシフト <span id="calendarTomorrowDateLabel" class="text-stone-500 font-bold text-xs ml-1"></span></span>
           </div>
           <div id="calendarTomorrowSummaryContent" class="space-y-2 text-sm text-stone-700">
-            <span class="text-stone-400">明日のシフトはありません</span>
+            <span class="text-stone-400">予定なし</span>
           </div>
         </div>
       </div>
@@ -462,6 +461,7 @@
     let currentBreakdownJobKey = 'job1';
     let toastTimer = null;
     let editingShift = null;
+    let calSelectedDateStr = null;
 
     const defaultPresets1 = [
       { start: '06:45', end: '09:00', breakMins: 0 },
@@ -516,36 +516,33 @@
 
       let hasBreakGlobal = savedJob?.hasBreakGlobal !== undefined ? savedJob.hasBreakGlobal : loadedPresets.some(p => Number(p.breakMins) > 0);
 
+      let wageSlots;
+      if (Array.isArray(savedJob?.wageSlots)) {
+        wageSlots = savedJob.wageSlots.map(s => ({ start: s.start || '', end: s.end || '', wage: Number(s.wage) || 0, bType: s.bType || 'weekday', bVal: Number(s.bVal) || 0 }));
+      } else {
+        const sv = savedJob || {};
+        const legacy = [
+          [sv.timeMorning ?? tM, numOr(sv.morning, defMorn), sv.bonusTypeMorning, sv.bonusMorning],
+          [sv.timeDay ?? tD, numOr(sv.day, defDay), sv.bonusTypeDay, sv.bonusDay],
+          [sv.timeEvening ?? tEv, numOr(sv.evening, defEve), sv.bonusTypeEvening, sv.bonusEvening],
+          [sv.timeNight ?? tN, numOr(sv.night, defNight), sv.bonusTypeNight, sv.bonusNight],
+          [sv.timeMidnight ?? tMid, numOr(sv.midnight, defMidnight), sv.bonusTypeMidnight, sv.bonusMidnight],
+          [sv.timeExtra ?? tEx, numOr(sv.extraWage, defExtra), sv.bonusTypeExtra, sv.bonusExtra]
+        ];
+        wageSlots = [];
+        legacy.forEach(([range, wage, bt, bv]) => {
+          if (!range || !range.includes('〜') || !(wage > 0)) return;
+          const [s, e] = range.split('〜').map(x => (x === '24:00' ? '00:00' : x));
+          if (s && e) wageSlots.push({ start: s, end: e, wage, bType: bt || 'weekday', bVal: Number(bv) || 0 });
+        });
+      }
+
       return {
         name: savedJob?.name !== undefined ? savedJob.name : defName,
         closeDay: savedJob?.closeDay || '20',
         payDay: savedJob?.payDay || '5',
         paid: numOr(savedJob?.paid, defPaid),
-        morning: numOr(savedJob?.morning, defMorn),
-        day: numOr(savedJob?.day, defDay),
-        evening: numOr(savedJob?.evening, defEve),
-        night: numOr(savedJob?.night, defNight),
-        midnight: numOr(savedJob?.midnight, defMidnight),
-        extraWage: numOr(savedJob?.extraWage, defExtra),
-        timeMorning: savedJob?.timeMorning !== undefined ? savedJob.timeMorning : tM,
-        timeDay: savedJob?.timeDay !== undefined ? savedJob.timeDay : tD,
-        timeEvening: savedJob?.timeEvening !== undefined ? savedJob.timeEvening : tEv,
-        timeNight: savedJob?.timeNight !== undefined ? savedJob.timeNight : tN,
-        timeMidnight: savedJob?.timeMidnight !== undefined ? savedJob.timeMidnight : tMid,
-        timeExtra: savedJob?.timeExtra !== undefined ? savedJob.timeExtra : tEx,
-        
-        bonusTypeMorning: savedJob?.bonusTypeMorning || 'weekday',
-        bonusMorning: Number(savedJob?.bonusMorning) || 0,
-        bonusTypeDay: savedJob?.bonusTypeDay || 'weekday',
-        bonusDay: Number(savedJob?.bonusDay) || 0,
-        bonusTypeEvening: savedJob?.bonusTypeEvening || 'weekday',
-        bonusEvening: Number(savedJob?.bonusEvening) || 0,
-        bonusTypeNight: savedJob?.bonusTypeNight || 'weekday',
-        bonusNight: Number(savedJob?.bonusNight) || 0,
-        bonusTypeMidnight: savedJob?.bonusTypeMidnight || 'weekday',
-        bonusMidnight: Number(savedJob?.bonusMidnight) || 0,
-        bonusTypeExtra: savedJob?.bonusTypeExtra || 'weekday',
-        bonusExtra: Number(savedJob?.bonusExtra) || 0,
+        wageSlots: wageSlots,
 
         transMonth: Number(savedJob?.transMonth) || 0,
         transDay: Number(savedJob?.transDay) || 0,
@@ -567,6 +564,7 @@
       
       const today = new Date();
       selectedCalendarDateStr = formatDateKey(today);
+      calSelectedDateStr = formatDateKey(today);
 
       renderCalendar();
       renderStandaloneShiftList();
@@ -818,7 +816,7 @@
         if (sh.isPaidLeave) {
           html += `
             <div class="bg-white p-2 border rounded-xl border-stone-200 flex justify-between items-center text-xs">
-              <span class="font-bold text-stone-800">有給休暇</span>
+              <span class="font-bold text-stone-800 flex items-center gap-1">${getJobLabelHtml(jk)}<span>有給休暇</span></span>
               <div class="flex items-center space-x-2">
                 <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-xs transition">削除</button>
               </div>
@@ -833,7 +831,7 @@
 
         html += `
           <div class="bg-white p-2 border rounded-xl border-stone-200 flex justify-between items-center text-xs">
-            <span class="font-bold text-stone-800 job-time">${sh.start}〜${sh.end}${breakText}</span>
+            <span class="font-bold text-stone-800 flex items-center gap-1">${getJobLabelHtml(jk)}<span class="job-time">${sh.start}〜${sh.end}${breakText}</span></span>
             <div class="flex items-center space-x-2">
               <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-xs transition">削除</button>
             </div>
@@ -1048,20 +1046,7 @@
     }
 
     function getBonusForCategory(job, category, dateObj) {
-      let targetType = 'weekday';
-      let bonusVal = 0;
-      if (category === 'morning') { targetType = job.bonusTypeMorning; bonusVal = job.bonusMorning; }
-      else if (category === 'day') { targetType = job.bonusTypeDay; bonusVal = job.bonusDay; }
-      else if (category === 'evening') { targetType = job.bonusTypeEvening; bonusVal = job.bonusEvening; }
-      else if (category === 'night') { targetType = job.bonusTypeNight; bonusVal = job.bonusNight; }
-      else if (category === 'midnight') { targetType = job.bonusTypeMidnight; bonusVal = job.bonusMidnight; }
-      else if (category === 'extra') { targetType = job.bonusTypeExtra; bonusVal = job.bonusExtra; }
-
-      let currentDayType = checkDateDayType(dateObj);
-      if (targetType === currentDayType) {
-        return bonusVal;
-      }
-      return 0;
+      return 0; // 加算額は時間帯ごとに getRateForMinuteDetailed 内で反映済み
     }
 
     // 1分ずつ勤務時間を走査する。休憩は実働時間の真ん中に取ったものとして除外する
@@ -1114,8 +1099,8 @@
       let startStr = `${start.getMonth()+1}月${start.getDate()}日`;
       let endStr = `${end.getMonth()+1}月${end.getDate()}日`;
 
-      let mornMins = 0, dayMins = 0, eveMins = 0, nightMins = 0, midnightMins = 0, extraMins = 0, paidDays = 0;
-      let mornPay = 0, dayPay = 0, evePay = 0, nightPay = 0, midnightPay = 0, extraPay = 0, paidPay = 0;
+      const catMap = {};
+      let paidDays = 0, paidPay = 0;
       let workDaysCount = 0;
 
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
@@ -1134,12 +1119,9 @@
                 let rateInfo = getRateForMinuteDetailed(min, job, dateObj, false);
                 let perMin = (rateInfo.rate + getBonusForCategory(job, rateInfo.category, dateObj)) / 60;
 
-                if (rateInfo.category === 'morning') { mornMins++; mornPay += perMin; }
-                else if (rateInfo.category === 'evening') { eveMins++; evePay += perMin; }
-                else if (rateInfo.category === 'night') { nightMins++; nightPay += perMin; }
-                else if (rateInfo.category === 'midnight') { midnightMins++; midnightPay += perMin; }
-                else if (rateInfo.category === 'extra') { extraMins++; extraPay += perMin; }
-                else { dayMins++; dayPay += perMin; }
+                const c = rateInfo.category;
+                catMap[c] = catMap[c] || { mins: 0, pay: 0 };
+                catMap[c].mins++; catMap[c].pay += perMin;
               });
               if (worked > 0) dayCommuted = true;
             }
@@ -1159,7 +1141,7 @@
         if (mins === 0 && subtotal === 0) return '';
         return `
           <div class="py-2.5 flex justify-between items-center text-sm">
-            <span class="font-bold text-stone-800 w-24">${label}</span>
+            <span class="font-bold text-stone-800 w-28 text-xs whitespace-nowrap">${label}</span>
             <span class="text-stone-700 text-center flex-1 font-bold">${formatHoursMin(mins)}</span>
             <span class="font-bold text-stone-900 w-24 text-right pr-1">¥${Math.floor(subtotal).toLocaleString()}</span>
           </div>
@@ -1170,7 +1152,7 @@
       let totalTrans = (hasAnyShift ? (job.transMonth || 0) : 0) + ((job.transDay || 0) * workDaysCount);
       let totalAllowance = (hasAnyShift ? (job.allowanceMonth || 0) : 0) + ((job.allowanceDay || 0) * workDaysCount);
       let allowanceLabel = job.allowanceMemo ? `${job.allowanceMemo}` : 'その他手当';
-      let grandTotal = mornPay + dayPay + evePay + nightPay + midnightPay + extraPay + paidPay + totalTrans + totalAllowance;
+      let grandTotal = Object.values(catMap).reduce((a, c) => a + c.pay, 0) + paidPay + totalTrans + totalAllowance;
 
       let rowsHtml = '';
       if (paidDays > 0) {
@@ -1181,12 +1163,10 @@
             <span class="font-bold text-stone-900 w-24 text-right pr-1">¥${Math.floor(paidPay).toLocaleString()}</span>
           </div>`;
       }
-      rowsHtml += renderRow('早朝出勤', mornMins, mornPay);
-      rowsHtml += renderRow('日中出勤', dayMins, dayPay);
-      rowsHtml += renderRow('夕方出勤', eveMins, evePay);
-      rowsHtml += renderRow('夜出勤', nightMins, nightPay);
-      rowsHtml += renderRow('深夜出勤', midnightMins, midnightPay);
-      if (extraMins > 0) rowsHtml += renderRow('追加出勤', extraMins, extraPay);
+      Object.keys(catMap).sort((a, b) => (a === 'other') - (b === 'other') || parseInt(a.slice(4)) - parseInt(b.slice(4))).forEach(c => {
+        const sl = job.wageSlots[parseInt(c.slice(4))];
+        rowsHtml += renderRow(c === 'other' || !sl ? 'その他の時間' : `${sl.start}〜${sl.end}`, catMap[c].mins, catMap[c].pay);
+      });
 
       if (totalTrans > 0) {
         rowsHtml += `
@@ -1233,14 +1213,6 @@
       `;
     }
 
-    const WAGE_SLOT_DEFS = [
-      { key: 'Morning', label: '早朝', timeKey: 'timeMorning', wageKey: 'morning', bTypeKey: 'bonusTypeMorning', bValKey: 'bonusMorning' },
-      { key: 'Day', label: '日中', timeKey: 'timeDay', wageKey: 'day', bTypeKey: 'bonusTypeDay', bValKey: 'bonusDay' },
-      { key: 'Evening', label: '夕方', timeKey: 'timeEvening', wageKey: 'evening', bTypeKey: 'bonusTypeEvening', bValKey: 'bonusEvening' },
-      { key: 'Night', label: '夜', timeKey: 'timeNight', wageKey: 'night', bTypeKey: 'bonusTypeNight', bValKey: 'bonusNight' },
-      { key: 'Midnight', label: '深夜', timeKey: 'timeMidnight', wageKey: 'midnight', bTypeKey: 'bonusTypeMidnight', bValKey: 'bonusMidnight' },
-      { key: 'Extra', label: '追加', timeKey: 'timeExtra', wageKey: 'extraWage', bTypeKey: 'bonusTypeExtra', bValKey: 'bonusExtra' }
-    ];
 
     function renderSettingsJobTabs() {
       const container = document.getElementById('settingsJobTabs');
@@ -1352,50 +1324,10 @@
       loadSettingsToUIForTab(jk);
     }
 
-    function isWageSlotRegistered(j, key) {
-      const timeVal = j[WAGE_SLOT_DEFS.find(s => s.key === key)?.timeKey];
-      const wageVal = j[WAGE_SLOT_DEFS.find(s => s.key === key)?.wageKey];
-      return !!(timeVal && timeVal.includes('〜') && wageVal > 0);
-    }
 
     function getSettingsFormHtml(jk) {
       const j = configData[jk];
-      let slotsHtml = '';
-      WAGE_SLOT_DEFS.forEach(s => {
-        let registered = isWageSlotRegistered(j, s.key);
-        let regBtnClass = registered ? "bg-rose-900 text-rose-50 hover:bg-rose-800" : "bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-300";
-
-        slotsHtml += `
-          <div id="set_wageSlot_${jk}_${s.key}" class="p-2 rounded-xl border border-stone-200 bg-stone-50/40 space-y-1.5">
-            <div class="flex items-center justify-between gap-1">
-              <span class="font-bold text-stone-700 text-xs shrink-0">${s.label}</span>
-              <div class="flex items-center gap-1">
-                <button type="button" onclick="saveSettingsWageSlotRow('${jk}', '${s.key}')" id="set_reg_btn_${s.key}" class="${regBtnClass} font-bold px-2.5 py-1 rounded-lg text-[11px] transition shadow-xs">登録</button>
-                <button type="button" onclick="removeSettingsWageSlot('${s.key}')" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-[11px]">削除</button>
-              </div>
-            </div>
-            <div class="flex items-center gap-1">
-              <input type="time" id="set_time_${s.key}_start" onchange="checkWageSlotInputState('${s.key}')" class="flex-1 p-1.5 border rounded-lg text-center font-bold text-xs bg-white border-stone-200">
-              <span class="text-stone-400 font-bold">〜</span>
-              <input type="time" id="set_time_${s.key}_end" onchange="checkWageSlotInputState('${s.key}')" class="flex-1 p-1.5 border rounded-lg text-center font-bold text-xs bg-white border-stone-200">
-            </div>
-            <div class="grid grid-cols-[auto_1fr_auto] items-center gap-1">
-              <span class="text-stone-500 font-bold text-xs">時給</span>
-              <div class="flex items-center gap-1">
-                <input type="text" inputmode="numeric" id="set_wage_${s.key}" oninput="formatInputNumber(this); checkWageSlotInputState('${s.key}')" class="w-full p-1.5 border rounded-lg font-bold text-xs bg-white text-right" placeholder="0">
-                <span class="text-stone-600 text-xs shrink-0">円</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <select id="set_btype_${s.key}" class="p-1.5 border rounded-lg bg-white text-[11px] font-bold text-stone-800">
-                  <option value="weekday">平日</option><option value="weekend">土日</option><option value="holiday">日祝</option>
-                </select>
-                <input type="text" inputmode="numeric" id="set_bval_${s.key}" oninput="formatInputNumber(this)" class="w-14 p-1.5 border rounded-lg font-bold text-xs bg-white text-right" placeholder="+0">
-                <span class="text-stone-600 text-xs shrink-0">円</span>
-              </div>
-            </div>
-          </div>
-        `;
-      });
+      let slotsHtml = buildWageSlotsHtml(j);
 
       return `
         <div class="space-y-4 text-xs">
@@ -1460,52 +1392,86 @@
       `;
     }
 
-    let activeSetWageSlots = { job1: ['Morning', 'Day', 'Evening', 'Night'], job2: ['Morning', 'Day', 'Evening', 'Night'], job3: ['Morning', 'Day', 'Evening', 'Night'] };
 
-    function updateSetWageSlotsVisibility(jk) {
-      let shown = activeSetWageSlots[jk] || ['Morning', 'Day', 'Evening', 'Night'];
-      WAGE_SLOT_DEFS.forEach(s => {
-        let el = document.getElementById(`set_wageSlot_${jk}_${s.key}`);
-        if (el) el.classList.toggle('hidden', !shown.includes(s.key));
-      });
+
+
+
+
+
+    function wageSlotRowHtml(i, s) {
+      const ok = !!(s.start && s.end && s.wage > 0);
+      const regCls = ok ? "bg-rose-900 text-rose-50 hover:bg-rose-800" : "bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-300";
+      const sel = v => (s.bType === v ? 'selected' : '');
+      return `
+        <div data-slot="${i}" class="p-2 rounded-xl border border-stone-200 bg-stone-50/40 space-y-1.5">
+          <div class="flex items-center gap-1">
+            <input type="time" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="flex-1 p-1.5 border rounded-lg text-center font-bold text-xs bg-white border-stone-200">
+            <span class="text-stone-400 font-bold">〜</span>
+            <input type="time" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="flex-1 p-1.5 border rounded-lg text-center font-bold text-xs bg-white border-stone-200">
+            <button type="button" onclick="saveSettingsWageSlotRow(${i})" id="set_reg_btn_${i}" class="${regCls} font-bold px-2.5 py-1 rounded-lg text-[11px] transition shadow-xs shrink-0">登録</button>
+            <button type="button" onclick="removeSettingsWageSlot(${i})" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-[11px] shrink-0">削除</button>
+          </div>
+          <div class="grid grid-cols-[auto_1fr_auto] items-center gap-1">
+            <span class="text-stone-500 font-bold text-xs">時給</span>
+            <div class="flex items-center gap-1">
+              <input type="text" inputmode="numeric" id="set_wage_${i}" value="${s.wage ? Number(s.wage).toLocaleString() : ''}" oninput="formatInputNumber(this); checkWageSlotInputState(${i})" class="w-full p-1.5 border rounded-lg font-bold text-xs bg-white text-right" placeholder="0">
+              <span class="text-stone-600 text-xs shrink-0">円</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <select id="set_btype_${i}" class="p-1.5 border rounded-lg bg-white text-[11px] font-bold text-stone-800">
+                <option value="weekday" ${sel('weekday')}>平日</option><option value="weekend" ${sel('weekend')}>土日</option><option value="holiday" ${sel('holiday')}>日祝</option>
+              </select>
+              <span class="text-stone-600 text-xs shrink-0">＋</span>
+              <input type="text" inputmode="numeric" id="set_bval_${i}" value="${s.bVal ? Number(s.bVal).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-14 p-1.5 border rounded-lg font-bold text-xs bg-white text-right" placeholder="0">
+              <span class="text-stone-600 text-xs shrink-0">円</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function buildWageSlotsHtml(j) {
+      const slots = j.wageSlots || [];
+      if (!slots.length) return '<div class="text-center text-stone-400 font-bold py-3">時間帯が未登録です。「＋ 時間帯を追加」を押してね</div>';
+      return slots.map((s, i) => wageSlotRowHtml(i, s)).join('');
+    }
+
+    function renderWageSlotRows() {
+      const c = document.getElementById('setWageSlotsContainer');
+      if (c) c.innerHTML = buildWageSlotsHtml(configData[currentSettingsJobKey]);
     }
 
     function addSettingsWageSlot() {
-      let shown = activeSetWageSlots[currentSettingsJobKey];
-      let next = WAGE_SLOT_DEFS.find(s => !shown.includes(s.key));
-      if (next) {
-        shown.push(next.key);
-        updateSetWageSlotsVisibility(currentSettingsJobKey);
-      }
+      syncSettingsFormToConfig(currentSettingsJobKey);
+      configData[currentSettingsJobKey].wageSlots.push({ start: '', end: '', wage: 0, bType: 'weekday', bVal: 0 });
+      renderWageSlotRows();
     }
 
-    function removeSettingsWageSlot(key) {
-      let shown = activeSetWageSlots[currentSettingsJobKey];
-      activeSetWageSlots[currentSettingsJobKey] = shown.filter(k => k !== key);
-      updateSetWageSlotsVisibility(currentSettingsJobKey);
-      showToast("時給枠を非表示にしました");
+    function removeSettingsWageSlot(i) {
+      syncSettingsFormToConfig(currentSettingsJobKey);
+      configData[currentSettingsJobKey].wageSlots.splice(i, 1);
+      saveAllDataStorage();
+      renderWageSlotRows();
+      showToast("時間帯を削除しました");
     }
 
-    function checkWageSlotInputState(key) {
-      const btn = document.getElementById(`set_reg_btn_${key}`);
+    function checkWageSlotInputState(i) {
+      const btn = document.getElementById(`set_reg_btn_${i}`);
       if (!btn) return;
-      const st = document.getElementById(`set_time_${key}_start`)?.value || '';
-      const ed = document.getElementById(`set_time_${key}_end`)?.value || '';
-      const wg = parseFormattedNumber(document.getElementById(`set_wage_${key}`)?.value);
-      if (st && ed && wg > 0) {
-        btn.className = "bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-2.5 py-1 rounded-lg text-[11px] transition shadow-xs";
-      } else {
-        btn.className = "bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-300 font-bold px-2.5 py-1 rounded-lg text-[11px] transition shadow-xs";
-      }
+      const st = document.getElementById(`set_time_${i}_start`)?.value || '';
+      const ed = document.getElementById(`set_time_${i}_end`)?.value || '';
+      const wg = parseFormattedNumber(document.getElementById(`set_wage_${i}`)?.value);
+      btn.className = ((st && ed && wg > 0) ? "bg-rose-900 text-rose-50 hover:bg-rose-800" : "bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-300") + " font-bold px-2.5 py-1 rounded-lg text-[11px] transition shadow-xs shrink-0";
     }
 
-    function saveSettingsWageSlotRow(jk, key) {
-      syncSettingsFormToConfig(jk);
-      const btn = document.getElementById(`set_reg_btn_${key}`);
-      if (btn) {
-        btn.className = "bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-2.5 py-1 rounded-lg text-[11px] transition shadow-xs";
-      }
-      showToast("時給設定を保存しました");
+    function saveSettingsWageSlotRow(i) {
+      const st = document.getElementById(`set_time_${i}_start`)?.value || '';
+      const ed = document.getElementById(`set_time_${i}_end`)?.value || '';
+      const wg = parseFormattedNumber(document.getElementById(`set_wage_${i}`)?.value);
+      if (!st || !ed || !(wg > 0)) { showToast("開始・終了時間と時給を入力してね"); return; }
+      saveAllDataStorage();
+      checkWageSlotInputState(i);
+      initOverviewPage();
+      showToast("時給設定を登録しました");
     }
 
     function loadSettingsToUIForTab(jk) {
@@ -1517,22 +1483,6 @@
       document.getElementById('set_payDay').value = j.payDay || '5';
       document.getElementById('set_wagePaid').value = j.paid ? j.paid.toLocaleString() : '';
 
-      WAGE_SLOT_DEFS.forEach(s => {
-        const startEl = document.getElementById(`set_time_${s.key}_start`);
-        if (startEl) startEl.value = parseTimeRangeString(j[s.timeKey], false);
-        const endEl = document.getElementById(`set_time_${s.key}_end`);
-        if (endEl) endEl.value = parseTimeRangeString(j[s.timeKey], true);
-        const wageVal = j[s.wageKey];
-        const wageEl = document.getElementById(`set_wage_${s.key}`);
-        if (wageEl) wageEl.value = wageVal ? wageVal.toLocaleString() : '';
-        const btypeEl = document.getElementById(`set_btype_${s.key}`);
-        if (btypeEl) btypeEl.value = j[s.bTypeKey] || 'weekday';
-        const bVal = j[s.bValKey];
-        const bvalEl = document.getElementById(`set_bval_${s.key}`);
-        if (bvalEl) bvalEl.value = bVal ? bVal.toLocaleString() : '';
-
-        checkWageSlotInputState(s.key);
-      });
 
       const lstepInput = document.getElementById('set_lstepUrl');
       if (lstepInput) lstepInput.value = lstepUrl || '';
@@ -1542,7 +1492,6 @@
       document.getElementById('set_allowanceDay').value = j.allowanceDay ? j.allowanceDay.toLocaleString() : '';
       document.getElementById('set_allowanceMemo').value = j.allowanceMemo || '';
 
-      updateSetWageSlotsVisibility(jk);
     }
 
     function parseTimeRangeString(rangeStr, isEnd) {
@@ -1563,14 +1512,12 @@
       j.payDay = getVal('set_payDay') || '5';
       j.paid = getNum('set_wagePaid');
 
-      WAGE_SLOT_DEFS.forEach(s => {
-        const st = document.getElementById(`set_time_${s.key}_start`)?.value || '';
-        const ed = document.getElementById(`set_time_${s.key}_end`)?.value || '';
-        j[s.timeKey] = (st && ed) ? `${st}〜${ed}` : '';
-        j[s.wageKey] = getNum(`set_wage_${s.key}`);
-        j[s.bTypeKey] = getVal(`set_btype_${s.key}`) || 'weekday';
-        j[s.bValKey] = getNum(`set_bval_${s.key}`);
-      });
+      if (document.getElementById('setWageSlotsContainer')) {
+        j.wageSlots = [...document.querySelectorAll('#setWageSlotsContainer [data-slot]')].map(r => {
+          const i = r.dataset.slot;
+          return { start: getVal(`set_time_${i}_start`), end: getVal(`set_time_${i}_end`), wage: getNum(`set_wage_${i}`), bType: getVal(`set_btype_${i}`) || 'weekday', bVal: getNum(`set_bval_${i}`) };
+        });
+      }
 
       j.transMonth = getNum('set_transMonth');
       j.transDay = getNum('set_transDay');
@@ -1731,7 +1678,7 @@
     function updateNewPresetForm() {
       const s = document.getElementById('new_preset_start')?.value || '00:00';
       const e = document.getElementById('new_preset_end')?.value || '00:00';
-      const b = parseFormattedNumber(document.getElementById('new_preset_break')?.value);
+      const b = newPresetForm.breakMins || 0;
       newPresetForm = { start: s, end: e, breakMins: b };
     }
 
@@ -1840,6 +1787,8 @@
         goalAmountHeader.value = monthlyGoal > 0 ? monthlyGoal.toLocaleString() : '';
       }
 
+      const gml = document.getElementById('goalMonthLabel');
+      if (gml) gml.innerText = `${viewMonth.getMonth()+1}月`;
       updatePeriodProgressWidget();
       calculateMonthlyReceivePay();
       calculateYearlyTotalPay();
@@ -2193,13 +2142,15 @@
         let dayClass = `p-1 rounded-xl font-bold flex flex-col items-center justify-center min-h-[48px] ${colorCls} `;
         if (isToday) dayClass += "bg-rose-50 border-2 border-rose-300 shadow-xs";
         else dayClass += "bg-stone-50/70 border border-stone-200/70";
+        dayClass += " cursor-pointer";
+        if (dateStr === calSelectedDateStr) dayClass += " ring-2 ring-rose-500";
 
         let dayNumDisplay = isPayday 
           ? `<div class="flex items-center justify-center"><span class="text-sm font-bold leading-tight">${d.getDate()}</span>${paydayHtml}</div>`
           : `<span class="text-sm font-bold leading-tight">${d.getDate()}</span>`;
 
         calendarDays.innerHTML += `
-          <div class="${dayClass}">
+          <div class="${dayClass}" onclick="selectCalendarDate('${dateStr}')">
             ${dayNumDisplay}
             ${iconHtml}
           </div>
@@ -2218,24 +2169,19 @@
       ).join('');
     }
 
+    function selectCalendarDate(key) {
+      calSelectedDateStr = key;
+      renderCalendar();
+    }
+
     function renderCalendarTodayTomorrowSummary() {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-
-      const todayStr = formatDateKey(today);
-      const tomorrowStr = formatDateKey(tomorrow);
-
-      const todayLabelEl = document.getElementById('calendarTodayDateLabel');
-      const todayContentEl = document.getElementById('calendarTodaySummaryContent');
-      const tomorrowLabelEl = document.getElementById('calendarTomorrowDateLabel');
-      const tomorrowContentEl = document.getElementById('calendarTomorrowSummaryContent');
-
-      if (todayLabelEl) todayLabelEl.innerText = `${today.getMonth()+1}/${today.getDate()}`;
-      if (tomorrowLabelEl) tomorrowLabelEl.innerText = `${tomorrow.getMonth()+1}/${tomorrow.getDate()}`;
-
-      if (todayContentEl) todayContentEl.innerHTML = buildDaySummaryHtml(todayStr, today);
-      if (tomorrowContentEl) tomorrowContentEl.innerHTML = buildDaySummaryHtml(tomorrowStr, tomorrow);
+      const sel = calSelectedDateStr ? parseDateKey(calSelectedDateStr) : new Date();
+      const next = new Date(sel.getFullYear(), sel.getMonth(), sel.getDate() + 1);
+      const set = (id, html, isHtml) => { const el = document.getElementById(id); if (el) el[isHtml ? 'innerHTML' : 'innerText'] = html; };
+      set('calendarTodayDateLabel', `${sel.getMonth()+1}/${sel.getDate()}`);
+      set('calendarTomorrowDateLabel', `${next.getMonth()+1}/${next.getDate()}`);
+      set('calendarTodaySummaryContent', buildDaySummaryHtml(formatDateKey(sel), sel), true);
+      set('calendarTomorrowSummaryContent', buildDaySummaryHtml(formatDateKey(next), next), true);
     }
 
     function buildDaySummaryHtml(dateStr, dateObj) {
@@ -2397,59 +2343,24 @@
       }
     }
 
+    function getSlotRate(s, dateObj) {
+      return s.wage + (s.bType === checkDateDayType(dateObj) ? (s.bVal || 0) : 0);
+    }
+
     function getRateForMinuteDetailed(min, currentJob, dateObj, isPaid) {
       if (isPaid) return { rate: currentJob.paid ?? 1650, category: 'paid' };
-
-      let hour = Math.floor(min / 60) % 24;
-      let minute = min % 60;
-      let curMins = hour * 60 + minute;
-
-      // 深夜（法定25%割増）は他の時間帯と重なっても最優先で適用する
-      let midStart = parseTimeStringToMinutes(currentJob.timeMidnight, false);
-      let midEnd = parseTimeStringToMinutes(currentJob.timeMidnight, true);
-      if (isMinuteInRange(curMins, midStart, midEnd)) {
-        return { rate: currentJob.midnight || 0, category: 'midnight' };
-      }
-
-
-      let mStart = parseTimeStringToMinutes(currentJob.timeMorning, false);
-      let mEnd = parseTimeStringToMinutes(currentJob.timeMorning, true);
-      if (isMinuteInRange(curMins, mStart, mEnd)) {
-        return { rate: currentJob.morning || 0, category: 'morning' };
-      }
-
-      let dStart = parseTimeStringToMinutes(currentJob.timeDay, false);
-      let dEnd = parseTimeStringToMinutes(currentJob.timeDay, true);
-      if (isMinuteInRange(curMins, dStart, dEnd)) {
-        return { rate: currentJob.day || 0, category: 'day' };
-      }
-
-      let eStart = parseTimeStringToMinutes(currentJob.timeEvening, false);
-      let eEnd = parseTimeStringToMinutes(currentJob.timeEvening, true);
-      if (isMinuteInRange(curMins, eStart, eEnd)) {
-        return { rate: currentJob.evening || 0, category: 'evening' };
-      }
-
-      let nStart = parseTimeStringToMinutes(currentJob.timeNight, false);
-      let nEnd = parseTimeStringToMinutes(currentJob.timeNight, true);
-      if (isMinuteInRange(curMins, nStart, nEnd)) {
-        return { rate: currentJob.night || 0, category: 'night' };
-      }
-
-
-      let exStart = parseTimeStringToMinutes(currentJob.timeExtra, false);
-      let exEnd = parseTimeStringToMinutes(currentJob.timeExtra, true);
-      if (isMinuteInRange(curMins, exStart, exEnd)) {
-        return { rate: currentJob.extraWage || 0, category: 'extra' };
-      }
-
-      const wageOf = { morning: currentJob.morning, day: currentJob.day, evening: currentJob.evening, night: currentJob.night, midnight: currentJob.midnight, extra: currentJob.extraWage };
-      let pref = hour < 9 ? 'morning' : (hour < 17 ? 'day' : (hour < 22 ? 'evening' : 'night'));
-      if (wageOf[pref] > 0) return { rate: wageOf[pref], category: pref };
-      for (const cat of ['morning', 'day', 'evening', 'night', 'midnight', 'extra']) {
-        if (wageOf[cat] > 0) return { rate: wageOf[cat], category: cat };
-      }
-      return { rate: 0, category: 'day' };
+      const curMins = min % 1440;
+      const slots = currentJob.wageSlots || [];
+      let best = null;
+      slots.forEach((s, i) => {
+        if (!s.start || !s.end || !(s.wage > 0)) return;
+        if (!isMinuteInRange(curMins, timeStrToMins(s.start), timeStrToMins(s.end))) return;
+        const rate = getSlotRate(s, dateObj);
+        if (!best || rate > best.rate) best = { rate, category: 'slot' + i };
+      });
+      if (best) return best;
+      const first = slots.find(s => s.start && s.end && s.wage > 0);
+      return { rate: first ? getSlotRate(first, dateObj) : 0, category: 'other' };
     }
 
     function isMinuteInRange(curMins, startMins, endMins) {
