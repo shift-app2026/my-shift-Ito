@@ -128,9 +128,9 @@
         </div>
 
         <div class="space-y-1.5">
-          <div class="flex justify-between items-center">
+          <div class="flex flex-col">
             <span class="text-xs font-bold text-stone-700">【ワンタッチ時間登録一覧】</span>
-            
+            <span class="text-[11px] text-stone-500 font-bold">※ここでは時間の修正はできません。</span>
           </div>
           
           <div id="modalPresetContainer" class="grid grid-cols-1 gap-2 text-xs"></div>
@@ -138,7 +138,7 @@
 
         <div class="space-y-1.5">
           <div class="flex justify-between items-center">
-            <span class="text-xs font-bold text-stone-700">【シフト一覧】</span>
+            <span class="text-xs font-bold text-stone-700">【シフト一覧】※時間の修正ができます。</span>
           </div>
           <div id="modalSelectedDateSummaryContent" class="space-y-2 text-xs text-stone-700">
             <span class="text-stone-400">シフトは登録されていません</span>
@@ -273,20 +273,22 @@
           <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡</p>
         </div>
 
-        <!-- 今日のシフト & 明日のシフト 確認エリア -->
+        <!-- シフト確認エリア -->
         <div class="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm space-y-3">
           <div class="text-sm font-bold text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
-            <span>📌 <span id="calendarTodayDateLabel"></span> のシフト</span>
+            <span>📌 今日のシフト (<span id="calendarTodayDateLabel"></span>)</span>
           </div>
           <div id="calendarTodaySummaryContent" class="space-y-2 text-sm text-stone-700">
             <span class="text-stone-400">予定なし</span>
           </div>
 
-          <div class="text-sm font-bold text-stone-900 border-b border-stone-200 pt-2 pb-2 flex items-center justify-between tracking-wide">
-            <span>📌 次の日のシフト <span id="calendarTomorrowDateLabel" class="text-stone-500 font-bold text-xs ml-1"></span></span>
-          </div>
-          <div id="calendarTomorrowSummaryContent" class="space-y-2 text-sm text-stone-700">
-            <span class="text-stone-400">予定なし</span>
+          <div id="selectedDateSection" class="hidden space-y-2 pt-2 border-t border-stone-200">
+            <div class="text-sm font-bold text-rose-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
+              <span>📌 選択した日のシフト (<span id="calendarSelectedDateLabel"></span>)</span>
+            </div>
+            <div id="calendarSelectedSummaryContent" class="space-y-2 text-sm text-stone-700">
+              <span class="text-stone-400">予定なし</span>
+            </div>
           </div>
         </div>
       </div>
@@ -789,7 +791,7 @@
       return shifts.some(sh => sh && !sh.isPaidLeave && sh.start === start && sh.end === end && Number(sh.breakMins || 0) === Number(breakMins || 0));
     }
 
-    function updateModalSelectedDateSummary() {
+            function updateModalSelectedDateSummary() {
       const summaryContent = document.getElementById('modalSelectedDateSummaryContent');
       if (!summaryContent) return;
 
@@ -817,7 +819,7 @@
         if (sh.isPaidLeave) {
           html += `
             <div class="bg-white p-2 border rounded-xl border-stone-200 flex justify-between items-center text-xs">
-              <span class="font-bold text-stone-800 flex items-center gap-1">${getJobLabelHtml(jk)}<span>有給休暇</span></span>
+              <span class="font-bold text-stone-800 flex items-center gap-1"><span>有給休暇</span></span>
               <div class="flex items-center space-x-2">
                 <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-xs transition">削除</button>
               </div>
@@ -826,15 +828,21 @@
           return;
         }
 
-        if (!sh.start || !sh.end) return;
         const breakMins = Number(sh.breakMins) || 0;
-        const breakText = ` 休憩${breakMins}分`;
 
         html += `
-          <div class="bg-white p-2 border rounded-xl border-stone-200 flex justify-between items-center text-xs">
-            <span class="font-bold text-stone-800 flex items-center gap-1">${getJobLabelHtml(jk)}<span class="job-time">${sh.start}〜${sh.end}${breakText}</span></span>
-            <div class="flex items-center space-x-2">
-              <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-xs transition">削除</button>
+          <div class="bg-stone-50 p-2 border rounded-xl border-stone-200 flex items-center justify-between gap-1 text-xs">
+            <div class="flex items-center gap-1 flex-1 min-w-0">
+              <input type="time" id="modal_edit_start_${jk}_${idx}" value="${sh.start || ''}" class="wage-time px-0.5 py-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-300 w-[64px]">
+              <span class="text-stone-400 font-bold shrink-0">〜</span>
+              <input type="time" id="modal_edit_end_${jk}_${idx}" value="${sh.end || ''}" class="wage-time px-0.5 py-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-300 w-[64px]">
+              <span class="text-stone-600 shrink-0 text-[11px]">休憩</span>
+              <input type="text" inputmode="numeric" id="modal_edit_break_${jk}_${idx}" value="${breakMins}" oninput="formatInputNumber(this)" class="w-10 p-0.5 border rounded text-center bg-white font-bold text-xs">
+              <span class="text-stone-600 shrink-0 text-[11px]">分</span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button type="button" onclick="updateShiftTimeModal('${jk}', ${idx})" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-2 py-1 rounded-lg text-xs transition shadow-xs">変更</button>
+              <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2 py-1 rounded-lg text-xs transition">削除</button>
             </div>
           </div>
         `;
@@ -846,9 +854,42 @@
       }
 
       summaryContent.innerHTML = html;
+    }
 
-      renderModalPresetButtons();
-      renderModalCustomPresets();
+    function updateShiftTimeModal(jobKey, idx) {
+      const startInput = document.getElementById(`modal_edit_start_${jobKey}_${idx}`);
+      const endInput = document.getElementById(`modal_edit_end_${jobKey}_${idx}`);
+      const breakInput = document.getElementById(`modal_edit_break_${jobKey}_${idx}`);
+      if (!startInput || !endInput) return;
+
+      const newStart = startInput.value;
+      const newEnd = endInput.value;
+      const newBreak = parseFormattedNumber(breakInput?.value || 0);
+
+      if (!newStart || !newEnd) {
+        showToast("開始・終了時間を入力してください");
+        return;
+      }
+      if (newStart === newEnd) {
+        showToast("開始と終了が同じ時間です");
+        return;
+      }
+
+      const dup = findOverlap(selectedCalendarDateStr, newStart, newEnd, jobKey, idx);
+      if (dup) {
+        showOverlapAlert(dup);
+        return;
+      }
+
+      let shifts = getDayShifts(selectedCalendarDateStr, jobKey);
+      if (shifts[idx]) {
+        shifts[idx].start = newStart;
+        shifts[idx].end = newEnd;
+        shifts[idx].breakMins = newBreak;
+        setDayShifts(selectedCalendarDateStr, jobKey, shifts);
+        updateModalSelectedDateSummary();
+        showToast("シフトの時間を変更しました♡");
+      }
     }
 
     function deleteJobShiftIndexModal(jobKey, idx) {
@@ -857,9 +898,7 @@
       setDayShifts(selectedCalendarDateStr, jobKey, shifts);
       updateModalSelectedDateSummary();
       showToast("シフトを削除しました");
-    }
-
-    function getActiveJobKeys() {
+    }function getActiveJobKeys() {
       let count = Number(configData.jobCount) || 1;
       let keys = ['job1'];
       if (count >= 2) keys.push('job2');
@@ -1478,7 +1517,7 @@
     function loadSettingsToUIForTab(jk) {
       const j = configData[jk];
       
-      const nameEl = document.getElementById(`set_jobName_\${jk}`);
+      const nameEl = document.getElementById(`set_jobName_${jk}`);
     if (nameEl) nameEl.value = j.name || '';
     document.getElementById('set_closeDay').value = j.closeDay || '20';
       document.getElementById('set_payDay').value = j.payDay || '5';
@@ -1508,7 +1547,7 @@
       const getNum = id => parseFormattedNumber(getVal(id));
 
 
-      j.name = getVal(`set_jobName_\${jk}`) || j.name || 'バイト';
+      j.name = getVal(`set_jobName_${jk}`) || j.name || 'バイト';
       j.closeDay = getVal('set_closeDay') || '20';
       j.payDay = getVal('set_payDay') || '5';
       j.paid = getNum('set_wagePaid');
@@ -2174,13 +2213,32 @@
     }
 
     function renderCalendarTodayTomorrowSummary() {
-      const sel = calSelectedDateStr ? parseDateKey(calSelectedDateStr) : new Date();
-      const next = new Date(sel.getFullYear(), sel.getMonth(), sel.getDate() + 1);
+      const today = new Date();
+      const todayStr = formatDateKey(today);
+
+      // If calSelectedDateStr is not set, default to today
+      if (!calSelectedDateStr) {
+        calSelectedDateStr = todayStr;
+      }
+
+      const sel = parseDateKey(calSelectedDateStr);
       const set = (id, html, isHtml) => { const el = document.getElementById(id); if (el) el[isHtml ? 'innerHTML' : 'innerText'] = html; };
-      set('calendarTodayDateLabel', `${sel.getMonth()+1}/${sel.getDate()}`);
-      set('calendarTomorrowDateLabel', `${next.getMonth()+1}/${next.getDate()}`);
-      set('calendarTodaySummaryContent', buildDaySummaryHtml(formatDateKey(sel), sel), true);
-      set('calendarTomorrowSummaryContent', buildDaySummaryHtml(formatDateKey(next), next), true);
+
+      // Today's shift always shown
+      set('calendarTodayDateLabel', `${today.getMonth()+1}/${today.getDate()}`);
+      set('calendarTodaySummaryContent', buildDaySummaryHtml(todayStr, today), true);
+
+      // Selected date section shown only if selected date is different from today
+      const selectedSection = document.getElementById('selectedDateSection');
+      if (selectedSection) {
+        if (calSelectedDateStr !== todayStr) {
+          selectedSection.classList.remove('hidden');
+          set('calendarSelectedDateLabel', `${sel.getMonth()+1}/${sel.getDate()}`);
+          set('calendarSelectedSummaryContent', buildDaySummaryHtml(calSelectedDateStr, sel), true);
+        } else {
+          selectedSection.classList.add('hidden');
+        }
+      }
     }
 
     function buildDaySummaryHtml(dateStr, dateObj) {
