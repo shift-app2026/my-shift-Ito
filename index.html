@@ -101,7 +101,7 @@
     <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
       <h3 class="text-base font-bold text-stone-900 text-center tracking-wide">バイト先の名称</h3>
       <div>
-        <input type="text" id="renameJobInput" maxlength="6" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="5文字以内">
+        <input type="text" id="renameJobInput" oninput="checkRenameInputLength(this)" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="5文字以内">
       </div>
       <div class="flex space-x-2">
         <button type="button" onclick="closeRenameJobModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
@@ -296,7 +296,8 @@
           <div id="calendarJobLegend" class="flex flex-wrap items-center justify-center gap-2.5 pt-2"></div>
         </div>
 
-        <div class="bg-stone-50 border border-stone-200 rounded-2xl p-2.5 text-center space-y-0.5">
+        <!-- 修正①：クリックでシフト入力画面へ移動 -->
+        <div onclick="switchTab('list')" class="bg-stone-50 border border-stone-200 rounded-2xl p-2.5 text-center space-y-0.5 cursor-pointer hover:bg-stone-100 transition">
           <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡</p>
         </div>
 
@@ -311,7 +312,8 @@
 
           <div id="selectedDateSection" class="hidden space-y-2 pt-2 border-t border-stone-200">
             <div class="text-sm font-bold text-rose-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
-              <span>📌 選択した日のシフト (<span id="calendarSelectedDateLabel"></span>)</span>
+              <!-- 修正②：「選択した日のシフト」→「選択日のシフト」 -->
+              <span>📌 選択日のシフト (<span id="calendarSelectedDateLabel"></span>)</span>
             </div>
             <div id="calendarSelectedSummaryContent" class="space-y-2 text-sm text-stone-700">
               <span class="text-stone-400">予定なし</span>
@@ -363,8 +365,10 @@
           </div>
 
           <div class="pt-2 border-t border-stone-200 space-y-2">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-xs font-bold text-stone-700">【バイト先の登録・選択】※5文字以内にしてね♡</span>
+            <!-- 修正：バイト先登録の案内文言変更 -->
+            <div class="flex flex-col mb-1 leading-relaxed">
+              <span class="text-xs font-bold text-stone-900">【バイト先の登録】</span>
+              <span class="text-[11px] font-bold text-rose-900">※新規登録の場合は、「削除」してから登録してね♡</span>
             </div>
             <div id="settingsJobTabs" class="space-y-1.5"></div>
           </div>
@@ -534,7 +538,10 @@
     }
 
     function createDefaultJobConfig(savedJob, defName, defPresets, defPaid, defMorn, defDay, defEve, defNight, defMidnight, defExtra, tM, tD, tEv, tN, tMid, tEx) {
-      let loadedPresets = (savedJob?.presets && savedJob.presets.length > 0) ? savedJob.presets.map(p => ({
+      // 新規登録の場合（savedJobが未定義または空の場合）、数字や時給枠をまっさらにする
+      const isNew = !savedJob || Object.keys(savedJob).length === 0;
+
+      let loadedPresets = (!isNew && savedJob?.presets && savedJob.presets.length > 0) ? savedJob.presets.map(p => ({
         start: p.start || '',
         end: p.end || '',
         breakMins: Number(p.breakMins) || 0
@@ -543,7 +550,10 @@
       let hasBreakGlobal = savedJob?.hasBreakGlobal !== undefined ? savedJob.hasBreakGlobal : loadedPresets.some(p => Number(p.breakMins) > 0);
 
       let wageSlots;
-      if (Array.isArray(savedJob?.wageSlots)) {
+      if (isNew) {
+        // 新規登録のときは初期状態で時給入力欄が1つだけで空の状態
+        wageSlots = [{ start: '', end: '', wage: 0, bType: 'weekday', bVal: 0 }];
+      } else if (Array.isArray(savedJob?.wageSlots)) {
         wageSlots = savedJob.wageSlots.map(s => ({ start: s.start || '', end: s.end || '', wage: Number(s.wage) || 0, bType: s.bType || 'weekday', bVal: Number(s.bVal) || 0 }));
       } else {
         const sv = savedJob || {};
@@ -561,20 +571,23 @@
           const [s, e] = range.split('〜').map(x => (x === '24:00' ? '00:00' : x));
           if (s && e) wageSlots.push({ start: s, end: e, wage, bType: bt || 'weekday', bVal: Number(bv) || 0 });
         });
+        if (wageSlots.length === 0) {
+          wageSlots = [{ start: '', end: '', wage: 0, bType: 'weekday', bVal: 0 }];
+        }
       }
 
       return {
-        name: savedJob?.name !== undefined ? savedJob.name : defName,
-        closeDay: savedJob?.closeDay || '20',
-        payDay: savedJob?.payDay || '5',
-        paid: numOr(savedJob?.paid, defPaid),
+        name: isNew ? 'バイト' : (savedJob?.name !== undefined ? savedJob.name : defName),
+        closeDay: isNew ? '20' : (savedJob?.closeDay || '20'),
+        payDay: isNew ? '5' : (savedJob?.payDay || '5'),
+        paid: isNew ? 0 : numOr(savedJob?.paid, defPaid),
         wageSlots: wageSlots,
 
-        transMonth: Number(savedJob?.transMonth) || 0,
-        transDay: Number(savedJob?.transDay) || 0,
-        allowanceMonth: Number(savedJob?.allowanceMonth) || 0,
-        allowanceDay: Number(savedJob?.allowanceDay) || 0,
-        allowanceMemo: savedJob?.allowanceMemo !== undefined ? savedJob.allowanceMemo : '',
+        transMonth: isNew ? 0 : (Number(savedJob?.transMonth) || 0),
+        transDay: isNew ? 0 : (Number(savedJob?.transDay) || 0),
+        allowanceMonth: isNew ? 0 : (Number(savedJob?.allowanceMonth) || 0),
+        allowanceDay: isNew ? 0 : (Number(savedJob?.allowanceDay) || 0),
+        allowanceMemo: isNew ? '' : (savedJob?.allowanceMemo !== undefined ? savedJob.allowanceMemo : ''),
 
         hasBreakGlobal: hasBreakGlobal,
         presets: loadedPresets
@@ -642,7 +655,7 @@
       shifts.forEach(sh => {
         if (!sh) return;
         if (sh.isPaidLeave) {
-          pay += job.paid ?? 1650;
+          pay += job.paid ?? 0;
           worked = true;
         } else {
           const r = calculateJobShiftMinutesAndPay(sh, job, dateObj);
@@ -654,7 +667,6 @@
           }
         }
       });
-      // 交通費・日額手当は実際に出勤した日だけ（有給のみの日は対象外）
       if (commuted) pay += (job.transDay || 0) + (job.allowanceDay || 0);
       return { mins, pay, worked, commuted };
     }
@@ -736,7 +748,6 @@
       const activeKeys = getActiveJobKeys();
       
       if (activeKeys.length === 3) {
-        // 2 rows: Row 1 (job1, job2), Row 2 (job3)
         let htmlRow1 = '';
         let htmlRow2 = '';
         activeKeys.forEach((jk, idx) => {
@@ -761,7 +772,6 @@
           </div>
         `;
       } else {
-        // 1 row for 1 or 2 jobs
         let rowHtml = '';
         activeKeys.forEach(jk => {
           let isSelected = (jk === currentSelectedJobKey);
@@ -777,11 +787,11 @@
       }
     }
 
-    function checkJobNameLength(input) {
+    function checkRenameInputLength(input) {
       if (!input) return;
-      if (input.value.length > 6) {
-        showAlertModal("バイト先の名称は5文字以内で入力してね♡");
-        input.value = input.value.slice(0, 6);
+      if (input.value.length > 5) {
+        showToast("登録は5文字以内です");
+        input.value = input.value.slice(0, 5);
       }
     }
 
@@ -804,8 +814,8 @@
       const jk = renamingJobKey;
       let newName = document.getElementById('renameJobInput').value.trim();
       if (!jk || !configData[jk]) { closeRenameJobModal(); return; }
-      if (!newName) { showAlertModal("名称を入力してね♡"); return; }
-      if (newName.length > 6) { showAlertModal("バイト先の名称は5文字以内で入力してね♡"); return; }
+      if (!newName) { showToast("名称を入力してね♡"); return; }
+      if (newName.length > 5) { showToast("登録は5文字以内です"); return; }
       configData[jk].name = newName;
       closeRenameJobModal();
       saveAllDataStorage();
@@ -813,7 +823,7 @@
       renderSettingsJobTabs();
       renderSettingsJobContent(currentSettingsJobKey);
       refreshAll();
-      showToast("バイト先名を変更しました");
+      showToast("バイト名を保存しました");
     }
 
     function switchModalJobTab(jobKey) {
@@ -828,7 +838,7 @@
       return shifts.some(sh => sh && !sh.isPaidLeave && sh.start === start && sh.end === end && Number(sh.breakMins || 0) === Number(breakMins || 0));
     }
 
-            function updateModalSelectedDateSummary() {
+    function updateModalSelectedDateSummary() {
       const summaryContent = document.getElementById('modalSelectedDateSummaryContent');
       if (!summaryContent) return;
 
@@ -935,7 +945,9 @@
       setDayShifts(selectedCalendarDateStr, jobKey, shifts);
       updateModalSelectedDateSummary();
       showToast("シフトを削除しました");
-    }function getActiveJobKeys() {
+    }
+
+    function getActiveJobKeys() {
       let count = Number(configData.jobCount) || 1;
       let keys = ['job1'];
       if (count >= 2) keys.push('job2');
@@ -1050,7 +1062,6 @@
       let payDayInput = String(job.payDay || '5').trim();
       
       let closeNum = (closeDayInput === '月末') ? 31 : (Number(closeDayInput) || 20);
-      // 「31」など月末以降の数字は「月末締め」と同じ扱い
       let isEndMonth = closeNum >= 31;
       let payNum = (payDayInput === '月末') ? 31 : (Number(payDayInput) || 5);
 
@@ -1064,7 +1075,6 @@
         start = new Date(year, workMonth, 1);
         end = new Date(year, workMonth + 1, 0);
       } else {
-        // 2月の30日締めなどで翌月にはみ出さないよう、その月の最終日で止める
         const clampedClose = (y, m) => new Date(y, m, Math.min(closeNum, new Date(y, m + 1, 0).getDate()));
         const prevClose = clampedClose(year, workMonth - 1);
         start = new Date(prevClose.getFullYear(), prevClose.getMonth(), prevClose.getDate() + 1);
@@ -1123,10 +1133,9 @@
     }
 
     function getBonusForCategory(job, category, dateObj) {
-      return 0; // 加算額は時間帯ごとに getRateForMinuteDetailed 内で反映済み
+      return 0;
     }
 
-    // 1分ずつ勤務時間を走査する。休憩は実働時間の真ん中に取ったものとして除外する
     function forEachWorkMinute(jobShift, callback) {
       let s = jobShift.start, e = jobShift.end;
       if (!s || !e) return 0;
@@ -1154,7 +1163,7 @@
       if (!jobShift) return { totalMins, totalPay };
 
       if (jobShift.isPaidLeave) {
-        return { totalMins: 0, totalPay: job.paid ?? 1650 };
+        return { totalMins: 0, totalPay: job.paid ?? 0 };
       }
 
       totalMins = forEachWorkMinute(jobShift, min => {
@@ -1188,7 +1197,7 @@
           shifts.forEach(jobShift => {
             if (!jobShift) return;
             if (jobShift.isPaidLeave) {
-              paidPay += (job.paid ?? 1650);
+              paidPay += (job.paid ?? 0);
               paidDays++;
             } else {
               let dateObj = new Date(d);
@@ -1290,7 +1299,6 @@
       `;
     }
 
-
     function renderSettingsJobTabs() {
       const container = document.getElementById('settingsJobTabs');
       if (!container) return;
@@ -1347,7 +1355,6 @@
       return `<span role="button" tabindex="0" class="shrink-0 ml-0.5 text-[10px] leading-none font-bold text-stone-500 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-md px-1.5 py-1" onclick="event.stopPropagation(); deleteJob('${jk}');" title="このバイト先を削除">削除</span>`;
     }
 
-    // バイト先を削除し、後ろのバイト先を前に詰めて登録数（トリプル→ダブル→単独）を1つ減らす
     function deleteJob(jk) {
       const keys = getActiveJobKeys();
       const idx = keys.indexOf(jk);
@@ -1370,7 +1377,7 @@
         configData[keys[i]] = configData[keys[i + 1]];
       }
       const lastKey = keys[keys.length - 1];
-      configData[lastKey] = createDefaultJobConfig(undefined, 'バイト', defaultPresets2, 1650, 1100, 1100, 1100, 1375, 1375, 0, '00:00〜09:00', '09:00〜17:00', '17:00〜22:00', '22:00〜24:00', '22:00〜05:00', '');
+      configData[lastKey] = createDefaultJobConfig(undefined, 'バイト', defaultPresets2, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', '');
 
       configData.jobCount = keys.length - 1;
       localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
@@ -1379,7 +1386,6 @@
       if (countSelect) countSelect.value = configData.jobCount;
 
       ensureValidSelectedJob();
-      // 削除後のフォーム内容で上書きされないよう、先に表示を作り直してから保存する
       renderSettingsJobTabs();
       renderSettingsJobContent(currentSettingsJobKey);
       saveAllDataStorage();
@@ -1400,7 +1406,6 @@
       container.innerHTML = getSettingsFormHtml(jk);
       loadSettingsToUIForTab(jk);
     }
-
 
     function getSettingsFormHtml(jk) {
       const j = configData[jk];
@@ -1469,11 +1474,17 @@
       `;
     }
 
-
-
-
-
-
+    function triggerTimePicker(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        if (typeof el.showPicker === 'function') {
+          el.showPicker();
+        } else {
+          el.focus();
+          el.click();
+        }
+      }
+    }
 
     function wageSlotRowHtml(i, s) {
       const ok = !!(s.start && s.end && s.wage > 0);
@@ -1481,12 +1492,18 @@
       const sel = v => (s.bType === v ? 'selected' : '');
       return `
         <div data-slot="${i}" class="p-2 rounded-xl border border-stone-200 bg-stone-50/40 space-y-1.5">
-          <div class="flex items-center gap-0.5">
-            <input type="time" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time flex-1 min-w-0 px-0.5 py-1.5 border rounded-lg text-center font-bold text-sm bg-white border-stone-200">
-            <span class="text-stone-400 font-bold text-[10px]">~</span>
-            <input type="time" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time flex-1 min-w-0 px-0.5 py-1.5 border rounded-lg text-center font-bold text-sm bg-white border-stone-200">
-            <button type="button" onclick="saveSettingsWageSlotRow(${i})" id="set_reg_btn_${i}" class="${regCls} font-bold px-1.5 py-1 rounded-md text-[10px] transition shadow-xs shrink-0">登録</button>
-            <button type="button" onclick="removeSettingsWageSlot(${i})" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-1.5 py-1 rounded-md text-[10px] shrink-0">削除</button>
+          <div class="flex items-center gap-1">
+            <div class="relative flex-1 min-w-0">
+              <input type="time" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1 py-1.5 pr-6 border rounded-lg text-center font-bold text-xs bg-white border-stone-200">
+              <button type="button" onclick="triggerTimePicker('set_time_${i}_start')" class="absolute right-1.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs">🕒</button>
+            </div>
+            <span class="text-stone-400 font-bold text-[10px] shrink-0">~</span>
+            <div class="relative flex-1 min-w-0">
+              <input type="time" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1 py-1.5 pr-6 border rounded-lg text-center font-bold text-xs bg-white border-stone-200">
+              <button type="button" onclick="triggerTimePicker('set_time_${i}_end')" class="absolute right-1.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs">🕒</button>
+            </div>
+            <button type="button" onclick="saveSettingsWageSlotRow(${i})" id="set_reg_btn_${i}" class="${regCls} font-bold px-1.5 py-1.5 rounded-md text-[10px] transition shadow-xs shrink-0">登録</button>
+            <button type="button" onclick="removeSettingsWageSlot(${i})" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-1.5 py-1.5 rounded-md text-[10px] shrink-0">削除</button>
           </div>
           <div class="grid grid-cols-[auto_1fr_auto] items-center gap-1">
             <span class="text-stone-500 font-bold text-xs">時給</span>
@@ -1554,12 +1571,9 @@
     function loadSettingsToUIForTab(jk) {
       const j = configData[jk];
       
-      const nameEl = document.getElementById(`set_jobName_${jk}`);
-    if (nameEl) nameEl.value = j.name || '';
-    document.getElementById('set_closeDay').value = j.closeDay || '20';
+      document.getElementById('set_closeDay').value = j.closeDay || '20';
       document.getElementById('set_payDay').value = j.payDay || '5';
       document.getElementById('set_wagePaid').value = j.paid ? j.paid.toLocaleString() : '';
-
 
       const lstepInput = document.getElementById('set_lstepUrl');
       if (lstepInput) lstepInput.value = lstepUrl || '';
@@ -1568,13 +1582,6 @@
       document.getElementById('set_allowanceMonth').value = j.allowanceMonth ? j.allowanceMonth.toLocaleString() : '';
       document.getElementById('set_allowanceDay').value = j.allowanceDay ? j.allowanceDay.toLocaleString() : '';
       document.getElementById('set_allowanceMemo').value = j.allowanceMemo || '';
-
-    }
-
-    function parseTimeRangeString(rangeStr, isEnd) {
-      if (!rangeStr || !rangeStr.includes('〜')) return '';
-      let parts = rangeStr.split('〜');
-      return isEnd ? (parts[1] || '') : (parts[0] || '');
     }
 
     function syncSettingsFormToConfig(jk) {
@@ -1583,8 +1590,6 @@
       const getVal = id => document.getElementById(id)?.value || '';
       const getNum = id => parseFormattedNumber(getVal(id));
 
-
-      j.name = getVal(`set_jobName_${jk}`) || j.name || 'バイト';
       j.closeDay = getVal('set_closeDay') || '20';
       j.payDay = getVal('set_payDay') || '5';
       j.paid = getNum('set_wagePaid');
@@ -1665,15 +1670,6 @@
       });
     }
 
-    function saveModalPresetRow(idx) {
-      const currentJob = configData[currentSelectedJobKey] || configData.job1;
-      if (currentJob && currentJob.presets && currentJob.presets[idx]) {
-        saveAllDataStorage();
-        renderModalPresetButtons();
-        showToast("ワンタッチ時間を登録しました");
-      }
-    }
-
     function deleteModalPresetRow(idx) {
       const currentJob = configData[currentSelectedJobKey] || configData.job1;
       if (currentJob && currentJob.presets && currentJob.presets[idx]) {
@@ -1745,7 +1741,6 @@
     }
 
     function onBreakInputChange(input) {
-      // 全角数字も受け付け、数字以外は取り除く
       input.value = input.value
         .replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
         .replace(/[^0-9]/g, '');
@@ -1768,17 +1763,14 @@
 
       const currentJob = configData[currentSelectedJobKey] || configData.job1;
       
-      // Add to preset list (【ワンタッチ時間登録一覧】) if not already exists
       let exists = currentJob.presets.some(p => p.start === newPresetForm.start && p.end === newPresetForm.end && Number(p.breakMins||0) === Number(newPresetForm.breakMins||0));
       if (!exists) {
         currentJob.presets.push({ start: newPresetForm.start, end: newPresetForm.end, breakMins: newPresetForm.breakMins });
         saveAllDataStorage();
       }
 
-      // Register to shift
       registerModalPresetTime(newPresetForm.start, newPresetForm.end, newPresetForm.breakMins, 'select');
 
-      // Clear / Reset form
       newPresetForm = { start: '00:00', end: '00:00', breakMins: 0 };
       renderModalCustomPresets();
       renderModalPresetButtons();
@@ -1790,22 +1782,6 @@
       const e = document.getElementById('new_preset_end')?.value || '00:00';
       const b = newPresetForm.breakMins || 0;
       newPresetForm = { start: s, end: e, breakMins: b };
-    }
-
-    function registerNewPreset() {
-      updateNewPresetForm();
-      if (!newPresetForm.start || !newPresetForm.end) { showToast("開始と終了時間を入力してください"); return; }
-      if (newPresetForm.start === newPresetForm.end) { showToast("開始と終了が同じ時間です"); return; }
-
-      const currentJob = configData[currentSelectedJobKey] || configData.job1;
-      currentJob.presets.push({ start: newPresetForm.start, end: newPresetForm.end, breakMins: newPresetForm.breakMins });
-      saveAllDataStorage();
-
-      // Reset form and re-render
-      newPresetForm = { start: '00:00', end: '00:00', breakMins: 0 };
-      renderModalCustomPresets();
-      renderModalPresetButtons();
-      showToast("ワンタッチ時間に登録しました");
     }
 
     function registerModalPresetTime(start, end, breakMins, mode) {
@@ -1848,7 +1824,6 @@
       let skippedCount = 0;
       let targetDaysInMonth = new Date(y, m + 1, 0).getDate();
 
-      // 曜日をそろえるため、4週間前（29日以降は5週間前）の同じ曜日からコピーする
       for (let day = 1; day <= targetDaysInMonth; day++) {
         let target = new Date(y, m, day);
         let source = new Date(y, m, day - (day <= 28 ? 28 : 35));
@@ -1940,7 +1915,6 @@
       initOverviewPage();
     }
 
-    // 振替休日・国民の休日も含めて判定する
     function isJapaneseHoliday(d) {
       if (isBaseHoliday(d)) return true;
 
@@ -2059,7 +2033,6 @@
       let totalYearPay = 0;
       let lastReceivedMonth = 0;
 
-      // 扶養・年収の壁と同じく「1/1〜12/31に受け取った給料（給料日ベース）」で合計する
       getActiveJobKeys().forEach(jk => {
         const job = configData[jk];
         for (let m = 0; m <= currentMonthIndex; m++) {
@@ -2169,7 +2142,6 @@
       return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${s}/${e}`;
     }
 
-
     const JOB_VISUALS = {
       job1: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', dot: 'bg-blue-600', orbClass: 'glass-orb glass-orb-sky' },
       job2: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-800', dot: 'bg-green-600', orbClass: 'glass-orb glass-orb-emerald' },
@@ -2189,6 +2161,7 @@
       }
       return `<span class="inline-flex items-center gap-1 ${extraClass}">${orb}<span>${name}</span></span>`;
     }
+
     function renderCalendar() {
       const { start, end } = getMonthCalendarRange(currentPeriodDate);
       
@@ -2286,7 +2259,6 @@
       const today = new Date();
       const todayStr = formatDateKey(today);
 
-      // If calSelectedDateStr is not set, default to today
       if (!calSelectedDateStr) {
         calSelectedDateStr = todayStr;
       }
@@ -2294,11 +2266,9 @@
       const sel = parseDateKey(calSelectedDateStr);
       const set = (id, html, isHtml) => { const el = document.getElementById(id); if (el) el[isHtml ? 'innerHTML' : 'innerText'] = html; };
 
-      // Today's shift always shown
       set('calendarTodayDateLabel', `${today.getMonth()+1}/${today.getDate()}`);
       set('calendarTodaySummaryContent', buildDaySummaryHtml(todayStr, today), true);
 
-      // Selected date section shown only if selected date is different from today
       const selectedSection = document.getElementById('selectedDateSection');
       if (selectedSection) {
         if (calSelectedDateStr !== todayStr) {
@@ -2328,7 +2298,7 @@
           let payVal = 0;
           if (jobShift.isPaidLeave) {
             timeDisplay = '有給休暇';
-            payVal = jobConf.paid ?? 1650;
+            payVal = jobConf.paid ?? 0;
           } else if (jobShift.start && jobShift.end) {
             const res = calculateJobShiftMinutesAndPay(jobShift, jobConf, dateObj);
             const breakText = (Number(jobShift.breakMins) > 0) ? ' 休憩あり' : '';
@@ -2472,7 +2442,7 @@
     }
 
     function getRateForMinuteDetailed(min, currentJob, dateObj, isPaid) {
-      if (isPaid) return { rate: currentJob.paid ?? 1650, category: 'paid' };
+      if (isPaid) return { rate: currentJob.paid ?? 0, category: 'paid' };
       const curMins = min % 1440;
       const slots = currentJob.wageSlots || [];
       let best = null;
@@ -2494,15 +2464,6 @@
       let c = curMins;
       if (c < s) c += 24 * 60;
       return c >= s && c < e;
-    }
-
-    function parseTimeStringToMinutes(timeStr, isEnd = false) {
-      if (!timeStr || !timeStr.includes('〜')) return null;
-      let parts = timeStr.split('〜');
-      let target = isEnd ? parts[1] : parts[0];
-      if (!target || !target.includes(':')) return null;
-      let [h, m] = target.split(':').map(Number);
-      return h * 60 + m;
     }
 
     function changeMonth(delta) {
@@ -2635,14 +2596,6 @@
       saveAllDataStorage();
       showToast("LステップURLを保存しました♡");
       updateTrialBanner();
-    }
-
-    function handleTrialLinkClick(event) {
-      if (!lstepUrl) {
-        event.preventDefault();
-        switchTab('settings');
-        showToast("「設定」タブのLステップURL欄に入力してね♡");
-      }
     }
 
     function importAppData(event) {
