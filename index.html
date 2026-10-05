@@ -297,7 +297,7 @@
         </div>
 
         <button type="button" onclick="switchTab('list')" class="w-full bg-stone-50 border border-stone-200 rounded-2xl p-2.5 text-center space-y-0.5 hover:bg-stone-100 active:scale-[0.99] transition">
-          <span class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡ ›</span>
+          <span class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡</span>
         </button>
 
         <!-- シフト確認エリア -->
@@ -331,7 +331,7 @@
         <div class="bg-white p-3.5 rounded-2xl border border-stone-200 space-y-2 shadow-sm">
           <div class="text-xs font-bold text-stone-700 border-b border-stone-100 pb-2 flex flex-col items-start tracking-wide leading-relaxed pl-1 space-y-1">
             <span class="text-[11px] text-stone-700 font-bold">📅 タップするとGoogleカレンダーに登録されます</span>
-            <span class="text-[11px] text-rose-900 font-bold whitespace-nowrap">日付をタップすると「シフトの入力画面に切り替わります♡」</span>
+            <span class="text-[11px] text-rose-900 font-bold whitespace-nowrap">日付をタップするとシフトの入力画面に切り替わります♡</span>
             <div id="standaloneJobLegend" class="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5"></div>
           </div>
           <div id="standaloneShiftListContainer" class="space-y-2 h-[50vh] min-h-[300px] max-h-[480px] overflow-y-auto pr-1 text-xs"></div>
@@ -842,12 +842,22 @@
       if (!jk || !configData[jk]) { closeRenameJobModal(); return; }
       if (!newName) { showAlertModal("名称を入力してね♡"); return; }
       if (Array.from(newName).length > 5) { showToast("登録は5文字以内です"); return; }
+      const prevName = (configData[jk].name || '').trim();
+      const isNewRegistration = (prevName === '' || prevName === 'バイト') && newName !== 'バイト';
+      // 今開いている画面の入力内容を先に保存してから、名前を反映する
+      syncSettingsFormToConfig(currentSettingsJobKey);
+      if (isNewRegistration) {
+        // 新規登録：時間・時給・締め日などをすべて白紙にし、時給入力は1枠だけにする
+        configData[jk] = createBlankJobConfig();
+        currentSettingsJobKey = jk;
+      }
       configData[jk].name = newName;
       closeRenameJobModal();
-      saveAllDataStorage();
-      renderModalJobTabs();
+      // 先に表示を作り直してから保存する（古い入力欄の内容で上書きされないように）
       renderSettingsJobTabs();
       renderSettingsJobContent(currentSettingsJobKey);
+      saveAllDataStorage();
+      renderModalJobTabs();
       refreshAll();
       showToast("バイト名を保存しました");
     }
@@ -1379,7 +1389,6 @@
     }
 
     function jobDeleteChipHtml(jk) {
-      if (getActiveJobKeys().length <= 1) return '';
       return `<span role="button" tabindex="0" class="shrink-0 ml-0.5 text-[10px] leading-none font-bold text-stone-500 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-md px-1.5 py-1" onclick="event.stopPropagation(); deleteJob('${jk}');" title="このバイト先を削除">削除</span>`;
     }
 
@@ -1387,9 +1396,28 @@
     function deleteJob(jk) {
       const keys = getActiveJobKeys();
       const idx = keys.indexOf(jk);
-      if (idx === -1 || keys.length <= 1) return;
+      if (idx === -1) return;
       const name = configData[jk]?.name || 'バイト';
       if (!confirm(`「${name}」を削除しますか？\nこのバイト先のシフト・設定もすべて削除されます。`)) return;
+
+      // バイト先が1件だけの場合：枠そのものは残し、シフトと設定をすべて白紙に戻す
+      if (keys.length <= 1) {
+        for (const dateKey of Object.keys(shiftsData)) {
+          const day = shiftsData[dateKey];
+          delete day[jk];
+          if (Object.keys(day).length === 0) delete shiftsData[dateKey];
+        }
+        configData[jk] = createBlankJobConfig();
+        localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
+        currentSettingsJobKey = jk;
+        // 表示を作り直してから保存する（古い入力欄の内容で上書きされないように）
+        renderSettingsJobTabs();
+        renderSettingsJobContent(jk);
+        saveAllDataStorage();
+        refreshAll();
+        showToast(`「${name}」を削除しました`);
+        return;
+      }
 
       syncSettingsFormToConfig(currentSettingsJobKey);
 
