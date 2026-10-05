@@ -101,7 +101,7 @@
     <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
       <h3 class="text-base font-bold text-stone-900 text-center tracking-wide">バイト先の名称</h3>
       <div>
-        <input type="text" id="renameJobInput" maxlength="6" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="6文字以内">
+        <input type="text" id="renameJobInput" maxlength="6" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="5文字以内">
       </div>
       <div class="flex space-x-2">
         <button type="button" onclick="closeRenameJobModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
@@ -367,7 +367,7 @@
 
           <div class="pt-2 border-t border-stone-200 space-y-2">
             <div class="flex justify-between items-center mb-1">
-              <span class="text-xs font-bold text-stone-700">【バイト先の登録・選択】※6文字以内にしてね♡</span>
+              <span class="text-xs font-bold text-stone-700">【バイト先の登録・選択】※5文字以内にしてね♡</span>
             </div>
             <div id="settingsJobTabs" class="space-y-1.5"></div>
           </div>
@@ -787,7 +787,7 @@
     function checkJobNameLength(input) {
       if (!input) return;
       if (input.value.length > 6) {
-        showAlertModal("バイト先の名称は6文字以内で入力してね♡");
+        showAlertModal("バイト先の名称は5文字以内で入力してね♡");
         input.value = input.value.slice(0, 6);
       }
     }
@@ -812,7 +812,7 @@
       let newName = document.getElementById('renameJobInput').value.trim();
       if (!jk || !configData[jk]) { closeRenameJobModal(); return; }
       if (!newName) { showAlertModal("名称を入力してね♡"); return; }
-      if (newName.length > 6) { showAlertModal("バイト先の名称は6文字以内で入力してね♡"); return; }
+      if (newName.length > 6) { showAlertModal("バイト先の名称は5文字以内で入力してね♡"); return; }
       configData[jk].name = newName;
       closeRenameJobModal();
       saveAllDataStorage();
