@@ -77,6 +77,22 @@
       .wage-time::-webkit-calendar-picker-indicator { display: none; }
     .wage-time { -webkit-appearance: none; appearance: none; min-height: 2rem; }
   </style>
+<style>
+  /* スマホ幅ではカードを画面いっぱいに表示し、上部の余白をなくす */
+  @media (max-width: 639px) {
+    body { padding: 0 !important; align-items: flex-start !important; min-height: 100dvh; }
+    #appCard {
+      height: 100dvh !important;
+      max-height: none !important;
+      border-radius: 0 !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      padding-top: env(safe-area-inset-top);
+    }
+    #appScroll { padding-top: 0.5rem !important; }
+    #appScroll > .tab-content { margin-top: 0 !important; }
+  }
+</style>
 </head>
 <body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
 
@@ -219,9 +235,9 @@
     </div>
   </div>
 
-  <div class="w-full max-w-md bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl border border-stone-200 overflow-hidden flex flex-col h-[94dvh] sm:h-auto max-h-[920px]">
+  <div id="appCard" class="w-full max-w-md bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl border border-stone-200 overflow-hidden flex flex-col h-[94dvh] sm:h-auto max-h-[920px]">
 
-    <div class="p-3 sm:p-4 flex-1 space-y-3 overflow-y-auto pb-28">
+    <div id="appScroll" class="p-3 sm:p-4 flex-1 space-y-3 overflow-y-auto pb-28">
       
       <!-- タブ1: 給与 -->
       <div id="tab-clock" class="tab-content space-y-3">
@@ -316,7 +332,7 @@
         </div>
 
         <div class="bg-stone-50 border border-stone-200 rounded-2xl p-2.5 text-center space-y-0.5">
-          <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡</p>
+          <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの���加・変更は、「シフト入力」からしてね♡</p>
         </div>
 
         <!-- シ���ト確認エリア -->
@@ -382,9 +398,12 @@
           </div>
 
           <div class="pt-2 border-t border-stone-200 space-y-2">
-            <div class="mb-2 space-y-1">
+            <div class="mb-1 space-y-1 text-center">
               <div class="text-xs font-bold text-stone-700">【バイト先の登録・選択】</div>
-              <div class="text-[11px] font-bold text-stone-500">※不要なバイト先を削除して���ら新規登録してね♡</div>
+              <div class="text-[11px] font-bold text-stone-800">※名前を登録すると、時給などを入力できるようになります。</div>
+            </div>
+            <div class="flex justify-center py-1">
+              <button type="button" onclick="registerNewJob()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-5 py-2 rounded-xl text-xs transition shadow-sm">バイト先名を登録する</button>
             </div>
             <div id="settingsJobTabs" class="space-y-1.5"></div>
           </div>
@@ -882,6 +901,7 @@
     function closeRenameJobModal() {
       document.getElementById('renameJobModal').classList.add('hidden');
       renamingJobKey = null;
+      pendingNewJobCount = null;
     }
 
     function submitRenameJobModal() {
@@ -896,6 +916,15 @@
         configData[jk] = createEmptyJobConfig();
       }
       configData[jk].name = newName;
+      if (pendingNewJobCount) {
+        configData.jobCount = pendingNewJobCount;
+        const countSelect = document.getElementById('settingJobCount');
+        if (countSelect) countSelect.value = configData.jobCount;
+      }
+      if (isNewRegistration && jk !== currentSettingsJobKey) {
+        syncSettingsFormToConfig(currentSettingsJobKey);
+        currentSettingsJobKey = jk;
+      }
       closeRenameJobModal();
       saveAllDataStorage();
       renderModalJobTabs();
@@ -1285,7 +1314,7 @@
           </div>
         </div>
         <div class="grid grid-cols-3 text-sm font-bold text-stone-500 border-b border-stone-200 pb-2 whitespace-nowrap">
-          <span>項目</span><span class="text-center">労働時間</span><span class="text-right pr-1">給料見込額</span>
+          <span>項目</span><span class="text-center">労働時��</span><span class="text-right pr-1">給料見込額</span>
         </div>
         ${rowsHtml}
         <div class="pt-2 mt-1 border-t-2 border-stone-200 flex justify-between items-center bg-rose-950 text-rose-50 p-3 rounded-2xl">
@@ -1302,49 +1331,46 @@
       container.innerHTML = '';
 
       const activeKeys = getActiveJobKeys();
-      
-      if (activeKeys.length === 3) {
-        let htmlRow1 = '';
-        let htmlRow2 = '';
-        activeKeys.forEach((jk, idx) => {
-          let isSelected = (jk === currentSettingsJobKey);
-          let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
-          
-          let btnHtml = `
-            <button type="button" onclick="switchSettingsJobTab('${jk}')" class="job-chip w-full py-2 rounded-lg text-xs font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
-              ${getJobLabelHtml(jk)}
-              <span class="text-stone-400 hover:text-stone-700 text-[11px] shrink-0" onclick="event.stopPropagation(); renameJobPrompt('${jk}');" title="名称を変更">✏️</span>
-              ${jobDeleteChipHtml(jk)}
-            </button>
-          `;
-          if (idx < 2) {
-            htmlRow1 += btnHtml;
-          } else {
-            htmlRow2 += btnHtml;
-          }
-        });
-        container.innerHTML = `
-          <div class="space-y-1.5 w-full">
-            <div class="grid grid-cols-2 gap-1.5">${htmlRow1}</div>
-            <div class="w-full">${htmlRow2}</div>
-          </div>
-        `;
-      } else {
-        let rowHtml = '';
-        activeKeys.forEach(jk => {
-          let isSelected = (jk === currentSettingsJobKey);
-          let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+      const isOddCount = activeKeys.length % 2 === 1;
 
-          rowHtml += `
-            <button type="button" onclick="switchSettingsJobTab('${jk}')" class="job-chip flex-1 py-2 rounded-lg text-xs font-bold transition truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
-              ${getJobLabelHtml(jk)}
-              <span class="text-stone-400 hover:text-stone-700 text-[11px] shrink-0" onclick="event.stopPropagation(); renameJobPrompt('${jk}');" title="名称を変更">✏️</span>
-              ${jobDeleteChipHtml(jk)}
-            </button>
-          `;
-        });
-        container.innerHTML = `<div class="flex space-x-1.5 w-full">${rowHtml}</div>`;
+      const cardsHtml = activeKeys.map((jk, idx) => {
+        const isSelected = (jk === currentSettingsJobKey);
+        const styleClass = isSelected
+          ? "bg-rose-50 text-rose-950 border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+          : "bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
+        // 奇数個のときは最後のカードを横いっぱいにして中央に置く
+        const spanStyle = (isOddCount && idx === activeKeys.length - 1) ? 'style="grid-column: 1 / -1;"' : '';
+        return `
+          <button type="button" onclick="switchSettingsJobTab('${jk}')" aria-pressed="${isSelected}" ${spanStyle} class="job-chip w-full py-2.5 px-2 rounded-xl border text-xs font-bold transition truncate ${styleClass} flex items-center justify-center gap-1.5">
+            ${getJobLabelHtml(jk)}
+            <span class="text-[11px] shrink-0" onclick="event.stopPropagation(); renameJobPrompt('${jk}');" title="名称を変更">✏️</span>
+            ${jobDeleteChipHtml(jk)}
+          </button>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div class="grid grid-cols-2 gap-2 w-full">${cardsHtml}</div>`;
+    }
+
+    // 未登録の枠があればそこへ、なければ枠を1つ増やして登録する（最大3件）
+    let pendingNewJobCount = null;
+    function registerNewJob() {
+      const activeKeys = getActiveJobKeys();
+      const emptyKey = activeKeys.find(jk => !configData[jk].name);
+      if (emptyKey) {
+        pendingNewJobCount = null;
+        renameJobPrompt(emptyKey);
+        return;
       }
+      if (activeKeys.length >= 3) {
+        showAlertModal("登録できるバイト先は3件までです。\n不要なバイト先を削除してから登録してね♡");
+        return;
+      }
+      const nextCount = activeKeys.length + 1;
+      const nextKey = 'job' + nextCount;
+      if (!configData[nextKey]) configData[nextKey] = createEmptyJobConfig();
+      pendingNewJobCount = nextCount;
+      renameJobPrompt(nextKey);
     }
 
     function jobDeleteChipHtml(jk) {
@@ -1421,15 +1447,7 @@
 
     function getSettingsFormHtml(jk) {
       const j = configData[jk];
-      if (!j.name) {
-        return `
-          <div class="text-center space-y-3 py-6 px-3 bg-stone-50 rounded-2xl border border-dashed border-stone-300">
-            <p class="text-sm font-bold text-stone-800">まずはバイト先名を登録してね♡</p>
-            <p class="text-[11px] font-bold text-rose-800">※ バイト先名は5文字以内</p>
-            <p class="text-[11px] font-bold text-stone-500">名前を登録すると、時給などを入力できるようになります</p>
-            <button type="button" onclick="renameJobPrompt('${jk}')" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm">バイト先名を登録する</button>
-          </div>`;
-      }
+      if (!j.name) return '';
       let slotsHtml = buildWageSlotsHtml(j);
 
       return `
