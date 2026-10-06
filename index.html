@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>マイシフト＆給料</title>
   
   <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADCklEQVR4nO3dwW1TQRRAUYOogE0aoATaYEEJtEEBdIHoACTqoARqSA0sQChAbuLgzJ+Z6JwCxubpMj+K/ZRnH6/enOA2z2e/AdYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SC9mv4E/fLn+NvstzPf25evZb+GXJeLQxE2/pzG9kvmPFWWU6ZOZeXNM/8ev7+eIZl0h024OZZxv1qzmxKGMh5oysfk/c7CsCXG4Nv7P8XM7Og5lXOLg6XmskMRBOjQOz5TLHTlDNwdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp0C37r9efj3y5p+rTqw/HvJCbgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0hJ/UuMcf31O/e77e+ePtsfN8e83GB73Ow27nz/IBnHUHB9rvrufP87qcdw9wcvnu/v5Qy0dxzmzu2S+u58/2tJxMJc4SOIgiYO0dBzn/Kbokt8m7X7+aEvHcbpvdpdPdvfzh1o9jlNP8LEmu/v542wQx+m2OT7uZHc/f5BnH6/eHPZiW0xkfXZlmU8cJHGQxEESB0kcJHGQxEESB0kcJHGQxEGy8fZEzh9hj5tj9400G2+j7L6RZuNtlN030my8jbL7RpqNN54scZDEQRIH6dq4dt9Is/E21u4baTbextp9I83G21i7b6TZeLvfFhNZn4035hMHSRwkcZDEQRIH6dA4Vv7uwi6OnKGbgyQO0tFxeLJc4uDpTbg59PF/jp+bxwppThwuj4eaMrFpN4c+zjdrVod+ZH8rn+PfYe5/ofk/c7hCyvTJzL85bnKLnBZo4re14mAp8x8rLEscJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpB/mCfM2/VKEGAAAAABJRU5ErkJggg==">
@@ -90,7 +89,8 @@
     <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
       <h3 class="text-base font-bold text-stone-900 text-center tracking-wide">バイト先の名称</h3>
       <div>
-        <input type="text" id="renameJobInput" maxlength="5" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="バイト名">
+        <input type="text" id="renameJobInput" maxlength="5" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="バイト名（5文字以内）" aria-describedby="renameJobHint">
+        <p id="renameJobHint" class="mt-1.5 text-[11px] text-stone-500 text-center">※ 5文字以内で入力してね</p>
       </div>
       <div class="flex space-x-2">
         <button type="button" onclick="closeRenameJobModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
@@ -110,7 +110,7 @@
         <input type="text" inputmode="numeric" id="breakSelectInput" maxlength="3" oninput="onBreakInputChange(this)" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="例: 50">
       </div>
       <div class="flex space-x-2">
-        <button type="button" onclick="closeBreakSelectModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
+        <button type="button" onclick="closeBreakSelectModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャン��ル</button>
         <button type="button" onclick="submitBreakSelectModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">決定</button>
       </div>
     </div>
@@ -319,7 +319,7 @@
           <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡</p>
         </div>
 
-        <!-- シフト確認エリア -->
+        <!-- シ���ト確認エリア -->
         <div class="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm space-y-3">
           <div class="text-sm font-bold text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
             <span>📌 今日のシフト (<span id="calendarTodayDateLabel"></span>)</span>
@@ -384,7 +384,7 @@
           <div class="pt-2 border-t border-stone-200 space-y-2">
             <div class="mb-2 space-y-1">
               <div class="text-xs font-bold text-stone-700">【バイト先の登録・選択】</div>
-              <div class="text-[11px] font-bold text-stone-500">※不要なバイト先を削除してから新規登録してね♡</div>
+              <div class="text-[11px] font-bold text-stone-500">※不要なバイト先を削除して���ら新規登録してね♡</div>
             </div>
             <div id="settingsJobTabs" class="space-y-1.5"></div>
           </div>
@@ -544,6 +544,10 @@
     }
     let configData = buildConfigData(savedWages);
 
+    function createEmptyJobConfig() {
+      return createDefaultJobConfig(undefined, '', defaultPresets1, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', '');
+    }
+
     function numOr(v, def) {
       if (v === undefined || v === null || v === '') return def;
       const n = Number(v);
@@ -605,13 +609,16 @@
       renderSettingsJobContent(currentSettingsJobKey);
       initOverviewPage();
       updateTrialBanner();
-      // 設定は入力のたびに自動保存（保存し忘れ防止）
+      // 入力したらすぐ configData に反映し、保存は少し待ってから configData をそのまま書く
+      // （保存時にフォームを読み直さないので、画面の作り直しと保存の順番で値が戻ることがない）
       let autoTimer = null;
       const settingsArea = document.getElementById('settingsJobContentArea');
       ['input', 'change'].forEach(ev => settingsArea.addEventListener(ev, () => {
+        syncSettingsFormToConfig(currentSettingsJobKey);
         clearTimeout(autoTimer);
         autoTimer = setTimeout(() => { saveAllDataStorage(); initOverviewPage(); }, 500);
       }));
+      checkBackupReminder();
       
       const today = new Date();
       selectedCalendarDateStr = formatDateKey(today);
@@ -883,6 +890,11 @@
       if (!jk || !configData[jk]) { closeRenameJobModal(); return; }
       if (!newName) { showAlertModal("名称を入力してね♡"); return; }
       if (newName.length > 5) { showAlertModal("バイト先の名称は5文字以内で入力してね♡"); return; }
+      const isNewRegistration = !configData[jk].name;
+      if (isNewRegistration) {
+        // 新規登録時は前のバイト先の時給などが残らないよう、まっさらな設定から始める
+        configData[jk] = createEmptyJobConfig();
+      }
       configData[jk].name = newName;
       closeRenameJobModal();
       saveAllDataStorage();
@@ -1345,17 +1357,12 @@
       const idx = keys.indexOf(jk);
       if (idx === -1) return;
       if (keys.length <= 1) {
-        askConfirm('バイト名をクリアしますか？', () => {
-          configData[jk].name = '';
-          configData[jk].wageSlots = [];
-          for (const dateKey of Object.keys(shiftsData)) {
-            delete shiftsData[dateKey][jk];
-            if (Object.keys(shiftsData[dateKey]).length === 0) delete shiftsData[dateKey];
-          }
-          localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
-          saveAllDataStorage();
+        askConfirm('バイト名をクリアしますか？\nこのバイト先のシフト・設定もすべて削除されます。', () => {
+          configData[jk] = createEmptyJobConfig();
+          removeJobShifts(jk);
           renderSettingsJobTabs();
           renderSettingsJobContent(currentSettingsJobKey);
+          saveAllDataStorage();
           refreshAll();
           showToast('バイト名をクリアしました');
         });
@@ -1379,7 +1386,7 @@
         configData[keys[i]] = configData[keys[i + 1]];
       }
       const lastKey = keys[keys.length - 1];
-      configData[lastKey] = createDefaultJobConfig(undefined, '', defaultPresets1, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', '');
+      configData[lastKey] = createEmptyJobConfig();
 
       configData.jobCount = keys.length - 1;
       localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
@@ -1414,6 +1421,15 @@
 
     function getSettingsFormHtml(jk) {
       const j = configData[jk];
+      if (!j.name) {
+        return `
+          <div class="text-center space-y-3 py-6 px-3 bg-stone-50 rounded-2xl border border-dashed border-stone-300">
+            <p class="text-sm font-bold text-stone-800">まずはバイト先名を登録してね♡</p>
+            <p class="text-[11px] font-bold text-rose-800">※ バイト先名は5文字以内</p>
+            <p class="text-[11px] font-bold text-stone-500">名前を登録すると、時給などを入力できるようになります</p>
+            <button type="button" onclick="renameJobPrompt('${jk}')" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm">バイト先名を登録する</button>
+          </div>`;
+      }
       let slotsHtml = buildWageSlotsHtml(j);
 
       return `
@@ -1455,7 +1471,7 @@
                   <span class="font-bold text-stone-700">有給休暇<span class="ml-2 text-stone-500 text-[11px]">1時間あたり</span></span>
                   <div class="flex items-center gap-1"><input type="text" inputmode="numeric" id="set_wagePaid" oninput="formatInputNumber(this)" class="w-24 p-1.5 border rounded text-right font-bold bg-white"><span class="font-bold">円</span></div>
                 </div>
-                <p class="text-[11px] text-stone-500 font-medium">※※時給が異なる場合は、よく入っている時間帯の時給か、平均時給を入力してね</p>
+                <p class="text-[11px] text-stone-500 font-medium">※時給が異なる場合は、よく入っている時間帯の時給か、平均時給を入力してね</p>
               </div>
             </div>
 
@@ -1565,6 +1581,16 @@
       showToast("時間帯を削除しました");
     }
 
+    // 日をまたぐ時間帯（例 22:00〜05:00）は2つに分けて重なりを調べる
+    function wageRangeToIntervals(start, end) {
+      const s = timeStrToMins(start), e = timeStrToMins(end);
+      return s < e ? [[s, e]] : [[s, 1440], [0, e]];
+    }
+    function wageRangesOverlap(aStart, aEnd, bStart, bEnd) {
+      const a = wageRangeToIntervals(aStart, aEnd), b = wageRangeToIntervals(bStart, bEnd);
+      return a.some(([as, ae]) => b.some(([bs, be]) => as < be && bs < ae));
+    }
+
     function checkWageSlotInputState(i) {
       const btn = document.getElementById(`set_reg_btn_${i}`);
       if (!btn) return;
@@ -1579,6 +1605,15 @@
       const ed = document.getElementById(`set_time_${i}_end`)?.value || '';
       const wg = parseFormattedNumber(document.getElementById(`set_wage_${i}`)?.value);
       if (!st || !ed || !(wg > 0)) { showToast("開始・終了時間と時給を入力してね"); return; }
+      if (st === ed) { showAlertModal('開始と終了が同じ時間になっています。\n時間を確認してね。'); return; }
+      syncSettingsFormToConfig(currentSettingsJobKey);
+      const slots = configData[currentSettingsJobKey].wageSlots;
+      const dupIdx = slots.findIndex((s, k) => k !== i && s.start && s.end && s.start !== s.end && wageRangesOverlap(st, ed, s.start, s.end));
+      if (dupIdx !== -1) {
+        const d = slots[dupIdx];
+        showAlertModal(`時間帯が重なっています。\n${d.start}〜${d.end}（時給${Number(d.wage).toLocaleString()}円）と重なっているよ。\n重なった時間は計算が正しくならないので、時間を分けてね。`);
+        return;
+      }
       saveAllDataStorage();
       checkWageSlotInputState(i);
       initOverviewPage();
@@ -1587,10 +1622,9 @@
 
     function loadSettingsToUIForTab(jk) {
       const j = configData[jk];
-      
-      const nameEl = document.getElementById(`set_jobName_${jk}`);
-    if (nameEl) nameEl.value = j.name || '';
-    document.getElementById('set_closeDay').value = j.closeDay || '20';
+      if (!document.getElementById('set_closeDay')) return;
+
+      document.getElementById('set_closeDay').value = j.closeDay || '20';
       document.getElementById('set_payDay').value = j.payDay || '5';
       document.getElementById('set_wagePaid').value = j.paid ? j.paid.toLocaleString() : '';
 
@@ -1607,12 +1641,11 @@
 
     function syncSettingsFormToConfig(jk) {
       const j = configData[jk];
-      if (!j) return;
+      // フォームが表示されていない（未登録のバイト先など）ときは、空の値で上書きしない
+      if (!j || !document.getElementById('set_closeDay')) return;
       const getVal = id => document.getElementById(id)?.value || '';
       const getNum = id => parseFormattedNumber(getVal(id));
 
-
-      j.name = getVal(`set_jobName_${jk}`) || j.name || '';
       j.closeDay = getVal('set_closeDay') || '20';
       j.payDay = getVal('set_payDay') || '5';
       j.paid = getNum('set_wagePaid');
@@ -2141,7 +2174,7 @@
       const rawName = configData[jk]?.name;
       const placeholderName = jk === 'job1' ? 'バイト名1' : (jk === 'job2' ? 'バイト名2' : 'バイト名3');
       const displayName = rawName ? esc(rawName) : `<span class="text-stone-400 font-normal">${placeholderName}</span>`;
-      const titleName = rawName || placeholderName;
+      const titleName = esc(rawName || placeholderName);
       const orb = `<span class="${visual.orbClass || 'glass-orb glass-orb-stone'}"></span>`;
       if (iconOnly) {
         return `<span class="inline-flex items-center ${extraClass}" title="${titleName}">${orb}</span>`;
@@ -2462,11 +2495,53 @@
     }
 
     function onJobCountChange(val) {
-      configData.jobCount = Number(val);
-      ensureValidSelectedJob();
-      renderSettingsJobTabs();
-      renderSettingsJobContent(currentSettingsJobKey);
-      saveAllDataStorage();
+      syncSettingsFormToConfig(currentSettingsJobKey);
+      const prevKeys = getActiveJobKeys();
+      const nextCount = Number(val);
+      const removedKeys = prevKeys.slice(nextCount);
+      const removedWithData = removedKeys.filter(jk => configData[jk].name || jobHasShifts(jk));
+
+      const apply = () => {
+        removedKeys.forEach(jk => {
+          removeJobShifts(jk);
+          configData[jk] = createEmptyJobConfig();
+        });
+        configData.jobCount = nextCount;
+        getActiveJobKeys().forEach(jk => {
+          if (!prevKeys.includes(jk) && !configData[jk].name) configData[jk] = createEmptyJobConfig();
+        });
+        ensureValidSelectedJob();
+        renderSettingsJobTabs();
+        renderSettingsJobContent(currentSettingsJobKey);
+        saveAllDataStorage();
+        refreshAll();
+      };
+
+      if (removedWithData.length === 0) { apply(); return; }
+
+      const names = removedWithData.map(jk => `「${getJobDisplayName(jk)}」`).join('');
+      // キャンセルされたら選択を元に戻す
+      document.getElementById('settingJobCount').value = configData.jobCount;
+      askConfirm(`バイト先の数を減らすと、${names}のシフト・設定が削除されます。よろしいですか？`, () => {
+        document.getElementById('settingJobCount').value = nextCount;
+        apply();
+        showToast('バイト先の数を変更しました');
+      }, '削除して変更');
+    }
+
+    function jobHasShifts(jk) {
+      return Object.values(shiftsData).some(day => {
+        const v = day && day[jk];
+        return Array.isArray(v) ? v.length > 0 : !!v;
+      });
+    }
+
+    function removeJobShifts(jk) {
+      for (const dateKey of Object.keys(shiftsData)) {
+        delete shiftsData[dateKey][jk];
+        if (Object.keys(shiftsData[dateKey]).length === 0) delete shiftsData[dateKey];
+      }
+      localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
     }
 
     function formatInputNumber(input) {
@@ -2485,7 +2560,6 @@
     }
 
     function saveAllDataStorage() {
-      syncSettingsFormToConfig(currentSettingsJobKey);
       let payload = JSON.parse(JSON.stringify(configData));
       payload.monthlyGoal = monthlyGoal;
       localStorage.setItem('mybasket_wages_v77', JSON.stringify(payload));
@@ -2583,7 +2657,30 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
+      localStorage.setItem('mybasket_last_backup', String(Date.now()));
       showToast('バックアップファイルを書き出しました♡');
+    }
+
+    const BACKUP_REMIND_DAYS = 30;
+    const BACKUP_REMIND_INTERVAL_DAYS = 7;
+    function checkBackupReminder() {
+      if (Object.keys(shiftsData).length === 0) return;
+      const DAY = 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const lastBackup = Number(localStorage.getItem('mybasket_last_backup')) || 0;
+      const lastRemind = Number(localStorage.getItem('mybasket_backup_reminded')) || 0;
+      if (now - lastBackup < BACKUP_REMIND_DAYS * DAY) return;
+      if (now - lastRemind < BACKUP_REMIND_INTERVAL_DAYS * DAY) return;
+      localStorage.setItem('mybasket_backup_reminded', String(now));
+      setTimeout(() => {
+        askConfirm(
+          lastBackup
+            ? `最後のバックアップから${Math.floor((now - lastBackup) / DAY)}日たったよ。\nデータはこのブラウザにしか保存されていないので、今バックアップしておく？`
+            : 'データはこのブラウザにしか保存されていないよ。\n機種変更やブラウザのデータ削除で消えないように、バックアップしておく？',
+          () => exportAppData(),
+          'バックアップする'
+        );
+      }, 800);
     }
 
 
