@@ -966,7 +966,7 @@
       const newBreak = parseFormattedNumber(breakInput?.value || 0);
 
       if (!newStart || !newEnd) {
-        showToast("開始・終了時間を入力してね♡");
+        showToast("開始・終了を入力してね♡");
         return;
       }
       if (newStart === newEnd) {
@@ -1424,7 +1424,7 @@
                   <span class="font-bold text-stone-700">有給休暇<span class="ml-2 text-stone-500 text-[11px]">1時間あたり</span></span>
                   <div class="flex items-center gap-1"><input type="text" inputmode="numeric" id="set_wagePaid" oninput="formatInputNumber(this)" class="w-24 p-1.5 border rounded text-right font-bold bg-white"><span class="font-bold">円</span></div>
                 </div>
-                <p class="text-[11px] text-stone-500 font-medium">※時給が異なる場合は、よくある時間帯の時給や平均時給を入力してね</p>
+                <p class="text-[11px] text-stone-500 font-medium">※※時給が異なる場合は、よく入っている時間帯の時給か、平均時給を入力してね</p>
               </div>
             </div>
 
