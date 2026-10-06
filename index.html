@@ -388,23 +388,12 @@
         </div>
 
         <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3">
-          <div class="flex justify-between items-center">
-            <label class="text-xs font-bold text-stone-800">バイトの登録数</label>
-            <select id="settingJobCount" onchange="onJobCountChange(this.value)" class="w-36 p-2 border rounded-xl border-stone-200 bg-white text-xs font-bold text-stone-900 text-center">
-              <option value="1">単独</option>
-              <option value="2">ダブル</option>
-              <option value="3">トリプル</option>
-            </select>
-          </div>
-
-          <div class="pt-2 border-t border-stone-200 space-y-2">
-            <div class="mb-1 space-y-1 text-center">
-              <div class="text-xs font-bold text-stone-700">【バイト先の登録・選択】</div>
-              <div class="text-[11px] font-bold text-stone-800">※名前を登録すると、時給などを入力できるようになります。</div>
-            </div>
-            <div class="flex justify-center py-1">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between gap-2">
               <button type="button" onclick="registerNewJob()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-5 py-2 rounded-xl text-xs transition shadow-sm">バイト先名を登録する</button>
+              <span class="text-xs font-bold text-stone-800">3件まで登録できます♡</span>
             </div>
+            <div class="text-[11px] font-bold text-stone-800">※登録すると、時給などを入力できるようになります。</div>
             <div id="settingsJobTabs" class="space-y-1.5"></div>
           </div>
 
@@ -462,7 +451,7 @@
               <li><strong class="text-stone-800">お給料タブ</strong>：今月の給料見込や年間収入、目標金額を確認できます。</li>
               <li><strong class="text-stone-800">カレンダータブ</strong>：月ごとのシフトや給料日（❤）が一目でわかります。</li>
               <li><strong class="text-stone-800">シフト入力タブ</strong>：日付をタップしてシフトの追加や有給の登録ができます。</li>
-              <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日・給料日、バイト先の登録数を自由に変更できます。</li>
+              <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日・給料日、バイト先の登録（最大3件）を自由に変更できます。</li>
             </ul>
           </div>
 
@@ -623,7 +612,6 @@
     }
 
     window.onload = function() {
-      document.getElementById('settingJobCount').value = configData.jobCount;
       renderSettingsJobTabs();
       renderSettingsJobContent(currentSettingsJobKey);
       initOverviewPage();
@@ -918,8 +906,6 @@
       configData[jk].name = newName;
       if (pendingNewJobCount) {
         configData.jobCount = pendingNewJobCount;
-        const countSelect = document.getElementById('settingJobCount');
-        if (countSelect) countSelect.value = configData.jobCount;
       }
       if (isNewRegistration && jk !== currentSettingsJobKey) {
         syncSettingsFormToConfig(currentSettingsJobKey);
@@ -1416,9 +1402,6 @@
 
       configData.jobCount = keys.length - 1;
       localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
-
-      const countSelect = document.getElementById('settingJobCount');
-      if (countSelect) countSelect.value = configData.jobCount;
 
       ensureValidSelectedJob();
       // 削除後のフォーム内容で上書きされないよう、先に表示を作り直してから保存する
@@ -2512,41 +2495,6 @@
       renderCalendar();
     }
 
-    function onJobCountChange(val) {
-      syncSettingsFormToConfig(currentSettingsJobKey);
-      const prevKeys = getActiveJobKeys();
-      const nextCount = Number(val);
-      const removedKeys = prevKeys.slice(nextCount);
-      const removedWithData = removedKeys.filter(jk => configData[jk].name || jobHasShifts(jk));
-
-      const apply = () => {
-        removedKeys.forEach(jk => {
-          removeJobShifts(jk);
-          configData[jk] = createEmptyJobConfig();
-        });
-        configData.jobCount = nextCount;
-        getActiveJobKeys().forEach(jk => {
-          if (!prevKeys.includes(jk) && !configData[jk].name) configData[jk] = createEmptyJobConfig();
-        });
-        ensureValidSelectedJob();
-        renderSettingsJobTabs();
-        renderSettingsJobContent(currentSettingsJobKey);
-        saveAllDataStorage();
-        refreshAll();
-      };
-
-      if (removedWithData.length === 0) { apply(); return; }
-
-      const names = removedWithData.map(jk => `「${getJobDisplayName(jk)}」`).join('');
-      // キャンセルされたら選択を元に戻す
-      document.getElementById('settingJobCount').value = configData.jobCount;
-      askConfirm(`バイト先の数を減らすと、${names}のシフト・設定が削除されます。よろしいですか？`, () => {
-        document.getElementById('settingJobCount').value = nextCount;
-        apply();
-        showToast('バイト先の数を変更しました');
-      }, '削除して変更');
-    }
-
     function jobHasShifts(jk) {
       return Object.values(shiftsData).some(day => {
         const v = day && day[jk];
@@ -2730,7 +2678,6 @@
 
           localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
           ensureValidSelectedJob();
-          document.getElementById('settingJobCount').value = configData.jobCount;
           renderSettingsJobTabs();
           renderSettingsJobContent(currentSettingsJobKey);
           saveAllDataStorage();
