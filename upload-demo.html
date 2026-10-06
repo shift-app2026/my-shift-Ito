@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ファイルアップロード一覧</title>
+    <style>
+      :root {
+        --bg: #f3f1f1;
+        --panel: #ffffff;
+        --line: #dcdcdc;
+        --line-strong: #cfcfcf;
+        --text: #202124;
+        --muted: #677078;
+        --soft: #f4f5f7;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Noto Sans JP", "Segoe UI", sans-serif;
+      }
+
+      .app {
+        width: min(100%, 980px);
+        margin: 40px 16px;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        height: 56px;
+        padding: 0 12px;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+      }
+
+      .picker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 130px;
+        height: 36px;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        background: var(--soft);
+        color: #3a3f45;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .picker input {
+        display: none;
+      }
+
+      .toolbar-text {
+        margin-left: auto;
+        font-size: 14px;
+        color: #3c3c3c;
+        white-space: nowrap;
+      }
+
+      .file-list {
+        margin-top: 12px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .file-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 54px;
+        padding: 0 16px;
+        border-top: 1px solid #ededed;
+      }
+
+      .file-row:first-child {
+        border-top: none;
+      }
+
+      .file-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .file-icon {
+        width: 18px;
+        height: 18px;
+        border: 1px solid #d0d0d0;
+        border-radius: 5px;
+        background: linear-gradient(180deg, #fbfbfb 0%, #efefef 100%);
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .file-icon::before {
+        content: "";
+        position: absolute;
+        right: -1px;
+        top: -1px;
+        width: 6px;
+        height: 6px;
+        border-top: 1px solid #d0d0d0;
+        border-left: 1px solid #d0d0d0;
+        transform: skew(-18deg);
+        background: #f8f8f8;
+      }
+
+      .file-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 14px;
+        color: #1d1d1f;
+      }
+
+      .file-time {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 560px) {
+        .toolbar {
+          gap: 8px;
+          padding: 0 8px;
+        }
+
+        .picker {
+          width: 110px;
+          font-size: 12px;
+        }
+
+        .toolbar-text {
+          font-size: 12px;
+        }
+
+        .file-row {
+          padding: 0 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="toolbar">
+        <label class="picker" for="fileInput">
+          <span>ファイル選択</span>
+          <input id="fileInput" type="file" multiple />
+        </label>
+        <div class="toolbar-text">アップロードでファイルを追加する</div>
+      </div>
+
+      <div id="fileList" class="file-list" aria-live="polite"></div>
+    </div>
+
+    <script>
+      const fileList = [
+        { name: 'index.html', uploadedAt: Date.now() - 1000 * 60 * 60 * 3 }
+      ];
+
+      const fileInput = document.getElementById('fileInput');
+      const fileListEl = document.getElementById('fileList');
+
+      function formatRelativeTime(timestamp) {
+        const diffMs = Date.now() - timestamp;
+        const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
+
+        if (diffMinutes < 60) {
+          return `${diffMinutes}分前`;
+        }
+
+        const diffHours = Math.floor(diffMinutes / 60);
+        if (diffHours < 24) {
+          return `${diffHours}時間前`;
+        }
+
+        const diffDays = Math.floor(diffHours / 24);
+        return `${diffDays}日前`;
+      }
+
+      function renderFileList() {
+        fileListEl.innerHTML = fileList
+          .map(
+            (file) => `
+              <div class="file-row">
+                <div class="file-left">
+                  <span class="file-icon" aria-hidden="true"></span>
+                  <span class="file-name">${file.name}</span>
+                </div>
+                <span class="file-time">${formatRelativeTime(file.uploadedAt)}</span>
+              </div>
+            `
+          )
+          .join('');
+      }
+
+      fileInput.addEventListener('change', (event) => {
+        const files = Array.from(event.target.files || []);
+
+        files.forEach((file) => {
+          fileList.unshift({
+            name: file.name,
+            uploadedAt: Date.now()
+          });
+        });
+
+        renderFileList();
+        fileInput.value = '';
+      });
+
+      renderFileList();
+    </script>
+  </body>
+</html>
