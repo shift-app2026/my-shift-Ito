@@ -187,19 +187,19 @@
         </div>
 
         <div class="space-y-1.5">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-bold text-stone-700">【新しい時間を登録】</span>
-          </div>
-          <div id="modalCustomPresetContainer" class="space-y-2"></div>
-        </div>
-
-        <div class="space-y-1.5">
           <div class="flex flex-col">
             <span class="text-xs font-bold text-stone-700">【ワンタッチ時間登録一覧】</span>
             <span class="text-[11px] text-stone-500 font-bold">※ここでは時間の修正はできません。</span>
           </div>
           
           <div id="modalPresetContainer" class="grid grid-cols-1 gap-2 text-xs"></div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-stone-700">【新しい時間を登録】</span>
+          </div>
+          <div id="modalCustomPresetContainer" class="space-y-2"></div>
         </div>
 
         <div class="space-y-1.5">
@@ -316,13 +316,13 @@
           <button type="button" onclick="changeMonth(1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">翌月 ▶</button>
         </div>
 
-        <div class="bg-white border border-rose-200 rounded-3xl p-3.5 shadow-sm space-y-1.5">
+        <div class="bg-white border border-rose-200 rounded-3xl p-3 shadow-sm space-y-1.5">
           <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-1.5 font-bold text-xs text-stone-900">
+            <div class="flex items-center space-x-1.5 font-bold text-[11px] text-stone-900">
               <span class="text-sm">📋</span>
-              <span>前月のシフトを曜日に合わせて一括コピー</span>
+              <span class="whitespace-nowrap">前月のシフトを曜日に合わせて一括コピー</span>
             </div>
-            <button type="button" onclick="copyLastMonthShifts()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-sm">コピーする</button>
+            <button type="button" onclick="copyLastMonthShifts()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-xs px-2.5 py-2 rounded-xl transition shadow-sm whitespace-nowrap shrink-0">コピー</button>
           </div>
         </div>
 
@@ -337,6 +337,7 @@
 
         <!-- シフト確認エリア -->
         <div class="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm space-y-3">
+          <button type="button" onclick="openShiftInputModal(calSelectedDateStr)" class="w-full bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-sm py-2.5 rounded-xl transition shadow-sm">選択日のシフトを入力する</button>
           <div class="text-sm font-bold text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
             <span>📌 今日のシフト (<span id="calendarTodayDateLabel"></span>)</span>
           </div>
@@ -352,8 +353,6 @@
               <span class="text-stone-400">予定なし</span>
             </div>
           </div>
-
-          <button type="button" onclick="openShiftInputModal(calSelectedDateStr)" class="w-full bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-sm py-2.5 rounded-xl transition shadow-sm">選択日のシフトを入力する</button>
         </div>
       </div>
 
@@ -525,11 +524,7 @@
     let editingShift = null;
     let calSelectedDateStr = null;
 
-    const defaultPresets1 = [
-      { start: '09:00', end: '13:00', breakMins: 0 },
-      { start: '13:00', end: '17:00', breakMins: 0 },
-      { start: '17:00', end: '22:00', breakMins: 0 }
-    ];
+    const defaultPresets1 = [];
     const defaultPresets2 = defaultPresets1;
 
     let shiftsData = {};
@@ -565,7 +560,7 @@
     }
 
     function createDefaultJobConfig(savedJob, defName, defPresets, defPaid, defMorn, defDay, defEve, defNight, defMidnight, defExtra, tM, tD, tEv, tN, tMid, tEx) {
-      let loadedPresets = (savedJob?.presets && savedJob.presets.length > 0) ? savedJob.presets.map(p => ({
+      let loadedPresets = (savedJob?.presets && savedJob.presets.length > 0 && savedJob.name) ? savedJob.presets.map(p => ({
         start: p.start || '',
         end: p.end || '',
         breakMins: Number(p.breakMins) || 0
@@ -1767,6 +1762,9 @@
           `;
         }
       });
+    if (!container.innerHTML.trim()) {
+        container.innerHTML = '<div class="text-stone-400 font-bold">下の「新しい時間を登録」から追加できます</div>';
+      }
     }
 
 
@@ -1793,19 +1791,13 @@
       let breakMins = newPresetForm.breakMins || 0;
 
       container.innerHTML = `
-        <div class="bg-white p-2.5 border rounded-2xl border-stone-200 space-y-2 text-xs shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-          <div class="flex items-center justify-center gap-2">
-            <input type="time" id="new_preset_start" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="flex-1 p-2 border rounded-xl border-stone-200 bg-stone-50 font-bold text-center text-sm">
-            <span class="font-bold text-stone-400 text-sm">〜</span>
-            <input type="time" id="new_preset_end" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="flex-1 p-2 border rounded-xl border-stone-200 bg-stone-50 font-bold text-center text-sm">
-          </div>
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <button type="button" onclick="openBreakSelectModal()" class="w-full py-2 px-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-xl font-bold text-stone-700 transition flex items-center justify-center gap-1">
-              <span>☕ 休憩: <span id="modalBreakDisplayVal">${breakMins}分</span></span>
-            </button>
-            <button type="button" onclick="registerNewPresetAndRegister()" class="w-full py-2 px-4 bg-rose-900 text-rose-50 hover:bg-rose-800 rounded-xl font-bold transition shadow-sm text-center">
-              登録
-            </button>
+        <div class="bg-white p-2 border rounded-2xl border-stone-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+          <div class="flex items-center justify-between gap-1">
+            <input type="time" id="new_preset_start" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time w-[64px] px-0.5 py-1 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center">
+            <span class="font-bold text-stone-400 text-xs">〜</span>
+            <input type="time" id="new_preset_end" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time w-[64px] px-0.5 py-1 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center">
+            <button type="button" onclick="openBreakSelectModal()" class="px-2 py-1.5 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="modalBreakDisplayVal">${breakMins}分</span></button>
+            <button type="button" onclick="registerNewPresetAndRegister()" class="px-3 py-1.5 bg-rose-900 text-rose-50 hover:bg-rose-800 rounded-lg font-bold text-xs transition shadow-sm whitespace-nowrap">登録</button>
           </div>
         </div>
       `;
