@@ -29,7 +29,7 @@
       box-shadow: 0 4px 12px rgba(136, 19, 55, 0.3);
     }
     input, select {
-      font-size: 15px !important;
+      font-size: 16px !important;
       color: #1c1917 !important;
       padding: 6px 10px;
     }
@@ -126,7 +126,7 @@
         <input type="text" inputmode="numeric" id="breakSelectInput" maxlength="3" oninput="onBreakInputChange(this)" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="例: 50">
       </div>
       <div class="flex space-x-2">
-        <button type="button" onclick="closeBreakSelectModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャン��ル</button>
+        <button type="button" onclick="closeBreakSelectModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
         <button type="button" onclick="submitBreakSelectModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm">決定</button>
       </div>
     </div>
@@ -272,6 +272,7 @@
                 <span class="text-xs font-bold text-stone-500 tracking-wider">給料見込</span>
                 <span id="goalCurrentPay" class="text-3xl font-bold font-serif-title text-stone-900 tracking-tight">¥0</span>
                 <span id="goalPercentText" class="text-xs font-bold text-rose-50 bg-rose-900 px-3 py-0.5 rounded-full mt-1 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">0%</span>
+                <span id="goalRemainText" class="text-[11px] font-bold text-stone-500 mt-1"></span>
               </div>
             </div>
             </div>
@@ -332,10 +333,11 @@
         </div>
 
         <div class="bg-stone-50 border border-stone-200 rounded-2xl p-2.5 text-center space-y-0.5">
-          <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの���加・変更は、「シフト入力」からしてね♡</p>
+          <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡</p>
+          <button type="button" onclick="openShiftInputModal(calSelectedDateStr)" class="mt-1.5 w-full bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-xs py-2 rounded-xl transition shadow-sm">選んだ日のシフトをここで入力する</button>
         </div>
 
-        <!-- シ���ト確認エリア -->
+        <!-- シフト確認エリア -->
         <div class="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm space-y-3">
           <div class="text-sm font-bold text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
             <span>📌 今日のシフト (<span id="calendarTodayDateLabel"></span>)</span>
@@ -737,18 +739,22 @@
       let ne = timeStrToMins(newEnd);
       if (ne <= ns) ne += 24 * 60;
 
-      const keys = getActiveJobKeys();
-      for (const jk of keys) {
-        const shifts = getDayShifts(dateKey, jk);
-        for (let i = 0; i < shifts.length; i++) {
-          if (jk === excludeJk && i === excludeIdx) continue;
-          const sh = shifts[i];
-          if (!sh || sh.isPaidLeave || !sh.start || !sh.end) continue;
-          let os = timeStrToMins(sh.start);
-          let oe = timeStrToMins(sh.end);
-          if (oe <= os) oe += 24 * 60;
-          if (ns < oe && ne > os) {
-            return { jobName: getJobDisplayName(jk), start: sh.start, end: sh.end };
+      const base = parseDateKey(dateKey);
+      for (const off of [-1, 0, 1]) {
+        const k = formatDateKey(new Date(base.getFullYear(), base.getMonth(), base.getDate() + off));
+        for (const jk of getActiveJobKeys()) {
+          const shifts = getDayShifts(k, jk);
+          for (let i = 0; i < shifts.length; i++) {
+            if (off === 0 && jk === excludeJk && i === excludeIdx) continue;
+            const sh = shifts[i];
+            if (!sh || sh.isPaidLeave || !sh.start || !sh.end) continue;
+            let os = timeStrToMins(sh.start);
+            let oe = timeStrToMins(sh.end);
+            if (oe <= os) oe += 24 * 60;
+            os += off * 1440; oe += off * 1440;
+            if (ns < oe && ne > os) {
+              return { jobName: getJobDisplayName(jk), start: sh.start, end: sh.end };
+            }
           }
         }
       }
@@ -1046,11 +1052,19 @@
     }
 
     function deleteJobShiftIndexModal(jobKey, idx) {
-      let shifts = getDayShifts(selectedCalendarDateStr, jobKey);
+      const dk = selectedCalendarDateStr;
+      let shifts = getDayShifts(dk, jobKey);
+      const removed = shifts[idx];
       shifts.splice(idx, 1);
-      setDayShifts(selectedCalendarDateStr, jobKey, shifts);
+      setDayShifts(dk, jobKey, shifts);
       updateModalSelectedDateSummary();
-      showToast("シフトを削除しました");
+      showToast("シフトを削除しました", () => {
+        const cur = getDayShifts(dk, jobKey);
+        cur.splice(idx, 0, removed);
+        setDayShifts(dk, jobKey, cur);
+        updateModalSelectedDateSummary();
+        refreshAll();
+      });
     }function getActiveJobKeys() {
       let count = Number(configData.jobCount) || 1;
       let keys = ['job1'];
@@ -1077,11 +1091,12 @@
       }
     }
 
-    function showToast(msg) {
+    function showToast(msg, undoFn) {
       const toast = document.getElementById('toastMessage');
       const toastText = document.getElementById('toastText');
       if (!toast || !toastText) return;
       toastText.innerText = msg;
+      if (undoFn) { const ub = document.createElement('button'); ub.textContent = '元に戻す'; ub.className = 'ml-3 underline font-bold text-rose-200'; ub.onclick = () => { undoFn(); toast.classList.remove('opacity-100'); toast.classList.add('opacity-0', 'pointer-events-none'); }; toastText.appendChild(ub); }
 
       toast.classList.remove('opacity-0', 'pointer-events-none');
       toast.classList.add('opacity-100');
@@ -1090,7 +1105,7 @@
       toastTimer = setTimeout(() => {
         toast.classList.remove('opacity-100');
         toast.classList.add('opacity-0', 'pointer-events-none');
-      }, 2500);
+      }, undoFn ? 5000 : 2500);
     }
 
     function switchTab(tabName) {
@@ -1300,7 +1315,7 @@
           </div>
         </div>
         <div class="grid grid-cols-3 text-sm font-bold text-stone-500 border-b border-stone-200 pb-2 whitespace-nowrap">
-          <span>項目</span><span class="text-center">労働時��</span><span class="text-right pr-1">給料見込額</span>
+          <span>項目</span><span class="text-center">労働時間</span><span class="text-right pr-1">給料見込額</span>
         </div>
         ${rowsHtml}
         <div class="pt-2 mt-1 border-t-2 border-stone-200 flex justify-between items-center bg-rose-950 text-rose-50 p-3 rounded-2xl">
@@ -1428,6 +1443,8 @@
     }
 
 
+    const DAY_OPTIONS = Array.from({ length: 28 }, (_, i) => `<option value="${i + 1}">${i + 1}日</option>`).join('') + '<option value="月末">月末</option>';
+
     function getSettingsFormHtml(jk) {
       const j = configData[jk];
       if (!j.name) return '';
@@ -1440,13 +1457,13 @@
             <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 flex items-center justify-between px-3">
               <span class="font-bold text-stone-700">締め日</span>
               <select id="set_closeDay" class="p-1.5 border rounded-lg text-center font-bold bg-white border-stone-200 text-stone-900">
-                <option value="5">5日</option><option value="10">10日</option><option value="15">15日</option><option value="20">20日</option><option value="25">25日</option><option value="月末">月末</option>
+                ${DAY_OPTIONS}
               </select>
             </div>
             <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 flex items-center justify-between px-3">
               <span class="font-bold text-stone-700">給料日</span>
               <select id="set_payDay" class="p-1.5 border rounded-lg text-center font-bold bg-white border-stone-200 text-stone-900">
-                <option value="5">5日</option><option value="10">10日</option><option value="15">15日</option><option value="20">20日</option><option value="25">25日</option><option value="月末">月末</option>
+                ${DAY_OPTIONS}
               </select>
             </div>
           </div>
@@ -1473,6 +1490,7 @@
                   <div class="flex items-center gap-1"><input type="text" inputmode="numeric" id="set_wagePaid" oninput="formatInputNumber(this)" class="w-24 p-1.5 border rounded text-right font-bold bg-white"><span class="font-bold">円</span></div>
                 </div>
                 <p class="text-[11px] text-stone-500 font-medium">※時給が異なる場合は、よく入っている時間帯の時給か、平均時給を入力してね</p>
+                <div class="flex items-center justify-between pt-1"><span class="font-bold text-stone-700">有給1日あたりの時間</span><div class="flex items-center gap-1"><input type="text" inputmode="decimal" id="set_paidHours" class="w-16 p-1.5 border rounded text-right font-bold bg-white" placeholder="8"><span class="text-stone-600 text-xs">時間</span></div></div>
               </div>
             </div>
 
@@ -1628,6 +1646,7 @@
       document.getElementById('set_closeDay').value = j.closeDay || '20';
       document.getElementById('set_payDay').value = j.payDay || '5';
       document.getElementById('set_wagePaid').value = j.paid ? j.paid.toLocaleString() : '';
+      document.getElementById('set_paidHours').value = j.paidHours > 0 ? String(j.paidHours) : '';
 
 
       document.getElementById('set_transMonth').value = j.transMonth ? j.transMonth.toLocaleString() : '';
@@ -1650,6 +1669,7 @@
       j.closeDay = getVal('set_closeDay') || '20';
       j.payDay = getVal('set_payDay') || '5';
       j.paid = getNum('set_wagePaid');
+      j.paidHours = parseFloat(String(getVal('set_paidHours')).replace(/[^0-9.]/g, '')) || 0;
 
       if (document.getElementById('setWageSlotsContainer')) {
         j.wageSlots = [...document.querySelectorAll('#setWageSlotsContainer [data-slot]')].map(r => {
@@ -1944,6 +1964,8 @@
       if (goalCurrentPay) goalCurrentPay.innerText = formatCurrency(totalPay);
       const rawPercent = monthlyGoal > 0 ? (totalPay / monthlyGoal) * 100 : 0;
       if (goalPercentText) goalPercentText.innerText = `${Math.round(rawPercent)}%`;
+      const remEl = document.getElementById('goalRemainText');
+      if (remEl) remEl.innerText = monthlyGoal <= 0 ? '' : (totalPay >= monthlyGoal ? '目標達成♡' : `目標まであと${formatCurrency(monthlyGoal - totalPay)}`);
       if (goalProgressCircle) goalProgressCircle.setAttribute('stroke-dasharray', `${Math.min(Math.round(rawPercent), 100)}, 100`);
     }
 
@@ -2653,6 +2675,25 @@
 
 
 
+    function sanitizeShifts(obj) {
+      const out = {};
+      if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return out;
+      const okT = t => (typeof t === 'string' && /^\d{1,2}:\d{2}$/.test(t)) ? t : '';
+      Object.keys(obj).forEach(dk => {
+        if (!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dk) || !obj[dk] || typeof obj[dk] !== 'object') return;
+        ['job1', 'job2', 'job3'].forEach(jk => {
+          const arr = [].concat(obj[dk][jk] || []).filter(x => x && typeof x === 'object').map(x => ({
+            start: okT(x.start), end: okT(x.end),
+            breakMins: Math.max(0, Number(x.breakMins) || 0),
+            isPaidLeave: !!x.isPaidLeave,
+            hours: Math.max(0, Number(x.hours) || 0)
+          })).filter(x => x.isPaidLeave || (x.start && x.end));
+          if (arr.length) { out[dk] = out[dk] || {}; out[dk][jk] = arr; }
+        });
+      });
+      return out;
+    }
+
     function importAppData(event) {
       const input = event.target;
       const file = input.files && input.files[0];
@@ -2670,7 +2711,7 @@
 
           askConfirm('今のデータに、読み込んだバックアップの内容を上書きします。よろしいですか？', () => { try {
 
-          shiftsData = data.mybasket_shifts_v23 || data.mybasket_shifts_v22 || data.mybasket_shifts_v21 || {};
+          shiftsData = sanitizeShifts(data.mybasket_shifts_v23 || data.mybasket_shifts_v22 || data.mybasket_shifts_v21 || {});
           let loadedWages = data.mybasket_wages_v77 || data.mybasket_wages_v76 || {};
           monthlyGoal = Number(loadedWages.monthlyGoal) || 0;
           if (data.mybasket_trial_start) { localStorage.setItem('mybasket_trial_start', data.mybasket_trial_start); updateTrialBanner(); }
