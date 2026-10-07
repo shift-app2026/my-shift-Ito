@@ -144,7 +144,7 @@
   <!-- 確認ポップアップ -->
   <div id="confirmModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
-      <h3 class="text-base font-bold text-rose-900 text-center tracking-wide">確認</h3>
+      <h3 id="confirmModalTitle" class="text-base font-bold text-rose-900 text-center tracking-wide">確認</h3>
       <p id="confirmModalText" class="text-sm font-bold text-stone-800 text-center whitespace-pre-line leading-relaxed"></p>
       <div class="flex space-x-2">
         <button type="button" onclick="closeConfirmModal(false)" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
@@ -179,6 +179,7 @@
 
       <div class="space-y-3 overflow-y-auto pr-1 flex-1">
         <div id="modalJobSelectContainer" class="flex space-x-1.5"></div>
+        <div id="modalWageWarn" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-bold p-2 rounded-xl"></div>
 
         <div class="flex space-x-2">
           <button type="button" id="modalTypeWorkBtn" onclick="setModalShiftType(false)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-stone-100 text-stone-900 border-stone-300 shadow-sm">通常勤務</button>
@@ -245,7 +246,7 @@
 
         <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-1.5 rounded-2xl shadow-md border border-rose-800/40 text-xs">
           <button type="button" onclick="changePayPeriodOffset(-1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">◀ 前月</button>
-          <div class="flex items-center gap-2"><span class="text-rose-300">✦</span><h2 id="todayDate" class="font-bold text-white text-base tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
+          <div class="flex items-center gap-2"><span class="text-rose-300">✦</span><h2 id="todayDate" onclick="payPeriodOffset=0;initOverviewPage();" title="タップで今月に戻る" class="cursor-pointer font-bold text-white text-base tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
           <button type="button" onclick="changePayPeriodOffset(1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">翌月 ▶</button>
         </div>
 
@@ -289,6 +290,7 @@
             <span id="monthlyReceiveTitle">今月のお給料</span>
           </div>
           <div id="monthlyReceiveBreakdown" class="space-y-2 text-xs text-stone-700 font-medium"></div>
+          <div id="monthlyWorkStat" class="text-[11px] font-bold text-stone-600"></div>
           <div class="border-t border-rose-200/60 pt-2 flex justify-between items-baseline">
             <span id="monthlyReceiveTotalLabel" class="text-xs font-bold text-rose-950">今月の受取総額 合計</span>
             <span id="monthlyReceiveTotalPay" class="text-xl font-bold font-serif-title tracking-tight text-rose-950">¥0</span>
@@ -310,7 +312,7 @@
       <div id="tab-calendar" class="tab-content hidden space-y-3">
         <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-1.5 rounded-2xl shadow-md border border-rose-800/40 text-xs">
           <button type="button" onclick="changeMonth(-1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">◀ 前月</button>
-          <div class="flex items-center gap-2"><span class="text-rose-300">✦</span><h2 id="currentMonthLabel" class="font-bold text-white text-base tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
+          <div class="flex items-center gap-2"><span class="text-rose-300">✦</span><h2 id="currentMonthLabel" onclick="currentPeriodDate=new Date();renderCalendar();" title="タップで今月に戻る" class="cursor-pointer font-bold text-white text-base tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
           <button type="button" onclick="changeMonth(1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">翌月 ▶</button>
         </div>
 
@@ -318,9 +320,9 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-1.5 font-bold text-xs text-stone-900">
               <span class="text-sm">📋</span>
-              <span>前月のシフトを一括コピー</span>
+              <span>前月のシフトを曜日に合わせて一括コピー</span>
             </div>
-            <button type="button" onclick="copyLastMonthShifts()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-sm">一括コピーする</button>
+            <button type="button" onclick="copyLastMonthShifts()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-sm">コピーする</button>
           </div>
         </div>
 
@@ -332,10 +334,6 @@
           <div id="calendarJobLegend" class="flex flex-wrap items-center justify-center gap-2.5 pt-2"></div>
         </div>
 
-        <div class="bg-stone-50 border border-stone-200 rounded-2xl p-2.5 text-center space-y-0.5">
-          <p class="text-xs font-bold text-stone-600 leading-relaxed whitespace-nowrap">シフトの追加・変更は、「シフト入力」からしてね♡</p>
-          <button type="button" onclick="openShiftInputModal(calSelectedDateStr)" class="mt-1.5 w-full bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-xs py-2 rounded-xl transition shadow-sm">選んだ日のシフトをここで入力する</button>
-        </div>
 
         <!-- シフト確認エリア -->
         <div class="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm space-y-3">
@@ -354,6 +352,8 @@
               <span class="text-stone-400">予定なし</span>
             </div>
           </div>
+
+          <button type="button" onclick="openShiftInputModal(calSelectedDateStr)" class="w-full bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-sm py-2.5 rounded-xl transition shadow-sm">選択日のシフトを入力する</button>
         </div>
       </div>
 
@@ -361,14 +361,14 @@
       <div id="tab-list" class="tab-content hidden space-y-3">
         <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-1.5 rounded-2xl shadow-md border border-rose-800/40 text-xs">
           <button type="button" onclick="changeListMonth(-1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">◀ 前月</button>
-          <div class="flex items-center gap-2"><span class="text-rose-300">✦</span><h2 id="currentListMonthLabel" class="font-bold text-white text-base tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
+          <div class="flex items-center gap-2"><span class="text-rose-300">✦</span><h2 id="currentListMonthLabel" onclick="currentListDate=new Date();renderStandaloneShiftList('jump');" title="タップで今月に戻る" class="cursor-pointer font-bold text-white text-base tracking-wider font-serif-title">----</h2><span class="text-rose-300">✦</span></div>
           <button type="button" onclick="changeListMonth(1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition">翌月 ▶</button>
         </div>
 
         <div class="bg-white p-3.5 rounded-2xl border border-stone-200 space-y-2 shadow-sm">
           <div class="text-xs font-bold text-stone-700 border-b border-stone-100 pb-2 flex flex-col items-start tracking-wide leading-relaxed pl-1 space-y-1">
             <span class="text-[11px] text-stone-700 font-bold">📅 タップするとGoogleカレンダーに登録されます</span>
-            <span class="text-[11px] text-rose-900 font-bold whitespace-nowrap">日付をタップすると、シフトの入力画面が開きます♡</span>
+            <span class="text-[11px] text-rose-900 font-bold whitespace-nowrap">日付をタップすると、シフトを修正できます♡</span>
             <div id="standaloneJobLegend" class="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5"></div>
           </div>
           <div id="standaloneShiftListContainer" class="space-y-2 h-[50vh] min-h-[300px] max-h-[480px] overflow-y-auto pr-1 text-xs"></div>
@@ -451,8 +451,8 @@
             </h3>
             <ul class="list-disc list-inside space-y-1 text-stone-600 font-medium">
               <li><strong class="text-stone-800">お給料タブ</strong>：今月の給料見込や年間収入、目標金額を確認できます。</li>
-              <li><strong class="text-stone-800">カレンダータブ</strong>：月ごとのシフトや給料日（❤）が一目でわかります。</li>
-              <li><strong class="text-stone-800">シフト入力タブ</strong>：日付をタップしてシフトの追加や有給の登録ができます。</li>
+              <li><strong class="text-stone-800">カレンダータブ</strong>：シフトの有無や給料日（❤）がわかります。日付を選んで「選択日のシフトを入力する」から、シフトの追加や有給の登録ができます。</li>
+              <li><strong class="text-stone-800">予定表タブ</strong>：1か月のシフトを一覧で確認できます。日付をタップすると修正でき、Googleカレンダーへの登録もできます。</li>
               <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日・給料日、バイト先の登録（最大3件）を自由に変更できます。</li>
             </ul>
           </div>
@@ -504,7 +504,7 @@
       <div class="grid grid-cols-5 gap-1">
         <button type="button" onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">お給料</button>
         <button type="button" onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">カレンダー</button>
-        <button type="button" onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">シフト入力</button>
+        <button type="button" onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">予定表</button>
         <button type="button" onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">設定</button>
         <button type="button" onclick="switchTab('guide')" id="btn-guide" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">その他</button>
       </div>
@@ -774,7 +774,10 @@
     }
 
     let confirmCb = null;
-    function askConfirm(msg, onOk, okLabel) {
+    function askConfirm(msg, onOk, okLabel, title) {
+      const t = document.getElementById('confirmModalTitle');
+      const tt = (title === undefined) ? '確認' : title;
+      t.textContent = tt; t.classList.toggle('hidden', !tt);
       document.getElementById('confirmModalText').innerText = msg;
       document.getElementById('confirmModalOk').innerText = okLabel || 'OK';
       confirmCb = onOk;
@@ -818,10 +821,29 @@
       refreshAll();
     }
 
+    // 休憩の目安（労働基準法：6時間超で45分以上、8時間超で60分以上）
+    function breakHint(start, end, breakMins) {
+      const dur = getMinutesDiff(start, end);
+      const need = dur > 480 ? 60 : (dur > 360 ? 45 : 0);
+      if (need === 0 || Number(breakMins) >= need) return '';
+      return `　※${dur > 480 ? '8' : '6'}時間超の勤務は休憩${need}分以上が目安だよ`;
+    }
+
+    function jobHasWage(jk) {
+      return ((configData[jk] && configData[jk].wageSlots) || []).some(x => x.start && x.end && x.wage > 0);
+    }
+
     function renderModalJobTabs() {
       const container = document.getElementById('modalJobSelectContainer');
       if (!container) return;
       container.innerHTML = '';
+
+      const warnEl = document.getElementById('modalWageWarn');
+      if (warnEl) {
+        const noWage = !jobHasWage(currentSelectedJobKey);
+        warnEl.classList.toggle('hidden', !noWage);
+        if (noWage) warnEl.textContent = '⚠️ このバイト先は時給が未設定です。このままだと金額が¥0になるので、「設定」タブで時給を入れてね♡';
+      }
 
       const activeKeys = getActiveJobKeys();
       
@@ -1035,7 +1057,7 @@
         shifts[idx].breakMins = newBreak;
         setDayShifts(selectedCalendarDateStr, jobKey, shifts);
         updateModalSelectedDateSummary();
-        showToast("シフトの時間を変更しました♡");
+        showToast("シフトの時間を変更しました♡" + breakHint(newStart, newEnd, newBreak));
       }
     }
 
@@ -1851,13 +1873,14 @@
       }
 
       // Register to shift
+      const bh = breakHint(newPresetForm.start, newPresetForm.end, newPresetForm.breakMins);
       if (!registerModalPresetTime(newPresetForm.start, newPresetForm.end, newPresetForm.breakMins)) { renderModalPresetButtons(); return; }
 
       // Clear / Reset form
       newPresetForm = { start: '00:00', end: '00:00', breakMins: 0 };
       renderModalCustomPresets();
       renderModalPresetButtons();
-      showToast("【ワンタッチ時間登録一覧】に登録し、シフトに追加しました♡");
+      showToast("【ワンタッチ時間登録一覧】に登録し、シフトに追加しました♡" + bh);
     }
 
     function updateNewPresetForm() {
@@ -1877,12 +1900,12 @@
       shifts.push({ start, end, breakMins, isPaidLeave: false });
       setDayShifts(selectedCalendarDateStr, currentSelectedJobKey, shifts);
       updateModalSelectedDateSummary();
-      showToast("シフトに登録しました");
+      showToast("シフトに登録しました" + breakHint(start, end, breakMins));
       return true;
     }
 
     function copyLastMonthShifts() {
-      askConfirm('前月の同じ曜日のシフトを今月へコピーします（入力済みの日と有給休暇はコピーしません）。よろしいですか？', () => {
+      askConfirm('入力済みのシフトと有給休暇は\nコピーされません♡', () => {
       let y = currentPeriodDate.getFullYear();
       let m = currentPeriodDate.getMonth();
 
@@ -1929,7 +1952,7 @@
       } else {
         showToast(`コピー元の前月にシフトが登録されていません`);
       }
-      });
+      }, undefined, '');
     }
 
     function getMonthCalendarRange(refDate) {
@@ -2031,7 +2054,7 @@
     }
 
     function calculateMonthlyReceivePay() {
-      let totalReceivePay = 0;
+      let totalReceivePay = 0, totalMins = 0, totalDays = 0;
       let breakdownHtml = '';
       const activeKeys = getActiveJobKeys();
       const viewMonth = getPayViewMonthDate();
@@ -2045,7 +2068,9 @@
         const job = configData[jk];
         const { start: periodStart, end: periodEnd } = getJobPayPeriodRangeForReceiveMonth(job, payPeriodOffset);
 
-        const jobReceivePay = calcJobPeriodPay(jk, payPeriodOffset).pay;
+        const rr = calcJobPeriodPay(jk, payPeriodOffset);
+        const jobReceivePay = rr.pay;
+        totalMins += rr.mins; totalDays += rr.days;
 
         totalReceivePay += jobReceivePay;
 
@@ -2061,6 +2086,8 @@
         `;
       });
 
+      const ws = document.getElementById('monthlyWorkStat');
+      if (ws) ws.textContent = totalDays > 0 ? `⏱ 勤務 のべ${totalDays}日・${Math.floor(totalMins / 60)}時間${totalMins % 60 ? totalMins % 60 + '分' : ''}（有給は時間に含みません）` : '';
       const container = document.getElementById('monthlyReceiveBreakdown');
       const totalEl = document.getElementById('monthlyReceiveTotalPay');
       if (container) {
