@@ -76,6 +76,8 @@
 
       .wage-time::-webkit-calendar-picker-indicator { display: none; }
     .wage-time { -webkit-appearance: none; appearance: none; min-height: 2rem; }
+    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
     .clock-time::-webkit-calendar-picker-indicator { display: block; opacity: .75; cursor: pointer; margin-left: 2px; }
   </style>
 <style>
@@ -178,7 +180,7 @@
         <h3 id="modalDateTitle" class="text-sm font-bold text-stone-900 tracking-wide">日付 のシフト</h3>
       </div>
 
-      <div class="space-y-3 overflow-y-auto pr-1 flex-1">
+      <div class="space-y-3 overflow-y-auto pr-1 flex-1 no-scrollbar">
         <p class="text-xs font-bold text-stone-700">バイト名を選択してからシフトを入力してね。</p>
         <div id="modalJobSelectContainer" class="flex space-x-1.5"></div>
         <div id="modalWageWarn" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-bold p-2 rounded-xl"></div>
