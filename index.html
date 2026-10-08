@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>マイシフト＆給料</title>
   
-  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADCklEQVR4nO3dwW1TQRRAUYOogE0aoATaYEEJtEEBdIHoACTqoARqSA0sQChAbuLgzJ+Z6JwCxubpMj+K/ZRnH6/enOA2z2e/AdYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SC9mv4E/fLn+NvstzPf25evZb+GXJeLQxE2/pzG9kvmPFWWU6ZOZeXNM/8ev7+eIZl0h024OZZxv1qzmxKGMh5oysfk/c7CsCXG4Nv7P8XM7Og5lXOLg6XmskMRBOjQOz5TLHTlDNwdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp0C37r9efj3y5p+rTqw/HvJCbgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0hJ/UuMcf31O/e77e+ePtsfN8e83GB73Ow27nz/IBnHUHB9rvrufP87qcdw9wcvnu/v5Qy0dxzmzu2S+u58/2tJxMJc4SOIgiYO0dBzn/Kbokt8m7X7+aEvHcbpvdpdPdvfzh1o9jlNP8LEmu/v542wQx+m2OT7uZHc/f5BnH6/eHPZiW0xkfXZlmU8cJHGQxEESB0kcJHGQxEESB0kcJHGQxEGy8fZEzh9hj5tj9400G2+j7L6RZuNtlN030my8jbL7RpqNN54scZDEQRIH6dq4dt9Is/E21u4baTbextp9I83G21i7b6TZeLvfFhNZn4035hMHSRwkcZDEQRIH6dA4Vv7uwi6OnKGbgyQO0tFxeLJc4uDpTbg59PF/jp+bxwppThwuj4eaMrFpN4c+zjdrVod+ZH8rn+PfYe5/ofk/c7hCyvTJzL85bnKLnBZo4re14mAp8x8rLEscJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpB/mCfM2/VKEGAAAAABJRU5ErkJggg==">
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADCklEQVR4nO3dwW1TQRRAUYOogE0aoATaYEEJtEEBdIHoACTqoARqSA0sQChAbuLgzJ+Z6JxCxubpMj+K/ZRnH6/enOA2z2e/AdYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SC9mv4E/fLn+NvstzPf25evZb+GXJeLQxE2/pzG9kvmPFWWU6ZOZeXNM/8ev7+eIZl0h024OZZxv1qzmxKGMh5oysfk/c7CsCXG4Nv7P8XM7Og5lXOLg6XmskMRBOjQOz5TLHTlDNwdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp0C37r9efj3y5p+rTqw/HpJCbgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0hJ/UuMcf31O/e77e+ePtsfN8e83GB73Ow27nz/IBnHUHB9rvrufP87qcdw9wcvnu/v5Qy0dxzmzu2S+u58/2tJxMJc4SOIgiYO0dBzn/Kbokt8m7X7+aEvHcbpvdpdPdvfzh1o9jlNP8LEmu/v542wQx+m2OT7uZHc/f5BnH6/eHPZiW0xkfXZlmU8cJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpB/mCfM2/VKEGAAAAABJRU5ErkJggg==">
   <meta name="theme-color" content="#881337">
 
   <style>/* Tailwind CSS（ビルド済み） */
@@ -324,9 +324,23 @@
           <div class="text-xs font-bold text-stone-800 border-b border-stone-200 pb-2 flex justify-between items-center tracking-wide">
             <span id="yearlyTitleLabel">年間収入合計</span>
           </div>
+          
           <div class="flex justify-between items-baseline pt-1">
-            <span id="yearlySubLabel" class="text-xs text-stone-600 font-bold">10月までの収入</span>
-            <span id="yearlyTotalPay" class="text-base font-bold font-serif-title tracking-tight text-stone-900">¥0</span>
+            <span id="yearlySubLabel" class="text-xs text-stone-600 font-bold">
+            10月までの収入
+            </span>
+              
+            <span id="yearlyTotalPay" class="text-base font-bold font-serif-title tracking-tight text-stone-900">
+            ¥0
+            </span>
+          </div>
+
+          <div id="incomeWallBox" class="mt-3 bg-stone-50/70 border border-stone-200 rounded-xl px-3 py-2 transition-colors duration-300">
+            <div class="text-[10px] font-bold text-stone-400 mb-0.5">【年収の壁】</div>
+            <div class="flex justify-between items-baseline gap-2 whitespace-nowrap text-[10px]">
+              <span class="text-stone-500 font-bold">103万円まで <span id="wall103" class="font-bold text-stone-600 text-[11px]">0円</span></span>
+              <span class="text-stone-500 font-bold">130万円まで <span id="wall130" class="font-bold text-stone-600 text-[11px]">0円</span></span>
+            </div>
           </div>
         </div>
       </div>
@@ -841,7 +855,7 @@
       const dur = getMinutesDiff(start, end);
       const need = dur > 480 ? 60 : (dur > 360 ? 45 : 0);
       if (need === 0 || Number(breakMins) >= need) return '';
-      return `　※${dur > 480 ? '8' : '6'}時間超の勤務は休憩${need}分以上が目安だよ`;
+      return ` ※${dur > 480 ? '8' : '6'}時間超の勤務は休憩${need}分以上が目安だよ`;
     }
 
     function jobHasWage(jk) {
@@ -2123,6 +2137,31 @@
         yearlySubLabel.innerText = lastReceivedMonth > 0
           ? `${currentYear}年 ${lastReceivedMonth}月までに受け取った給料`
           : `${currentYear}年はまだ受け取りがありません`;
+      }
+
+      // --- 【追加】103万円・130万円の壁の残り計算 & カラー変化の演出 ---
+      const remain103 = Math.max(0, 1030000 - totalYearPay);
+      const remain130 = Math.max(0, 1300000 - totalYearPay);
+
+      const wall103 = document.getElementById('wall103');
+      const wall130 = document.getElementById('wall130');
+      const wallBox = document.getElementById('incomeWallBox');
+
+      if (wall103) wall103.innerText = `${remain103.toLocaleString()}円`;
+      if (wall130) wall130.innerText = `${remain130.toLocaleString()}円`;
+
+      // 壁が近いときだけ、控えめに色を変える（10万円以下でうす黄、5万円以下でうすローズ）
+      if (wallBox) {
+        const base = "mt-3 rounded-xl px-3 py-2 transition-colors duration-300 border ";
+        wallBox.className = base + "bg-stone-50/70 border-stone-200";
+        if (wall103) wall103.className = "font-bold text-stone-600 text-[11px]";
+        if (remain103 <= 50000) {
+          wallBox.className = base + "bg-rose-50/60 border-rose-200";
+          if (wall103) wall103.className = "font-bold text-rose-600 text-[11px]";
+        } else if (remain103 <= 100000) {
+          wallBox.className = base + "bg-amber-50/60 border-amber-200";
+          if (wall103) wall103.className = "font-bold text-amber-700 text-[11px]";
+        }
       }
     }
 
