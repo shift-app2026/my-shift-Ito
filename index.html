@@ -76,6 +76,7 @@
 
       .wage-time::-webkit-calendar-picker-indicator { display: none; }
     .wage-time { -webkit-appearance: none; appearance: none; min-height: 2rem; }
+    .clock-time::-webkit-calendar-picker-indicator { display: block; opacity: .75; cursor: pointer; margin-left: 2px; }
   </style>
 <style>
   /* スマホ幅ではカードを画面いっぱいに表示し、上部の余白をなくす */
@@ -116,7 +117,7 @@
   </div>
 
   <!-- 休憩時間選択モーダル（シフト入力画面の上に重ねるので z-[70]） -->
-  <div id="breakSelectModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
+  <div id="breakSelectModal" style="z-index:70" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
       <h3 class="text-base font-bold text-stone-900 text-center tracking-wide">☕ 休憩時間</h3>
       <div id="breakChoiceChips" class="grid grid-cols-4 gap-2"></div>
@@ -174,10 +175,11 @@
   <div id="shiftInputModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-stone-200 space-y-4 max-h-[92vh] flex flex-col overflow-hidden">
       <div class="flex justify-between items-center border-b border-stone-200 pb-2.5 shrink-0">
-        <h3 id="modalDateTitle" class="text-sm font-bold text-stone-900 tracking-wide">日付 のシフト入力</h3>
+        <h3 id="modalDateTitle" class="text-sm font-bold text-stone-900 tracking-wide">日付 のシフト</h3>
       </div>
 
       <div class="space-y-3 overflow-y-auto pr-1 flex-1">
+        <p class="text-xs font-bold text-stone-700">バイト名を選択してからシフトを入力してね。</p>
         <div id="modalJobSelectContainer" class="flex space-x-1.5"></div>
         <div id="modalWageWarn" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-bold p-2 rounded-xl"></div>
 
@@ -185,6 +187,15 @@
           <button type="button" id="modalTypeWorkBtn" onclick="setModalShiftType(false)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-stone-100 text-stone-900 border-stone-300 shadow-sm">通常勤務</button>
           <button type="button" id="modalTypePaidBtn" onclick="setModalShiftType(true)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50">☆ 有給休暇</button>
         </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-stone-700">【新規シフト入力】</span>
+          </div>
+          <div id="modalCustomPresetContainer" class="space-y-2"></div>
+        </div>
+
+        <button type="button" onclick="openPresetRegisterModal()" class="w-full py-2 rounded-xl text-sm font-bold bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 transition">ワンタッチ時間登録</button>
 
         <div class="space-y-1.5">
           <div class="flex flex-col">
@@ -197,14 +208,7 @@
 
         <div class="space-y-1.5">
           <div class="flex justify-between items-center">
-            <span class="text-xs font-bold text-stone-700">【新しい時間を登録】</span>
-          </div>
-          <div id="modalCustomPresetContainer" class="space-y-2"></div>
-        </div>
-
-        <div class="space-y-1.5">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-bold text-stone-700">【シフト一覧】※時間の修正ができます。</span>
+            <span class="text-xs font-bold text-stone-700">【シフト一覧】</span>
           </div>
           <div id="modalSelectedDateSummaryContent" class="space-y-2 text-xs text-stone-700">
             <span class="text-stone-400">シフトは登録されていません</span>
@@ -218,6 +222,22 @@
           <span class="text-xs font-bold text-rose-100 tracking-tight">※登録したシフトは自動で保存されます♡</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- ワンタッチ時間登録画面 -->
+  <div id="presetRegisterModal" style="z-index:60" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-3 hidden">
+    <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-stone-200 space-y-4">
+      <h3 class="text-sm font-bold text-stone-900 tracking-wide border-b border-stone-200 pb-2.5">ワンタッチ時間登録</h3>
+      <p class="text-xs font-bold text-rose-900">※入力が完了したら必ず登録ボタンを押してね</p>
+      <div class="bg-white p-2 border rounded-2xl border-stone-200 flex items-center justify-between gap-1">
+        <input type="time" id="pr_start" class="wage-time clock-time w-[96px] px-0.5 py-1 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center">
+        <span class="font-bold text-stone-400 text-xs">〜</span>
+        <input type="time" id="pr_end" class="wage-time clock-time w-[96px] px-0.5 py-1 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center">
+        <button type="button" onclick="openBreakSelectModal('preset')" class="px-2 py-1.5 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="pr_break_disp">0分</span></button>
+        <button type="button" onclick="submitPresetRegister()" class="px-3 py-1.5 bg-rose-900 text-rose-50 hover:bg-rose-800 rounded-lg font-bold text-xs transition shadow-sm whitespace-nowrap">登録</button>
+      </div>
+      <button type="button" onclick="closePresetRegisterModal()" class="w-full py-2 rounded-xl bg-stone-200 text-stone-700 hover:bg-stone-300 text-sm font-bold transition">閉じる</button>
     </div>
   </div>
 
@@ -337,7 +357,7 @@
 
         <!-- シフト確認エリア -->
         <div class="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm space-y-3">
-          <button type="button" onclick="openShiftInputModal(calSelectedDateStr)" class="w-full bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold text-sm py-2.5 rounded-xl transition shadow-sm">選択日のシフトを入力する</button>
+          <div class="bg-rose-50 border border-rose-200 text-rose-900 text-xs font-bold p-2.5 rounded-xl text-center">※シフトを入力したい日付をタップすると<br>「シフト登録画面」に移動します♡</div>
           <div class="text-sm font-bold text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
             <span>📌 今日のシフト (<span id="calendarTodayDateLabel"></span>)</span>
           </div>
@@ -345,14 +365,6 @@
             <span class="text-stone-400">予定なし</span>
           </div>
 
-          <div id="selectedDateSection" class="hidden space-y-2 pt-2 border-t border-stone-200">
-            <div class="text-sm font-bold text-rose-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
-              <span>📌 選択した日のシフト (<span id="calendarSelectedDateLabel"></span>)</span>
-            </div>
-            <div id="calendarSelectedSummaryContent" class="space-y-2 text-sm text-stone-700">
-              <span class="text-stone-400">予定なし</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -394,7 +406,7 @@
               <button type="button" onclick="registerNewJob()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-5 py-2 rounded-xl text-xs transition shadow-sm">バイト先名を登録する</button>
               <span class="text-xs font-bold text-stone-800">3件まで登録できます♡</span>
             </div>
-            <div class="text-[11px] font-bold text-stone-800">※登録すると、時給などを入力できるようになります。</div>
+            <div class="text-[11px] font-bold text-stone-800">※登録すると、時給関係の登録ができます。</div>
             <div id="settingsJobTabs" class="space-y-1.5"></div>
           </div>
 
@@ -420,14 +432,14 @@
         </div>
       </div>
 
-      <!-- タブ4: その他 -->
+      <!-- タブ4: はじめに -->
       <div id="tab-guide" class="tab-content hidden space-y-3">
         <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-1.5 rounded-2xl text-center shadow-md border border-rose-800/40 relative overflow-hidden">
           <div class="absolute -top-6 -left-6 w-16 h-16 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>
           <div class="flex justify-between items-center px-1">
             <span class="text-xs text-rose-300 tracking-widest text-lg">📖</span>
             <div>
-              <p class="text-base font-bold tracking-wider text-white">その他</p>
+              <p class="text-base font-bold tracking-wider text-white">はじめに</p>
               <p class="text-xs font-bold text-rose-200 tracking-wide">アプリの使い方や大切なお知らせ</p>
             </div>
             <span class="text-xs text-rose-300 tracking-widest text-lg">📖</span>
@@ -435,6 +447,10 @@
         </div>
 
         <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3 text-xs text-stone-800 leading-relaxed">
+          <div class="bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 font-bold text-rose-900">
+            🌸 まずは「設定」タブでバイト先を登録しよう
+          </div>
+
           <div class="space-y-1.5 border-b border-stone-200 pb-3">
             <h3 class="font-bold text-stone-900 text-sm flex items-center gap-1.5">
               <span>✨</span><span>このアプリについて</span>
@@ -450,9 +466,10 @@
             </h3>
             <ul class="list-disc list-inside space-y-1 text-stone-600 font-medium">
               <li><strong class="text-stone-800">お給料タブ</strong>：今月の給料見込や年間収入、目標金額を確認できます。</li>
-              <li><strong class="text-stone-800">カレンダータブ</strong>：シフトの有無や給料日（❤）がわかります。日付を選んで「選択日のシフトを入力する」から、シフトの追加や有給の登録ができます。</li>
+              <li><strong class="text-stone-800">シフト登録タブ</strong>：シフトの有無や給料日（❤）がわかります。入力したい日付をタップすると、シフトの追加や有給の登録ができます。</li>
               <li><strong class="text-stone-800">予定表タブ</strong>：1か月のシフトを一覧で確認できます。日付をタップすると修正でき、Googleカレンダーへの登録もできます。</li>
               <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日・給料日、バイト先の登録（最大3件）を自由に変更できます。</li>
+              <li><strong class="text-stone-800">はじめにタブ</strong>：このページです。アプリの使い方や、データの保存・お問い合わせなどの大切なお知らせを確認できます。</li>
             </ul>
           </div>
 
@@ -502,10 +519,10 @@
     <div class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-stone-100/95 border-t border-stone-200 p-1.5 shadow-lg" style="padding-bottom: calc(0.375rem + env(safe-area-inset-bottom, 0px));">
       <div class="grid grid-cols-5 gap-1">
         <button type="button" onclick="switchTab('clock')" id="btn-clock" class="tab-btn active py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">お給料</button>
-        <button type="button" onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">カレンダー</button>
+        <button type="button" onclick="switchTab('calendar')" id="btn-calendar" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">シフト登録</button>
         <button type="button" onclick="switchTab('list')" id="btn-list" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">予定表</button>
         <button type="button" onclick="switchTab('settings')" id="btn-settings" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">設定</button>
-        <button type="button" onclick="switchTab('guide')" id="btn-guide" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">その他</button>
+        <button type="button" onclick="switchTab('guide')" id="btn-guide" class="tab-btn bg-white text-stone-700 border border-stone-200 py-2.5 rounded-xl text-[11px] font-bold text-center transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-0.5">はじめに</button>
       </div>
     </div>
 
@@ -798,7 +815,7 @@
 
       const [y, m, d] = dateStr.split('-');
       const titleEl = document.getElementById('modalDateTitle');
-      if (titleEl) titleEl.innerText = `${y}年${m}月${d}日 のシフト入力`;
+      if (titleEl) titleEl.innerText = `${y}年${m}月${d}日 のシフト`;
 
       renderModalJobTabs();
       renderModalPresetButtons();
@@ -996,18 +1013,9 @@
 
         html += `
           <div class="bg-stone-50 p-2 border rounded-xl border-stone-200 flex items-center justify-between gap-1 text-xs">
-            <div class="flex items-center gap-1 flex-1 min-w-0">
-              <input type="time" id="modal_edit_start_${jk}_${idx}" value="${sh.start || ''}" class="wage-time px-0.5 py-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-300 w-[64px]">
-              <span class="text-stone-400 font-bold shrink-0">〜</span>
-              <input type="time" id="modal_edit_end_${jk}_${idx}" value="${sh.end || ''}" class="wage-time px-0.5 py-1 border rounded-lg text-center font-bold text-xs bg-white border-stone-300 w-[64px]">
-              <span class="text-stone-600 shrink-0 text-[11px]">休憩</span>
-              <input type="text" inputmode="numeric" id="modal_edit_break_${jk}_${idx}" value="${breakMins}" oninput="formatInputNumber(this)" class="w-10 p-0.5 border rounded text-center bg-white font-bold text-xs">
-              <span class="text-stone-600 shrink-0 text-[11px]">分</span>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" onclick="updateShiftTimeModal('${jk}', ${idx})" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-2 py-1 rounded-lg text-xs transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]">変更</button>
-              <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2 py-1 rounded-lg text-xs transition">削除</button>
-            </div>
+            <span class="font-bold text-stone-800 job-time flex-1">${sh.start}〜${sh.end}</span>
+            <span class="font-bold text-stone-600 whitespace-nowrap">休憩${breakMins}分</span>
+            <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1 rounded-lg text-xs transition">削除</button>
           </div>
         `;
       });
@@ -1018,42 +1026,6 @@
       }
 
       summaryContent.innerHTML = html;
-    }
-
-    function updateShiftTimeModal(jobKey, idx) {
-      const startInput = document.getElementById(`modal_edit_start_${jobKey}_${idx}`);
-      const endInput = document.getElementById(`modal_edit_end_${jobKey}_${idx}`);
-      const breakInput = document.getElementById(`modal_edit_break_${jobKey}_${idx}`);
-      if (!startInput || !endInput) return;
-
-      const newStart = startInput.value;
-      const newEnd = endInput.value;
-      const newBreak = parseFormattedNumber(breakInput?.value || 0);
-
-      if (!newStart || !newEnd) {
-        showToast("開始・終了を入力してね♡");
-        return;
-      }
-      if (newStart === newEnd) {
-        showToast("開始と終了が同じ時間だよ。変えてね♡");
-        return;
-      }
-
-      const dup = findOverlap(selectedCalendarDateStr, newStart, newEnd, jobKey, idx);
-      if (dup) {
-        showOverlapAlert(dup);
-        return;
-      }
-
-      let shifts = getDayShifts(selectedCalendarDateStr, jobKey);
-      if (shifts[idx]) {
-        shifts[idx].start = newStart;
-        shifts[idx].end = newEnd;
-        shifts[idx].breakMins = newBreak;
-        setDayShifts(selectedCalendarDateStr, jobKey, shifts);
-        updateModalSelectedDateSummary();
-        showToast("シフトの時間を変更しました♡" + breakHint(newStart, newEnd, newBreak));
-      }
     }
 
     function updatePaidHoursModal(jk, idx) {
@@ -1506,8 +1478,8 @@
                   <span class="font-bold text-stone-700">有給休暇<span class="ml-2 text-stone-500 text-[11px]">1時間あたり</span></span>
                   <div class="flex items-center gap-1"><input type="text" inputmode="numeric" id="set_wagePaid" oninput="formatInputNumber(this)" class="w-24 p-1.5 border rounded text-right font-bold bg-white"><span class="font-bold">円</span></div>
                 </div>
-                <p class="text-[11px] text-stone-500 font-medium">※時給が異なる場合は、よく入っている時間帯の時給か、平均時給を入力してね</p>
-                <div class="flex items-center justify-between pt-1"><span class="font-bold text-stone-700">有給1日あたりの時間</span><div class="flex items-center gap-1"><input type="text" inputmode="decimal" id="set_paidHours" class="w-16 p-1.5 border rounded text-right font-bold bg-white" placeholder="8"><span class="text-stone-600 text-xs">時間</span></div></div>
+                <p class="text-[11px] text-stone-500 font-medium">※時給が異なる場合は、<br>頻繁に入っている時間帯の時給か、平均時給を入力してね</p>
+                <div class="flex items-center justify-between pt-1"><span class="font-bold text-stone-700">有給1日あたりの時間</span><div class="flex items-center gap-1"><input type="text" inputmode="decimal" id="set_paidHours" class="w-16 p-1.5 border rounded text-right font-bold bg-white" placeholder=""><span class="text-stone-600 text-xs">時間</span></div></div>
               </div>
             </div>
 
@@ -1744,7 +1716,9 @@
       const currentJob = configData[currentSelectedJobKey] || configData.job1;
       const presets = currentJob.presets || [];
 
-      presets.forEach((p, idx) => {
+      presets.map((p, idx) => ({ p, idx }))
+        .sort((a, b) => timeStrToMins(a.p.start) - timeStrToMins(b.p.start) || timeStrToMins(a.p.end) - timeStrToMins(b.p.end))
+        .forEach(({ p, idx }) => {
         if (p.start && p.end) {
           const breakMins = Number(p.breakMins) || 0;
 
@@ -1754,7 +1728,7 @@
               <span class="font-bold text-stone-600 flex-1 text-center whitespace-nowrap">休憩${breakMins}分</span>
               <div class="flex items-center gap-1.5 shrink-0">
                 <button type="button" onclick="registerModalPresetTime('${p.start}', '${p.end}', ${breakMins})"
-                        class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 py-1 px-3 rounded-lg font-bold transition">選択</button>
+                        class="bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 py-1 px-3 rounded-lg font-bold transition">登録</button>
                 <button type="button" onclick="deleteModalPresetRow(${idx})"
                         class="bg-stone-200 text-stone-700 hover:bg-stone-300 py-1 px-2.5 rounded-lg font-bold transition">削除</button>
               </div>
@@ -1763,7 +1737,7 @@
         }
       });
     if (!container.innerHTML.trim()) {
-        container.innerHTML = '<div class="text-stone-400 font-bold">下の「新しい時間を登録」から追加できます</div>';
+        container.innerHTML = '<div class="text-stone-400 font-bold">「ワンタッチ時間登録」から追加できます</div>';
       }
     }
 
@@ -1793,9 +1767,9 @@
       container.innerHTML = `
         <div class="bg-white p-2 border rounded-2xl border-stone-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
           <div class="flex items-center justify-between gap-1">
-            <input type="time" id="new_preset_start" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time w-[64px] px-0.5 py-1 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center">
+            <input type="time" id="new_preset_start" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-[96px] px-0.5 py-1 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center">
             <span class="font-bold text-stone-400 text-xs">〜</span>
-            <input type="time" id="new_preset_end" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time w-[64px] px-0.5 py-1 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center">
+            <input type="time" id="new_preset_end" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-[96px] px-0.5 py-1 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center">
             <button type="button" onclick="openBreakSelectModal()" class="px-2 py-1.5 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="modalBreakDisplayVal">${breakMins}分</span></button>
             <button type="button" onclick="registerNewPresetAndRegister()" class="px-3 py-1.5 bg-rose-900 text-rose-50 hover:bg-rose-800 rounded-lg font-bold text-xs transition shadow-sm whitespace-nowrap">登録</button>
           </div>
@@ -1817,8 +1791,9 @@
       }).join('');
     }
 
-    function openBreakSelectModal() {
-      const current = newPresetForm.breakMins || 0;
+    function openBreakSelectModal(target) {
+      breakTarget = target === 'preset' ? 'preset' : 'new';
+      const current = breakTarget === 'preset' ? prBreakMins : (newPresetForm.breakMins || 0);
       document.getElementById('breakSelectInput').value = String(current);
       renderBreakChoiceChips(current);
       document.getElementById('breakSelectModal').classList.remove('hidden');
@@ -1845,9 +1820,49 @@
       const raw = document.getElementById('breakSelectInput').value;
       const val = raw === '' ? 0 : Number(raw);
       if (isNaN(val) || val < 0) { showAlertModal("休憩時間は数字で入力してね♡"); return; }
+      if (breakTarget === 'preset') {
+        prBreakMins = val;
+        document.getElementById('pr_break_disp').textContent = val + '分';
+        closeBreakSelectModal();
+        return;
+      }
       newPresetForm.breakMins = val;
       closeBreakSelectModal();
       renderModalCustomPresets();
+    }
+
+    let prBreakMins = 0;
+    let breakTarget = 'new';
+
+    function openPresetRegisterModal() {
+      clearPresetRegisterForm();
+      document.getElementById('presetRegisterModal').classList.remove('hidden');
+    }
+    function closePresetRegisterModal() {
+      document.getElementById('presetRegisterModal').classList.add('hidden');
+      renderModalPresetButtons();
+    }
+    function clearPresetRegisterForm() {
+      document.getElementById('pr_start').value = '';
+      document.getElementById('pr_end').value = '';
+      prBreakMins = 0;
+      document.getElementById('pr_break_disp').textContent = '0分';
+    }
+    function submitPresetRegister() {
+      const start = document.getElementById('pr_start').value;
+      const end = document.getElementById('pr_end').value;
+      const breakMins = prBreakMins;
+      if (!start || !end) { showToast("開始と終了時間を入力してください"); return; }
+      if (start === end) { showToast("開始と終了が同じ時間だよ。変えてね♡"); return; }
+      const job = configData[currentSelectedJobKey] || configData.job1;
+      if (!job.presets) job.presets = [];
+      const exists = job.presets.some(p => p.start === start && p.end === end && Number(p.breakMins || 0) === breakMins);
+      if (exists) { showToast("すでに登録されている時間だよ"); return; }
+      job.presets.push({ start, end, breakMins });
+      saveAllDataStorage();
+      clearPresetRegisterForm();
+      renderModalPresetButtons();
+      showToast("【ワンタッチ時間登録一覧】に登録しました♡");
     }
 
     function registerNewPresetAndRegister() {
@@ -1855,24 +1870,12 @@
       if (!newPresetForm.start || !newPresetForm.end) { showToast("開始と終了時間を入力してください"); return; }
       if (newPresetForm.start === newPresetForm.end) { showToast("開始と終了が同じ時間だよ。変えてね♡"); return; }
 
-      const currentJob = configData[currentSelectedJobKey] || configData.job1;
-      
-      // Add to preset list (【ワンタッチ時間登録一覧】) if not already exists
-      let exists = currentJob.presets.some(p => p.start === newPresetForm.start && p.end === newPresetForm.end && Number(p.breakMins||0) === Number(newPresetForm.breakMins||0));
-      if (!exists) {
-        currentJob.presets.push({ start: newPresetForm.start, end: newPresetForm.end, breakMins: newPresetForm.breakMins });
-        saveAllDataStorage();
-      }
-
       // Register to shift
-      const bh = breakHint(newPresetForm.start, newPresetForm.end, newPresetForm.breakMins);
       if (!registerModalPresetTime(newPresetForm.start, newPresetForm.end, newPresetForm.breakMins)) { renderModalPresetButtons(); return; }
 
       // Clear / Reset form
       newPresetForm = { start: '00:00', end: '00:00', breakMins: 0 };
       renderModalCustomPresets();
-      renderModalPresetButtons();
-      showToast("【ワンタッチ時間登録一覧】に登録し、シフトに追加しました♡" + bh);
     }
 
     function updateNewPresetForm() {
@@ -2084,10 +2087,6 @@
       const totalEl = document.getElementById('monthlyReceiveTotalPay');
       if (container) {
         container.innerHTML = breakdownHtml || `<span class="text-stone-400 font-bold">この月に受取予定の給料はありません</span>`;
-        const note = document.createElement('div');
-        note.className = 'text-[11px] text-stone-500 font-medium pt-1';
-        note.textContent = '※給料日は土日・祝日などにより、その月によって変動するので注意してね';
-        container.appendChild(note);
       }
       if (totalEl) totalEl.innerText = formatCurrency(totalReceivePay);
     }
@@ -2314,6 +2313,7 @@
     function selectCalendarDate(key) {
       calSelectedDateStr = key;
       renderCalendar();
+      openShiftInputModal(key);
     }
 
     function renderCalendarTodayTomorrowSummary() {
@@ -2325,24 +2325,11 @@
         calSelectedDateStr = todayStr;
       }
 
-      const sel = parseDateKey(calSelectedDateStr);
       const set = (id, html, isHtml) => { const el = document.getElementById(id); if (el) el[isHtml ? 'innerHTML' : 'innerText'] = html; };
 
       // Today's shift always shown
       set('calendarTodayDateLabel', `${today.getMonth()+1}/${today.getDate()}`);
       set('calendarTodaySummaryContent', buildDaySummaryHtml(todayStr, today), true);
-
-      // Selected date section shown only if selected date is different from today
-      const selectedSection = document.getElementById('selectedDateSection');
-      if (selectedSection) {
-        if (calSelectedDateStr !== todayStr) {
-          selectedSection.classList.remove('hidden');
-          set('calendarSelectedDateLabel', `${sel.getMonth()+1}/${sel.getDate()}`);
-          set('calendarSelectedSummaryContent', buildDaySummaryHtml(calSelectedDateStr, sel), true);
-        } else {
-          selectedSection.classList.add('hidden');
-        }
-      }
     }
 
     function buildDaySummaryHtml(dateStr, dateObj) {
