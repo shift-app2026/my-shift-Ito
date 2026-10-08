@@ -95,6 +95,17 @@
     #appScroll { padding-top: 0.5rem !important; }
     #appScroll > .tab-content { margin-top: 0 !important; }
   }
+  /* ビルド済みTailwindに含まれていなかったクラスの補完 */
+  .bg-rose-50\/60 { background-color: rgba(255, 241, 242, 0.6); }
+  .bg-amber-50\/60 { background-color: rgba(255, 251, 235, 0.6); }
+  .w-\[96px\] { width: 96px; }
+  .max-h-\[90vh\] { max-height: 90vh; }
+  .mt-3 { margin-top: 0.75rem; }
+  .mt-1\.5 { margin-top: 0.375rem; }
+  .mb-0\.5 { margin-bottom: 0.125rem; }
+  .font-normal { font-weight: 400; }
+  .transition-colors { transition-property: color, background-color, border-color; transition-timing-function: cubic-bezier(.4,0,.2,1); transition-duration: .15s; }
+  #toastMessage { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
 </style>
 </head>
 <body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
@@ -593,10 +604,21 @@
       return isNaN(n) ? def : n;
     }
 
+    // 締め日・給料日：1〜28日か「月末」に正規化（29日以降は月末扱い）
+    function normDay(v, def) {
+      const s = String(v == null ? '' : v).trim();
+      if (s === '月末') return s;
+      const n = Number(s);
+      if (!Number.isInteger(n) || n < 1) return def;
+      return n >= 29 ? '月末' : String(n);
+    }
+    // 時刻は「H:MM」形式のみ許可（バックアップ読み込み時の不正値対策）
+    function okTime(t) { return /^\d{1,2}:\d{2}$/.test(String(t || '')) ? String(t) : ''; }
+
     function createDefaultJobConfig(savedJob, defName, defPresets, defPaid, defMorn, defDay, defEve, defNight, defMidnight, defExtra, tM, tD, tEv, tN, tMid, tEx) {
       let loadedPresets = (savedJob?.presets && savedJob.presets.length > 0 && savedJob.name) ? savedJob.presets.map(p => ({
-        start: p.start || '',
-        end: p.end || '',
+        start: okTime(p.start),
+        end: okTime(p.end),
         breakMins: Number(p.breakMins) || 0
       })) : JSON.parse(JSON.stringify(defPresets));
 
@@ -604,7 +626,7 @@
 
       let wageSlots;
       if (Array.isArray(savedJob?.wageSlots)) {
-        wageSlots = savedJob.wageSlots.map(s => ({ start: s.start || '', end: s.end || '', wage: Number(s.wage) || 0, bType: s.bType || 'weekday', bVal: Number(s.bVal) || 0 }));
+        wageSlots = savedJob.wageSlots.map(s => ({ start: okTime(s.start), end: okTime(s.end), wage: Number(s.wage) || 0, bType: s.bType || 'weekday', bVal: Number(s.bVal) || 0 }));
       } else {
         const sv = savedJob || {};
         const legacy = [
@@ -619,14 +641,14 @@
         legacy.forEach(([range, wage, bt, bv]) => {
           if (!range || !range.includes('〜') || !(wage > 0)) return;
           const [s, e] = range.split('〜').map(x => (x === '24:00' ? '00:00' : x));
-          if (s && e) wageSlots.push({ start: s, end: e, wage, bType: bt || 'weekday', bVal: Number(bv) || 0 });
+          if (okTime(s) && okTime(e)) wageSlots.push({ start: s, end: e, wage, bType: bt || 'weekday', bVal: Number(bv) || 0 });
         });
       }
 
       return {
         name: savedJob?.name !== undefined ? savedJob.name : defName,
-        closeDay: savedJob?.closeDay || '20',
-        payDay: savedJob?.payDay || '5',
+        closeDay: normDay(savedJob?.closeDay, '20'),
+        payDay: normDay(savedJob?.payDay, '5'),
         paid: numOr(savedJob?.paid, defPaid),
         paidHours: Number(savedJob?.paidHours) || 0,
         wageSlots: wageSlots,
@@ -1071,7 +1093,9 @@
         updateModalSelectedDateSummary();
         refreshAll();
       });
-    }function getActiveJobKeys() {
+    }
+
+    function getActiveJobKeys() {
       let count = Number(configData.jobCount) || 1;
       let keys = ['job1'];
       if (count >= 2) keys.push('job2');
@@ -1167,7 +1191,7 @@
       let payNum = (payDayInput === '月末') ? 31 : (Number(payDayInput) || 5);
 
       let workMonth = receiveMonth - 1;
-      if (payNum > closeNum) {
+      if (payNum >= closeNum) {
         workMonth = receiveMonth;
       }
 
@@ -2054,7 +2078,7 @@
 
     function getAdjustedPaydayDate(year, month, payDayInput) {
       let lastDay = new Date(year, month + 1, 0).getDate();
-      let pDayNum = (payDayInput === '月末' || isNaN(Number(payDayInput))) ? lastDay : Number(payDayInput);
+      let pDayNum = (payDayInput === '月末' || isNaN(Number(payDayInput))) ? lastDay : Math.min(Number(payDayInput), lastDay);
       let paydayObj = new Date(year, month, pDayNum);
       return adjustPaydayIfHoliday(paydayObj);
     }
