@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>マイシフト＆給料</title>
   
-  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADCklEQVR4nO3dwW1TQRRAUYOogE0aoATaYEEJtEEBdIHoACTqoARqSA0sQChAbuLgzJ+Z6JxCxubpMj+K/ZRnH6/enOA2z2e/AdYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SC9mv4E/fLn+NvstzPf25evZb+GXJeLQxE2/pzG9kvmPFWWU6ZOZeHnM/8ev7+eIZl0h024OZZxv1qzmxKGMh5oysfk/c7CsCXG4Nv7P8XM7Og5lXOLg6XmskMRBOjQOz5TLHTlDNwdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp0C37r9efj3y5p+rTqw/HpJCbgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0hJ/UuMcf31O/e77e+ePtsfN8e83GB73Ow27nz/IBnHUHB9rvrufP87qcdw9wcvnu/v5Qy0dxzmzu2S+u58/2tJxMJc4SOIgiYO0dBzn/Kbokt8m7X7+aEvHcbdpdddpdfvfzh1o9nlNP8LEmu/v542wQx+m2OT7uZHc/f5BnH6/eHPZiW0xkfXZlmU8cJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpB/mCfM2/VKEGAAAAABJRU5ErkJggg==">
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADCklEQVR4nO3dwW1TQRRAUYOogE0aoATaYEEJtEEBdIHoACTqoARqSA0sQChAbuLgzJ+Z6JxCxubpMj+K/ZRnH6/enOA2z2e/AdYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SC9mv4E/fLn+NvstzPf25evZb+GXJeLQxE2/pzG9kvmPFWWU6ZOZeHnM/8ev7+eIZl0h024OZZxv1qzmxKGMh5oysfk/c7CsCXG4Nv7P8XM7Og5lXOLg6XmskMRBOjQOz5TLHTlDNwdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp0C37r9efj3y5p+rTqw/HpJCbgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0hJ/UuMcf31O/e77e+ePtsfN8e83GB73Ow27nz/IBnHUHB9rvrufP87qcdw9wcvnu/v5Qy0dxzmzu2S+u58/2tJxMJc4SOIgiYO0dBzn/Kbokt8m7X7+aEvHcbdpdddpdfvfzh1o9nlNP8LEmu/v542wQx+m2OT7uZHc/f5BnH6/eHPZiW0xkfXZlmU8cJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kpB/mCfM2/VKEGAAAAABJRU5ErkJggg==">
   <meta name="theme-color" content="#881337">
 
   <style>/* Tailwind CSS（ビルド済み） */
@@ -40,6 +40,8 @@
     }
     input[type="time"] {
       min-width: 0;
+      padding: 4px 6px !important;
+      font-size: 15px !important;
     }
 
     .job-chip { transition: background-color .15s ease, border-color .15s ease, transform .1s ease; }
@@ -111,22 +113,18 @@
   #toastMessage { top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
 </style>
 <style>
-/* ===== 不足していたクラスを補完 ===== */
 .w-20 { width: 5rem; }
 .gap-3 { gap: 0.75rem; }
 .leading-snug { line-height: 1.375; }
 .text-2xl { font-size: 1.5rem; line-height: 2rem; }
 
-/* ===== 横はみ出しの安全対策 ===== */
 html, body { max-width: 100%; overflow-x: hidden; }
 #appCard, #appScroll { min-width: 0; }
 #appScroll { overflow-x: hidden; }
 
-/* ===== 見やすさ：文字色を少し濃く ===== */
 .text-stone-500 { color: #6b635e; }
 .text-stone-400 { color: #8d8681; }
 
-/* ===== 見やすさ：金額は太く、数字がくっきり読める書体に ===== */
 #goalCurrentPay, #monthlyReceiveTotalPay, #yearlyTotalPay, #wall103, #wall130 {
   font-family: 'Noto Sans JP', sans-serif;
   font-weight: 700;
@@ -136,10 +134,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
 #goalCurrentPay { white-space: nowrap; }
 #wall103, #wall130 { white-space: nowrap; }
 
-/* ===== 円グラフ：パーセント表示をくすみボルドーに ===== */
 #goalPercentText { background: linear-gradient(135deg, #b8607b 0%, #8f3f59 100%); }
 
-/* ===== 下部タブ ===== */
 .tab-btn {
   min-width: 0;
   display: flex;
@@ -151,12 +147,10 @@ html, body { max-width: 100%; overflow-x: hidden; }
   padding-right: 2px;
 }
 
-/* ===== 円グラフを大きく（16rem〜66vwに拡大）＆給料見込の文字を少し大きく ===== */
 #goalRing { width: min(16rem, 66vw); height: min(16rem, 66vw); }
 #goalCurrentPay { font-size: 2.25rem; line-height: 1.2; }
 .goal-label-text { font-size: 0.8125rem; }
 
-/* ===== 給料内訳ボタン（背景色を白・ボーダーを統一） ===== */
 #breakdownPill {
   display: inline-flex; flex-direction: row; align-items: center; gap: 4px;
   white-space: nowrap;
@@ -167,13 +161,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
 }
 #breakdownPill:active { background: #f5f5f4; }
 
-/* ===== コピーカードの文字 ===== */
 .copy-label { font-size: 0.71875rem; text-wrap: balance; }
-
-/* ===== 少しだけ大きい文字（13px） ===== */
 .t13 { font-size: 0.8125rem; line-height: 1.25rem; }
 
-/* ===== 設定タブ（文字切れ防止・余白バランス調整） ===== */
 #tab-settings .text-xs { font-size: 0.8125rem; line-height: 1.35rem; }
 #tab-settings .text-sm { font-size: 0.9375rem; line-height: 1.45rem; }
 #tab-settings .font-medium { font-weight: 700; }
@@ -267,55 +257,66 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
   <!-- シフト入力・編集専用モーダル -->
   <div id="shiftInputModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-    <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-stone-200 space-y-4 max-h-[92vh] flex flex-col overflow-hidden">
-      <div class="flex justify-between items-center border-b border-stone-200 pb-2.5 shrink-0">
+    <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-stone-200 space-y-3.5 max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="flex justify-between items-center border-b border-stone-200 pb-2 shrink-0">
+        <span class="text-xs font-bold text-stone-500">選択した日付</span>
         <h3 id="modalDateTitle" class="text-sm font-bold text-stone-900 tracking-wide">日付 のシフト</h3>
       </div>
 
       <div class="space-y-3 overflow-y-auto pr-1 flex-1 no-scrollbar">
-        <p class="t13 font-bold text-stone-700">バイト名を選択してからシフトを入力してね。</p>
-        <div id="modalJobSelectContainer" class="flex space-x-1.5"></div>
-        <div id="modalWageWarn" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold p-2 rounded-xl whitespace-pre-line leading-snug"></div>
-
-        <div class="flex space-x-2">
-          <button type="button" id="modalTypeWorkBtn" onclick="setModalShiftType(false)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-stone-100 text-stone-900 border-stone-300 shadow-sm">通常勤務</button>
-          <button type="button" id="modalTypePaidBtn" onclick="setModalShiftType(true)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50">☆ 有給休暇</button>
-        </div>
-
-        <button type="button" onclick="openPresetRegisterModal()" class="w-full py-2 rounded-xl text-sm font-bold bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 transition">ワンタッチ時間登録</button>
-
+        <!-- 【シフト登録】 -->
         <div class="space-y-1.5">
-          <div class="flex flex-col">
-            <span class="text-sm font-bold text-stone-700">【ワンタッチ時間登録一覧】</span>
-            <span class="text-xs text-stone-500 font-bold">※ここでは時間の修正はできません。</span>
+          <span class="text-sm font-bold text-stone-800">【シフト登録】</span>
+          <p class="text-xs font-bold text-stone-600">※バイト先を選択して、勤務時間を登録します。</p>
+          <div id="modalJobSelectContainer" class="flex space-x-1.5"></div>
+
+          <div class="flex space-x-2 pt-1">
+            <button type="button" id="modalTypeWorkBtn" onclick="setModalShiftType(false)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-stone-100 text-stone-900 border-stone-300 shadow-sm">通常勤務</button>
+            <button type="button" id="modalTypePaidBtn" onclick="setModalShiftType(true)" class="flex-1 py-2.5 rounded-xl text-sm font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50">☆ 有給休暇</button>
           </div>
-          
-          <div id="modalPresetContainer" class="grid grid-cols-1 gap-2 text-xs"></div>
         </div>
 
-        <!-- 【新規シフト入力】をワンタッチ時間登録一覧の下・シフト一覧の上に配置 -->
-        <div class="space-y-2 bg-stone-50 p-3 rounded-2xl border border-stone-200">
+        <!-- 【ワンタッチ時間登録】 -->
+        <div class="space-y-1.5 pt-1 border-t border-stone-100">
+          <button type="button" onclick="openPresetRegisterModal()" class="w-full py-2.5 bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 rounded-xl font-bold text-sm transition shadow-sm">ワンタッチ時間登録</button>
+          <p class="text-xs font-bold text-stone-600">※よく使う勤務時間を登録しておくと便利です（任意）。</p>
+        </div>
+
+        <!-- 【ワンタッチ時間登録一覧】 -->
+        <div class="space-y-1.5 pt-1 border-t border-stone-100">
+          <span class="text-sm font-bold text-stone-800">【ワンタッチ時間登録一覧】</span>
+          <p class="text-xs font-bold text-stone-600">※ここでは時間の修正はできません。</p>
+          <div id="modalPresetContainer" class="space-y-2 text-xs"></div>
+        </div>
+
+        <!-- 【新規シフト入力】 -->
+        <div class="space-y-2 pt-1 border-t border-stone-100">
           <div class="flex justify-between items-center">
-            <span class="text-sm font-bold text-stone-700">【新規シフト入力】</span>
+            <span class="text-sm font-bold text-stone-800">【新規シフト入力】</span>
           </div>
           <div id="modalCustomPresetContainer" class="space-y-2"></div>
-          <button type="button" onclick="registerNewPresetAndRegister()" class="w-full py-2 bg-rose-900 text-rose-50 hover:bg-rose-800 rounded-xl font-bold text-xs transition shadow-sm">登録する</button>
+          <div class="flex items-center justify-between gap-2 pt-1">
+            <p class="text-xs font-bold text-stone-600 whitespace-nowrap">※時間登録を直接できます。</p>
+            <button type="button" onclick="registerNewPresetAndRegister()" class="shrink-0 px-5 py-2.5 bg-rose-900 text-rose-50 hover:bg-rose-800 rounded-xl font-bold text-sm transition shadow-sm">登録</button>
+          </div>
         </div>
 
-        <div class="space-y-1.5">
+        <!-- 【この日のシフト一覧】 -->
+        <div class="space-y-1.5 pt-1 border-t border-stone-100">
           <div class="flex justify-between items-center">
-            <span class="text-sm font-bold text-stone-700">【シフト一覧】</span>
+            <span class="text-sm font-bold text-stone-800">【この日のシフト一覧】</span>
           </div>
-          <div id="modalSelectedDateSummaryContent" class="space-y-2 text-xs text-stone-700">
+          <p class="text-xs font-bold text-stone-600">選択した日付に登録したシフトが表示されます。</p>
+          <div id="modalSelectedDateSummaryContent" class="space-y-2 text-xs text-stone-700 pt-1">
             <span class="text-stone-400">シフトは登録されていません</span>
           </div>
         </div>
       </div>
 
       <div class="pt-2 border-t border-stone-200 shrink-0">
-        <button type="button" onclick="closeShiftInputModal()" class="w-full py-2 px-3 rounded-xl bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm flex flex-col items-center justify-center">
+        <button type="button" onclick="closeShiftInputModal()" class="w-full py-2.5 px-3 rounded-xl bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm flex flex-col items-center justify-center">
           <span class="text-sm font-bold tracking-wide">閉じる</span>
-          <span class="text-xs font-bold text-rose-100 tracking-tight">※登録したシフトは自動で保存されます♡</span>
+          <span class="text-[11px] font-bold text-rose-100 tracking-tight">※登録したシフトは自動で保存されます♡</span>
         </button>
       </div>
     </div>
@@ -326,7 +327,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-stone-200 space-y-4">
       <h3 class="text-sm font-bold text-stone-900 tracking-wide border-b border-stone-200 pb-2.5">ワンタッチ時間登録</h3>
       
-      <!-- フォントを少し小さくし、テキストと登録ボタンを横並びにする構成 -->
       <div class="flex items-center justify-between gap-2">
         <p class="text-[11px] font-bold text-rose-900 leading-tight">※入力が完了したら<br>必ず登録ボタンを押してね</p>
         <button type="button" onclick="submitPresetRegister()" class="px-3.5 py-2 bg-rose-900 text-rose-50 hover:bg-rose-800 rounded-xl font-bold text-xs transition shadow-sm whitespace-nowrap shrink-0">登録</button>
@@ -399,7 +399,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
             </div>
           </div>
 
-          <!-- 下部：左に目標金額、右に給料内訳 -->
           <div class="flex items-center justify-between pt-1 gap-2">
             <div class="flex items-center gap-1.5 bg-white border border-stone-200 rounded-xl px-3 py-2 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
               <span class="text-xs font-bold text-stone-600">目標金額 ¥</span>
@@ -427,13 +426,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
           </div>
           
           <div class="flex justify-between items-baseline pt-1">
-            <span id="yearlySubLabel" class="text-xs sm:text-sm text-stone-600 font-bold">
-            10月までの収入
-            </span>
-              
-            <span id="yearlyTotalPay" class="text-lg sm:text-xl font-bold font-serif-title tracking-tight text-stone-900">
-            ¥0
-            </span>
+            <span id="yearlySubLabel" class="text-xs sm:text-sm text-stone-600 font-bold">10月までの収入</span>
+            <span id="yearlyTotalPay" class="text-lg sm:text-xl font-bold font-serif-title tracking-tight text-stone-900">¥0</span>
           </div>
 
           <div id="incomeWallBox" class="mt-3 bg-stone-50/70 border border-stone-200 rounded-xl px-3 py-2.5 transition-colors duration-300">
@@ -452,7 +446,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         </div>
       </div>
 
-      <!-- タブ2: シフト入力 -->
+      <!-- タブ2: シフト登録 -->
       <div id="tab-calendar" class="tab-content hidden space-y-3">
         <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-2 rounded-2xl shadow-md border border-rose-800/40 text-xs">
           <button type="button" onclick="changeMonth(-1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition text-sm">◀ 前月</button>
@@ -477,10 +471,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
             <span class="text-rose-500">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-sky-600">土</span>
           </div>
           <div id="calendarDays" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
-          <div id="calendarJobLegend" class="flex flex-wrap items-center justify-center gap-2.5 pt-2.5"></div>
+          <div id="calendarJobLegend" class="flex flex-wrap items-center justify-center gap-2.5 pt-2.5 text-xs font-bold text-stone-700">
+            <span class="text-red-500 font-bold">❤はお給料日</span>
+          </div>
         </div>
 
-        <!-- シフト確認エリア -->
         <div class="bg-white border border-stone-100 rounded-3xl p-4 shadow-sm space-y-3">
           <div class="text-sm sm:text-base font-bold text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between tracking-wide">
             <span>📌 今日のシフト (<span id="calendarTodayDateLabel"></span>)</span>
@@ -503,7 +498,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
           <div class="text-xs sm:text-sm font-bold text-stone-700 border-b border-stone-100 pb-2 flex flex-col items-start tracking-wide leading-relaxed pl-1 space-y-1">
             <span class="text-xs text-stone-700 font-bold">📅 タップするとGoogleカレンダーに登録されます</span>
             <span class="t13 text-rose-900 font-bold">日付をタップすると、シフトを修正できます♡</span>
-            <div id="standaloneJobLegend" class="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5"></div>
+            <div id="standaloneJobLegend" class="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5 text-xs font-bold text-stone-700">
+              <span class="text-red-500 font-bold">❤はお給料日</span>
+            </div>
           </div>
           <div id="standaloneShiftListContainer" class="space-y-2 max-h-[62vh] overflow-y-auto pr-1 text-sm"></div>
         </div>
@@ -995,7 +992,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       const [y, m, d] = dateStr.split('-');
       const titleEl = document.getElementById('modalDateTitle');
-      if (titleEl) titleEl.innerText = `${y}年${m}月${d}日 のシフト`;
+      if (titleEl) { const weekday = ['日','月','火','水','木','金','土'][new Date(Number(y), Number(m) - 1, Number(d)).getDay()]; titleEl.innerText = `${y}年${m}月${d}日（${weekday}）`; }
 
       renderModalJobTabs();
       renderModalPresetButtons();
@@ -1903,17 +1900,15 @@ html, body { max-width: 100%; overflow-x: hidden; }
       let breakMins = newPresetForm.breakMins || 0;
 
       container.innerHTML = `
-        <div class="bg-white p-2.5 border rounded-2xl border-stone-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-          <div class="flex items-center justify-between gap-1.5">
-            <div class="relative flex-1 min-w-0">
-              <input type="time" id="new_preset_start" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm">
-            </div>
-            <span class="font-bold text-stone-400 text-xs">〜</span>
-            <div class="relative flex-1 min-w-0">
-              <input type="time" id="new_preset_end" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm">
-            </div>
-            <button type="button" onclick="openBreakSelectModal()" class="px-2.5 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="modalBreakDisplayVal">${breakMins}分</span></button>
+        <div class="bg-white p-2.5 border rounded-2xl border-stone-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-between gap-1.5">
+          <div class="relative flex-1 min-w-0">
+            <input type="time" id="new_preset_start" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm">
           </div>
+          <span class="font-bold text-stone-400 text-xs">〜</span>
+          <div class="relative flex-1 min-w-0">
+            <input type="time" id="new_preset_end" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm">
+          </div>
+          <button type="button" onclick="openBreakSelectModal()" class="px-2.5 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="modalBreakDisplayVal">${breakMins}分</span></button>
         </div>
       `;
     }
@@ -2430,7 +2425,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
           `;
         }
 
-        // 丸印の有無に関わらず高さを固定し、位置がずれないようレイアウト構造を統一
         let iconHtml = `<div style="height: 14px;" class="flex items-center justify-center space-x-0.5">${dotsHtml}</div>`;
 
         const isToday = (dateStr === formatDateKey(new Date()));
@@ -2463,9 +2457,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
     }
 
     function buildJobLegendHtml() {
-      return getActiveJobKeys().map(jk =>
-        `<div class="bg-stone-50 border border-stone-200 px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-stone-800 flex items-center gap-1.5">${getJobLabelHtml(jk)}</div>`
-      ).join('');
+      let html = `<span class="text-red-500 font-bold whitespace-nowrap">❤はお給料日</span>`;
+      getActiveJobKeys().forEach(jk => {
+        html += `<div class="bg-stone-50 border border-stone-200 px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-stone-800 flex items-center gap-1.5">${getJobLabelHtml(jk)}</div>`;
+      });
+      return html;
     }
 
     function selectCalendarDate(key) {
@@ -2613,7 +2609,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
           bgStyle = "bg-amber-100/80 border border-amber-300 hover:bg-amber-200/70";
         }
 
-        // ご要望の反映：フォントをほんの少し小さくし、左側（隅っこ）に少し寄せる調整
         container.innerHTML += `
           <div id="list-row-${dateStr}" onclick="openShiftInputModal('${dateStr}')" class="flex items-center px-2 py-2 rounded-2xl border transition ${bgStyle} space-x-2 overflow-hidden cursor-pointer" title="この日をタップしてシフトを追加・変更">
             <div class="w-20 pl-0.5 shrink-0 text-left font-bold text-xs sm:text-sm ${dayColor}">
