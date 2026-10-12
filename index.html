@@ -86,6 +86,8 @@
     .wage-time { -webkit-appearance: none; appearance: none; min-height: 2rem; }
     .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
+    /* モーダル内に続きがある場合だけ表示する控えめなスクロール案内 */
+    #shiftScrollHint { line-height: 1.2; }
   </style>
 <style>
   @media (max-width: 639px) {
@@ -263,7 +265,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         <h3 id="modalDateTitle" class="text-sm font-bold text-stone-900 tracking-wide">日付 のシフト</h3>
       </div>
 
-      <div class="space-y-3 overflow-y-auto pr-1 flex-1 no-scrollbar">
+      <div id="shiftInputScrollArea" class="space-y-3 overflow-y-auto pr-1 flex-1 no-scrollbar" onscroll="updateShiftScrollHint()">
         <!-- 【シフト登録】 -->
         <div class="space-y-1.5">
           <span class="text-sm font-bold text-stone-800">【シフト登録】</span>
@@ -313,6 +315,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         </div>
       </div>
 
+      <div id="shiftScrollHint" class="shrink-0 text-center text-[11px] font-bold text-stone-400 py-1 hidden" aria-hidden="true">↓ 下に続きがあります</div>
       <div class="pt-2 border-t border-stone-200 shrink-0">
         <button type="button" onclick="closeShiftInputModal()" class="w-full py-2.5 px-3 rounded-xl bg-rose-900 text-rose-50 hover:bg-rose-800 transition shadow-sm flex flex-col items-center justify-center">
           <span class="text-sm font-bold tracking-wide">閉じる</span>
@@ -985,6 +988,15 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
     let newPresetForm = { start: '00:00', end: '00:00', breakMins: 0 };
 
+    function updateShiftScrollHint() {
+      const area = document.getElementById('shiftInputScrollArea');
+      const hint = document.getElementById('shiftScrollHint');
+      if (!area || !hint) return;
+      const canScroll = area.scrollHeight > area.clientHeight + 4;
+      const atBottom = area.scrollTop + area.clientHeight >= area.scrollHeight - 6;
+      hint.classList.toggle('hidden', !canScroll || atBottom);
+    }
+
     function openShiftInputModal(dateStr) {
       selectedCalendarDateStr = dateStr;
       editingShift = null;
@@ -1002,6 +1014,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       const modal = document.getElementById('shiftInputModal');
       if (modal) modal.classList.remove('hidden');
+      requestAnimationFrame(updateShiftScrollHint);
     }
 
     function closeShiftInputModal() {
