@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>マイシフト＆給料</title>
   
-  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADCklEQVR4nO3dwW1TQRRAUYOogE0aoATaYEEJtEEBdIHoACTqoARqSA0sQChAbuLgzJ+Z6JxCxubpMj+K/ZRnH6/enOA2z2e/AdYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SC9mv4E/fLn+NvstzPf25evZb+GXJeLQxE2/pzG9kvmPFWWU6ZOZeHnM/8ev7+eIZl0h024OZZxv1qzmxKGMh5oysfk/c7CsCXG4Nv7P8XM7Og5lXOLg6XmskMRBOjQOz5TLHTlDNwdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp0C37r9efj3y5p+rTqw/HpJCbgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0hJ/UuMcf31O/e77e+ePtsfN8e83GB73Ow27nz/IBnHUHB9rvrufP87qcdw9wcvnu/v5Qy0dxzmzu2S+u58/2tJxMJc4SOIgiYO0dBzn/Kbokt8m7X7+aEvHcbdpdddpdfvfzh1o9nlNP8LEmu/v542wQx+m2OT7uZHc/f5BnH6/eHPZiW0xkfXZlmU8cJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kpB/mCfM2/VKEGAAAAABJRU5ErkJggg==">
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADCklEQVR4nO3dwW1TQRRAUYOogE0aoATaYEEJtEEBdIHoACTqoARqSA0sQChAbuLgzJ+Z6JxCxubpMj+K/ZRnH6/enOA2z2e/AdYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SC9mv4E/fLn+NvstzPf25evZb+GXJeLQxE2/pzG9kvmPFWWU6ZOZeHnM/8ev7+eIZl0h024OZZxv1qzmxKGMh5oysfk/c7CsCXG4Nv7P8XM7Og5lXOLg6XmskMRBOjQOz5TLHTlDNwdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp0C37r9efj3y5p+rTqw/HpJCbgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0hJ/UuMcf31O/e77e+ePtsfN8e83GB73Ow27nz/IBnHUHB9rvrufP87qcdw9wcvnu/v5Qy0dxzmzu2S+u58/2tJxMJc4SOIgiYO0dBzn/Kbokt8m7X7+aEvHcbdpdddpdfvfzh1o9nlNP8LEmu/v542wQx+m2OT7uZHc/f5BnH6/eHPZiW0xkfXZlmU8cJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kpB/mCfM2/VKEGAAAAABJRU5ErkJggg==">
   <meta name="theme-color" content="#881337">
 
   <style>/* Tailwind CSS（ビルド済み） */
@@ -25,7 +25,7 @@
     .tab-btn.active { 
       background: linear-gradient(135deg, #881337 0%, #4c0519 100%) !important; 
       color: white !important; 
-      font-weight: bold; 
+      font-weight: bold !important; 
       box-shadow: 0 4px 12px rgba(136, 19, 55, 0.3);
     }
     input, select {
@@ -437,11 +437,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
             <div class="text-sm font-bold text-stone-600 mb-1">【年収の壁】</div>
             <div class="space-y-1.5 text-xs">
               <div class="flex justify-between items-baseline gap-2">
-                <span class="text-base text-stone-700 font-bold">103万円まで</span>
+                <span id="wall103Label" class="text-base text-stone-700 font-bold">103万円まで</span>
                 <span id="wall103" class="font-bold text-stone-700 text-base">0円</span>
               </div>
               <div class="flex justify-between items-baseline gap-2">
-                <span class="text-base text-stone-700 font-bold">130万円まで</span>
+                <span id="wall130Label" class="text-base text-stone-700 font-bold">130万円まで</span>
                 <span id="wall130" class="font-bold text-stone-700 text-base">0円</span>
               </div>
             </div>
@@ -469,7 +469,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
           </div>
         </div>
 
-        <div class="bg-white border border-stone-100 rounded-3xl p-3 shadow-sm space-y-2">
+        <div class="bg-white border border-stone-100 rounded-3xl p-3.5 shadow-sm space-y-2">
           <div class="grid grid-cols-7 text-center text-sm sm:text-base font-bold text-stone-500 mb-1">
             <span class="text-rose-500">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-sky-600">土</span>
           </div>
@@ -721,6 +721,31 @@ html, body { max-width: 100%; overflow-x: hidden; }
     const defaultPresets1 = [];
     const defaultPresets2 = defaultPresets1;
 
+    // 年収の壁（制度変更時はここだけ直せばOK）
+    const WALL_103 = 1030000;
+    const WALL_130 = 1300000;
+    // 勤務時間の異常警告（分）
+    const MAX_NORMAL_SHIFT_MINS = 16 * 60;
+    const DEFAULT_PAID_HOURS = 8;
+
+    // localStorage保存の安全版（容量超過・プライベートモード等で失敗しても画面を止めない）
+    var _storageErrShown = false;
+    function safeSetItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        console.error('localStorage save failed', e);
+        if (!_storageErrShown) {
+          _storageErrShown = true;
+          try {
+            showAlertModal('データを保存できませんでした。\nブラウザの保存容量がいっぱいか、プライベートモードの可能性があります。\n「設定」タブからバックアップを書き出しておいてね♡');
+          } catch (_) {}
+        }
+        return false;
+      }
+    }
+
     let shiftsData = {};
     try {
       shiftsData = JSON.parse(localStorage.getItem('mybasket_shifts_v23') || '{}');
@@ -797,7 +822,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         closeDay: normDay(savedJob?.closeDay, '20'),
         payDay: normDay(savedJob?.payDay, '5'),
         paid: numOr(savedJob?.paid, defPaid),
-        paidHours: Number(savedJob?.paidHours) || 0,
+        paidHours: Number(savedJob?.paidHours) > 0 ? Number(savedJob.paidHours) : DEFAULT_PAID_HOURS,
         wageSlots: wageSlots,
 
         transMonth: Number(savedJob?.transMonth) || 0,
@@ -851,7 +876,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       } else {
         shiftsData[dateStr][jobKey] = shiftsArr;
       }
-      localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
+      safeSetItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
     }
 
     function timeStrToMins(tStr) {
@@ -914,7 +939,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
       if (s.bType === 'weekday') {
         hit = (dayOfWeek !== 0 && dayOfWeek !== 6 && !isHol);
       } else if (s.bType === 'saturday') {
-        hit = ((dayOfWeek === 6 || dayOfWeek === 0) && !isHol);
+        // 修正: 土曜のみを対象 (日曜を含めない)
+        hit = (dayOfWeek === 6 && !isHol);
       } else if (s.bType === 'weekend') {
         hit = (dayOfWeek === 6 || dayOfWeek === 0 || isHol);
       } else if (s.bType === 'holiday') {
@@ -944,7 +970,10 @@ html, body { max-width: 100%; overflow-x: hidden; }
             let oe = timeStrToMins(sh.end);
             if (oe <= os) oe += 24 * 60;
             os += off * 1440; oe += off * 1440;
-            if (ns < oe && ne > os) {
+            // 修正: 新規シフト側にもオフセットを適用して比較
+            const nsOff = ns + off * 1440;
+            const neOff = ne + off * 1440;
+            if (nsOff < oe && neOff > os) {
               return { jobName: getJobDisplayName(jk), start: sh.start, end: sh.end };
             }
           }
@@ -1570,7 +1599,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         configData[lastKey] = createEmptyJobConfig();
 
         configData.jobCount = keys.length - 1;
-        localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
+        safeSetItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
 
         ensureValidSelectedJob();
         renderSettingsJobTabs();
@@ -1810,7 +1839,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       j.closeDay = getVal('set_closeDay') || '20';
       j.payDay = getVal('set_payDay') || '5';
       j.paid = getNum('set_wagePaid');
-      j.paidHours = parseFloat(String(getVal('set_paidHours')).replace(/[^0-9.]/g, '')) || 0;
+      j.paidHours = parseFloat(String(getVal('set_paidHours')).replace(/[^0-9.]/g, '')) || DEFAULT_PAID_HOURS;
 
       if (document.getElementById('setWageSlotsContainer')) {
         j.wageSlots = [...document.querySelectorAll('#setWageSlotsContainer [data-slot]')].map(r => {
@@ -2033,13 +2062,23 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
     function registerModalPresetTime(start, end, breakMins) {
       if (!selectedCalendarDateStr) { showToast("日付を選んでね♡"); return false; }
+      if (!jobHasWage(currentSelectedJobKey)) {
+        showAlertModal('先に「設定」タブで時給を登録してね♡\n時給が未設定のままだと、給料見込が¥0になっちゃうよ。');
+        return false;
+      }
       const dup = findOverlap(selectedCalendarDateStr, start, end);
       if (dup) { showOverlapAlert(dup); return false; }
       const shifts = getDayShifts(selectedCalendarDateStr, currentSelectedJobKey);
       shifts.push({ start, end, breakMins, isPaidLeave: false });
       setDayShifts(selectedCalendarDateStr, currentSelectedJobKey, shifts);
       updateModalSelectedDateSummary();
-      showToast("シフトに登録しました" + breakHint(start, end, breakMins));
+      const workMins = getMinutesDiff(start, end);
+      if (workMins > MAX_NORMAL_SHIFT_MINS) {
+        const wh = Math.floor(workMins / 60), wm = workMins % 60;
+        showAlertModal(`勤務時間が${wh}時間${wm ? wm + '分' : ''}になっています。\n開始・終了時間を間違えていないか確認してね♡\n（登録はされています。違っていたら削除してやり直してね）`);
+      } else {
+        showToast("シフトに登録しました" + breakHint(start, end, breakMins));
+      }
       return true;
     }
 
@@ -2080,7 +2119,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         }
 
         if (copiedCount > 0) {
-          localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
+          safeSetItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
           refreshAll();
           showToast(skippedCount > 0
             ? `前月と同じ曜日でコピーしました（入力済みの${skippedCount}日はそのまま）`
@@ -2262,9 +2301,13 @@ html, body { max-width: 100%; overflow-x: hidden; }
           : `${currentYear}年はまだ受け取りがありません`;
       }
 
-      const remain103 = Math.max(0, 1030000 - totalYearPay);
-      const remain130 = Math.max(0, 1300000 - totalYearPay);
+      const remain103 = Math.max(0, WALL_103 - totalYearPay);
+      const remain130 = Math.max(0, WALL_130 - totalYearPay);
 
+      const wall103Label = document.getElementById('wall103Label');
+      const wall130Label = document.getElementById('wall130Label');
+      if (wall103Label) wall103Label.textContent = `${WALL_103 / 10000}万円まで`;
+      if (wall130Label) wall130Label.textContent = `${WALL_130 / 10000}万円まで`;
       const wall103 = document.getElementById('wall103');
       const wall130 = document.getElementById('wall130');
       const wallBox = document.getElementById('incomeWallBox');
@@ -2693,7 +2736,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         delete shiftsData[dateKey][jk];
         if (Object.keys(shiftsData[dateKey]).length === 0) delete shiftsData[dateKey];
       }
-      localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
+      safeSetItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
     }
 
     function formatInputNumber(input) {
@@ -2714,7 +2757,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
     function saveAllDataStorage() {
       let payload = JSON.parse(JSON.stringify(configData));
       payload.monthlyGoal = monthlyGoal;
-      localStorage.setItem('mybasket_wages_v77', JSON.stringify(payload));
+      safeSetItem('mybasket_wages_v77', JSON.stringify(payload));
     }
 
     function saveSettings() {
@@ -2730,7 +2773,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
     function formatCurrency(val) {
       if (isNaN(val) || val === null || val === undefined) return "¥0";
-      return `¥${Math.floor(val).toLocaleString()}`;
+      // 修正: 表示は四捨五入で一貫させる
+      return `¥${Math.round(val).toLocaleString()}`;
     }
 
     function formatDateKey(d) {
@@ -2743,44 +2787,20 @@ html, body { max-width: 100%; overflow-x: hidden; }
       if (LSTEP_URL) window.open(LSTEP_URL, '_blank'); else showToast('決済ページは準備中です');
     }
 
+    // お試し期間の日数カウントは行わない（期間の管理はLステップ配信側）。
+    // 将来、期間終了後に機能を制限する場合は TRIAL_DAYS を使ってカウントを復活させる。
     function updateTrialBanner() {
       const banner = document.getElementById('trialBanner');
       if (!banner) return;
 
-      let startStr = localStorage.getItem('mybasket_trial_start');
-      if (!startStr) {
-        startStr = formatDateKey(new Date());
-        localStorage.setItem('mybasket_trial_start', startStr);
-      }
-
-      const [sy, sm, sd] = startStr.split('-').map(Number);
-      const startDate = new Date(sy, sm - 1, sd);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      startDate.setHours(0, 0, 0, 0);
-
-      const passedDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
-      const remainingDays = TRIAL_DAYS - passedDays;
-
-      banner.classList.remove('hidden');
+      banner.classList.remove('hidden', 'bg-rose-50', 'border-rose-300', 'text-rose-900');
+      banner.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-900');
       banner.onclick = openPaymentPage;
       banner.style.cursor = 'pointer';
-
-      if (remainingDays > 0) {
-        banner.innerHTML = `
-          <span>✨ 無料お試し期間中：あと ${remainingDays} 日</span>
-          <span class="text-amber-700 underline">続けて使うには？</span>
-        `;
-        banner.classList.remove('bg-rose-50', 'border-rose-300', 'text-rose-900');
-        banner.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-900');
-      } else {
-        banner.innerHTML = `
-          <span>お試し期間が終了しました</span>
-          <span class="text-rose-700 underline">購入について</span>
-        `;
-        banner.classList.remove('bg-amber-50', 'border-amber-200', 'text-amber-900');
-        banner.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-900');
-      }
+      banner.innerHTML = `
+        <span>✨ お試し期間・ご購入について</span>
+        <span class="text-amber-700 underline">くわしく見る</span>
+      `;
     }
 
     function exportAppData(event) {
@@ -2809,7 +2829,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      localStorage.setItem('mybasket_last_backup', String(Date.now()));
+      safeSetItem('mybasket_last_backup', String(Date.now()));
       showToast('バックアップファイルを書き出しました♡');
     }
 
@@ -2823,7 +2843,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       const lastRemind = Number(localStorage.getItem('mybasket_backup_reminded')) || 0;
       if (now - lastBackup < BACKUP_REMIND_DAYS * DAY) return;
       if (now - lastRemind < BACKUP_REMIND_INTERVAL_DAYS * DAY) return;
-      localStorage.setItem('mybasket_backup_reminded', String(now));
+      safeSetItem('mybasket_backup_reminded', String(now));
       setTimeout(() => {
         askConfirm(
           lastBackup
@@ -2873,10 +2893,10 @@ html, body { max-width: 100%; overflow-x: hidden; }
             shiftsData = sanitizeShifts(data.mybasket_shifts_v23 || data.mybasket_shifts_v22 || data.mybasket_shifts_v21 || {});
             let loadedWages = data.mybasket_wages_v77 || data.mybasket_wages_v76 || {};
             monthlyGoal = Number(loadedWages.monthlyGoal) || 0;
-            if (data.mybasket_trial_start) { localStorage.setItem('mybasket_trial_start', data.mybasket_trial_start); updateTrialBanner(); }
+            if (data.mybasket_trial_start) { safeSetItem('mybasket_trial_start', data.mybasket_trial_start); updateTrialBanner(); }
             configData = buildConfigData(loadedWages);
 
-            localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
+            safeSetItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
             ensureValidSelectedJob();
             renderSettingsJobTabs();
             renderSettingsJobContent(currentSettingsJobKey);
