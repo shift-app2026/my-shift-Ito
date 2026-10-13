@@ -40,11 +40,31 @@
       padding-top: 2px;
       padding-bottom: 2px;
     }
-    input[type="time"] {
+    .wage-time[readonly] {
       min-width: 0;
       padding: 4px 6px !important;
       padding-right: 28px !important;
       font-size: 15px !important;
+    }
+    .wage-time[readonly] {
+      min-width: 0 !important;
+      padding: 6px 26px 6px 6px !important;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      box-sizing: border-box;
+    }
+    .custom-time-select {
+      min-width: 0;
+      width: 100%;
+      padding: 10px 8px !important;
+      border: 1px solid #d6d3d1;
+      border-radius: 12px;
+      background: #fff;
+      color: #292524;
+      font-size: 18px !important;
+      font-weight: 700;
+      text-align: center;
     }
 
     .wage-time::-webkit-calendar-picker-indicator {
@@ -250,6 +270,36 @@ html, body { max-width: 100%; overflow-x: hidden; }
 #tab-settings .paid-note { font-size: 0.75rem; line-height: 1.25rem; }
 #tab-settings .wage-empty { font-size: 0.75rem !important; line-height: 1rem; }
 </style>
+
+<style id="final-readability-adjustments">
+/* 入力欄の間隔は少しだけ広げ、既存の並びは維持 */
+#tab-settings .wage-header { row-gap: 8px; }
+#tab-settings .wage-header-label { column-gap: 8px; row-gap: 5px; }
+#tab-settings .wage-head-sub { padding-left: 9px !important; padding-right: 9px !important; }
+#tab-settings .wage-head-btn { min-height: 34px; padding-top: 5px; padding-bottom: 5px; }
+#tab-settings .wage-rate-row { column-gap: 8px !important; }
+#tab-settings .wage-base-rate, #tab-settings .wage-bonus-rate { column-gap: 6px !important; }
+#tab-settings .allowance-period-grid { column-gap: 12px !important; }
+#tab-settings .allowance-period-grid > div { column-gap: 6px !important; }
+.settings-job-card { gap: 7px !important; }
+.settings-job-card button { border-radius: 9px; transition: background-color .15s, border-color .15s; }
+.settings-job-card.is-selected .settings-job-action { background: rgba(255,255,255,.58) !important; border-color: #f3c7d3 !important; color: #6f243b !important; }
+.settings-job-card.is-selected .settings-job-delete { background: rgba(255,255,255,.42) !important; border-color: #e7cfd4 !important; color: #6b5a5d !important; }
+.settings-job-card:not(.is-selected) .settings-job-action { background: #f5f5f4 !important; border-color: #e7e5e4 !important; color: #44403c !important; }
+.settings-job-card:not(.is-selected) .settings-job-delete { background: #eeecea !important; border-color: #d6d3d1 !important; color: #57534e !important; }
+.settings-job-card .settings-job-action:active { filter: brightness(.97); }
+@media (max-width: 380px) {
+  #tab-settings .wage-header { align-items: flex-start; }
+  #tab-settings .wage-header-label { width: 100%; }
+  #tab-settings .wage-head-btn { max-width: 100%; }
+  #tab-settings .wage-rate-row { column-gap: 6px !important; }
+  #tab-settings .wage-base-rate, #tab-settings .wage-bonus-rate { column-gap: 4px !important; }
+  #tab-settings .allowance-period-grid { column-gap: 10px !important; }
+  .settings-job-card { gap: 4px !important; }
+  .settings-job-card .settings-job-action { padding-left: 6px !important; padding-right: 6px !important; font-size: 11px !important; }
+}
+</style>
+
 </head>
 <body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
 
@@ -375,7 +425,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         <!-- 【ワンタッチ時間登録】 -->
         <div class="space-y-1.5 pt-1 border-t border-stone-100">
           <div class="flex items-center gap-2 flex-wrap">
-            <button type="button" onclick="openPresetRegisterModal()" class="flex-1 min-w-0 py-2.5 px-2 bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 rounded-xl font-bold text-sm transition shadow-sm">①【ワンタッチ時間登録】</button>
+            <button type="button" onclick="openPresetRegisterModal()" class="flex-1 min-w-0 py-2.5 px-2 bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 rounded-xl font-bold text-sm transition shadow-sm">【ワンタッチ時間登録】</button>
             <button type="button" onclick="openPresetHelpModal()" aria-haspopup="dialog" aria-controls="presetHelpModal" class="shrink-0 px-3 py-2 bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 rounded-full font-bold text-xs transition shadow-sm">※見てね♡</button>
           </div>
         </div>
@@ -433,11 +483,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       <div class="bg-white p-2 border rounded-2xl border-stone-200 flex items-center justify-between gap-1">
         <div class="relative flex-1 min-w-0">
-          <input type="time" id="pr_start" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('pr_start')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+          <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="pr_start" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('pr_start')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
         </div>
         <span class="font-bold text-stone-400 text-xs">〜</span>
         <div class="relative flex-1 min-w-0">
-          <input type="time" id="pr_end" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('pr_end')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+          <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="pr_end" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('pr_end')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
         </div>
         <button type="button" onclick="openBreakSelectModal('preset')" class="px-2 py-1.5 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="pr_break_disp">0分</span></button>
       </div>
@@ -1610,9 +1660,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
               ${getJobLabelHtml(jk)}
             </button>
             <button type="button" onclick="renameJobPrompt('${jk}')" title="バイト先名を修正"
-              class="shrink-0 px-2 py-1.5 rounded-lg border border-rose-200 bg-white text-stone-700 text-xs font-bold whitespace-nowrap">✏️ 修正</button>
+              class="settings-job-action shrink-0 px-2 py-1.5 rounded-lg border border-rose-200 bg-rose-100/70 text-rose-950 text-xs font-bold whitespace-nowrap">✏️ 修正</button>
             <button type="button" onclick="deleteJob('${jk}')" title="このバイト先を削除"
-              class="shrink-0 px-2 py-1.5 rounded-lg border border-stone-200 bg-white text-stone-600 text-xs font-bold whitespace-nowrap">削除</button>
+              class="settings-job-action settings-job-delete shrink-0 px-2 py-1.5 rounded-lg border border-stone-300 bg-stone-100/80 text-stone-700 text-xs font-bold whitespace-nowrap">削除</button>
           </div>
         `;
       }).join('');
@@ -1729,8 +1779,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
           </div>
 
           <div class="space-y-2 pt-1 border-t border-stone-200">
-            <div class="flex justify-between items-center gap-1 whitespace-nowrap">
-              <div class="flex items-center gap-1.5 min-w-0">
+            <div class="wage-header flex flex-wrap justify-between items-center gap-x-2 gap-y-2">
+              <div class="wage-header-label flex flex-wrap items-center gap-1.5 min-w-0">
                 <span class="wage-head-title font-bold text-stone-900 whitespace-nowrap">【時給入力】</span>
                 <button type="button" onclick="openOvertimeInfoModal()" class="wage-head-sub font-bold text-rose-900 whitespace-nowrap px-2 py-1 rounded-full border border-amber-300 bg-amber-100 shadow-sm" aria-label="残業・深夜の割増についてを確認">※確認してね 👆</button>
               </div>
@@ -1760,16 +1810,16 @@ html, body { max-width: 100%; overflow-x: hidden; }
             <div class="grid grid-cols-1 gap-2.5 pt-1">
               <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-2">
                 <span class="font-bold text-stone-700">交通費</span>
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="flex items-center gap-1 text-xs min-w-0 font-bold text-stone-700"><span class="shrink-0 whitespace-nowrap">1か月</span><input type="text" inputmode="numeric" id="set_transMonth" oninput="formatInputNumber(this)" class="flex-1 min-w-0 w-full p-1.5 border rounded text-center bg-white font-bold text-sm"><span class="shrink-0">円</span></div>
-                  <div class="flex items-center gap-1 text-xs min-w-0 font-bold text-stone-700"><span class="shrink-0 whitespace-nowrap">1日</span><input type="text" inputmode="numeric" id="set_transDay" oninput="formatInputNumber(this)" class="flex-1 min-w-0 w-full p-1.5 border rounded text-center bg-white font-bold text-sm"><span class="shrink-0">円</span></div>
+                <div class="grid grid-cols-2 gap-3 allowance-period-grid">
+                  <div class="flex items-center gap-1.5 text-xs min-w-0 font-bold text-stone-700"><span class="shrink-0 whitespace-nowrap">1か月</span><input type="text" inputmode="numeric" id="set_transMonth" oninput="formatInputNumber(this)" class="flex-1 min-w-0 w-full p-1.5 border rounded text-center bg-white font-bold text-sm"><span class="shrink-0">円</span></div>
+                  <div class="flex items-center gap-1.5 text-xs min-w-0 font-bold text-stone-700"><span class="shrink-0 whitespace-nowrap">1日</span><input type="text" inputmode="numeric" id="set_transDay" oninput="formatInputNumber(this)" class="flex-1 min-w-0 w-full p-1.5 border rounded text-center bg-white font-bold text-sm"><span class="shrink-0">円</span></div>
                 </div>
               </div>
               <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-2">
                 <span class="font-bold text-stone-700">その他</span>
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="flex items-center gap-1 text-xs min-w-0 font-bold text-stone-700"><span class="shrink-0 whitespace-nowrap">1か月</span><input type="text" inputmode="numeric" id="set_allowanceMonth" oninput="formatInputNumber(this)" class="flex-1 min-w-0 w-full p-1.5 border rounded text-center bg-white font-bold text-sm"><span class="shrink-0">円</span></div>
-                  <div class="flex items-center gap-1 text-xs min-w-0 font-bold text-stone-700"><span class="shrink-0 whitespace-nowrap">1日</span><input type="text" inputmode="numeric" id="set_allowanceDay" oninput="formatInputNumber(this)" class="flex-1 min-w-0 w-full p-1.5 border rounded text-center bg-white font-bold text-sm"><span class="shrink-0">円</span></div>
+                <div class="grid grid-cols-2 gap-3 allowance-period-grid">
+                  <div class="flex items-center gap-1.5 text-xs min-w-0 font-bold text-stone-700"><span class="shrink-0 whitespace-nowrap">1か月</span><input type="text" inputmode="numeric" id="set_allowanceMonth" oninput="formatInputNumber(this)" class="flex-1 min-w-0 w-full p-1.5 border rounded text-center bg-white font-bold text-sm"><span class="shrink-0">円</span></div>
+                  <div class="flex items-center gap-1.5 text-xs min-w-0 font-bold text-stone-700"><span class="shrink-0 whitespace-nowrap">1日</span><input type="text" inputmode="numeric" id="set_allowanceDay" oninput="formatInputNumber(this)" class="flex-1 min-w-0 w-full p-1.5 border rounded text-center bg-white font-bold text-sm"><span class="shrink-0">円</span></div>
                 </div>
                 <div>
                   <input type="text" id="set_allowanceMemo" maxlength="7" class="w-full p-2 border rounded-lg bg-white font-medium text-sm" placeholder="手当のメモ（7文字以内）">
@@ -1781,16 +1831,61 @@ html, body { max-width: 100%; overflow-x: hidden; }
       `;
     }
 
-    function triggerTimePicker(id) {
-      const el = document.getElementById(id);
-      if (el) {
-        if (typeof el.showPicker === 'function') {
-          el.showPicker();
-        } else {
-          el.focus();
-          el.click();
-        }
+    let customTimePickerTargetId = null;
+
+    function initCustomTimePickerOptions() {
+      const hour = document.getElementById('customTimeHour');
+      const minute = document.getElementById('customTimeMinute');
+      if (!hour || !minute || hour.options.length) return;
+      for (let h = 0; h < 24; h++) {
+        const option = document.createElement('option');
+        option.value = String(h).padStart(2, '0');
+        option.textContent = String(h).padStart(2, '0');
+        hour.appendChild(option);
       }
+      for (let m = 0; m < 60; m++) {
+        const option = document.createElement('option');
+        option.value = String(m).padStart(2, '0');
+        option.textContent = String(m).padStart(2, '0');
+        minute.appendChild(option);
+      }
+    }
+
+    function openCustomTimePicker(id) {
+      const el = document.getElementById(id);
+      const modal = document.getElementById('customTimePickerModal');
+      if (!el || !modal) return;
+      customTimePickerTargetId = id;
+      initCustomTimePickerOptions();
+      const match = /^(\d{2}):(\d{2})$/.exec(el.value || '');
+      document.getElementById('customTimeHour').value = match ? match[1] : '09';
+      document.getElementById('customTimeMinute').value = match ? match[2] : '00';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeCustomTimePicker() {
+      const modal = document.getElementById('customTimePickerModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+      customTimePickerTargetId = null;
+    }
+
+    function applyCustomTimePicker() {
+      if (!customTimePickerTargetId) return closeCustomTimePicker();
+      const el = document.getElementById(customTimePickerTargetId);
+      if (el) {
+        el.value = `${document.getElementById('customTimeHour').value}:${document.getElementById('customTimeMinute').value}`;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      closeCustomTimePicker();
+    }
+
+    function triggerTimePicker(id) {
+      openCustomTimePicker(id);
     }
 
     function wageSlotRowHtml(i, s) {
@@ -1802,23 +1897,23 @@ html, body { max-width: 100%; overflow-x: hidden; }
           <!-- 1行目：勤務時間 -->
           <div class="flex items-center gap-1.5">
             <div class="relative flex-1 min-w-0">
-              <input type="time" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
+              <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
               <button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('set_time_${i}_start')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs leading-none">🕒</button>
             </div>
             <span class="text-stone-400 font-bold text-xs shrink-0">〜</span>
             <div class="relative flex-1 min-w-0">
-              <input type="time" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
+              <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
               <button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('set_time_${i}_end')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs leading-none">🕒</button>
             </div>
           </div>
           <!-- 2行目：時給・曜日区分・割増 -->
-          <div class="wage-rate-row flex items-center gap-1.5 min-w-0">
-            <div class="wage-base-rate flex items-center gap-1 min-w-0">
+          <div class="wage-rate-row flex items-center gap-2 min-w-0">
+            <div class="wage-base-rate flex items-center gap-1.5 min-w-0">
               <span class="text-stone-600 font-bold text-xs shrink-0">時給</span>
               <input type="text" inputmode="numeric" id="set_wage_${i}" value="${s.wage ? Number(s.wage).toLocaleString() : ''}" oninput="formatInputNumber(this); checkWageSlotInputState(${i})" class="wage-base-input min-w-0 p-1.5 border rounded-lg font-bold text-sm bg-white text-right" placeholder="0">
               <span class="text-stone-600 text-xs shrink-0">円</span>
             </div>
-            <div class="wage-bonus-rate flex items-center gap-1 min-w-0">
+            <div class="wage-bonus-rate flex items-center gap-1.5 min-w-0">
               <select id="set_btype_${i}" class="wage-bonus-select min-w-0 p-1 border rounded-lg bg-white text-xs font-bold text-stone-800">
                 <option value="weekday" ${sel('weekday')}>平日</option><option value="saturday" ${sel('saturday')}>土日</option><option value="weekend" ${sel('weekend')}>土日祝</option><option value="holiday" ${sel('holiday')}>日祝</option>
               </select>
@@ -2028,11 +2123,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
       container.innerHTML = `
         <div class="bg-white p-2.5 border rounded-2xl border-stone-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-between gap-1.5">
           <div class="relative flex-1 min-w-0">
-            <input type="time" id="new_preset_start" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('new_preset_start')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+            <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="new_preset_start" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('new_preset_start')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
           </div>
           <span class="font-bold text-stone-400 text-xs">〜</span>
           <div class="relative flex-1 min-w-0">
-            <input type="time" id="new_preset_end" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('new_preset_end')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+            <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="new_preset_end" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('new_preset_end')" class="absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
           </div>
           <button type="button" onclick="openBreakSelectModal()" class="px-2.5 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="modalBreakDisplayVal">${breakMins}分</span></button>
         </div>
@@ -3011,5 +3106,27 @@ html, body { max-width: 100%; overflow-x: hidden; }
       reader.readAsText(file);
     }
   </script>
+
+  <!-- アプリ内時間選択画面（スマホ標準のキーボード切替バーを使わない） -->
+  <div id="customTimePickerModal" class="fixed inset-0 bg-stone-950/55 backdrop-blur-sm z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="customTimePickerTitle" onclick="if(event.target===this) closeCustomTimePicker()">
+    <div class="w-full max-w-xs rounded-3xl border border-rose-100 bg-white p-5 shadow-2xl space-y-4">
+      <div class="text-center space-y-1">
+        <h3 id="customTimePickerTitle" class="text-lg font-bold text-stone-900">時間を選択</h3>
+        <p class="text-xs text-stone-500">時と分を選んでね</p>
+      </div>
+      <div class="grid grid-cols-2 gap-3 items-end">
+        <label class="block text-center text-xs font-bold text-stone-600">時
+          <select id="customTimeHour" class="custom-time-select mt-1" aria-label="時を選択"></select>
+        </label>
+        <label class="block text-center text-xs font-bold text-stone-600">分
+          <select id="customTimeMinute" class="custom-time-select mt-1" aria-label="分を選択"></select>
+        </label>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="closeCustomTimePicker()" class="rounded-xl border border-stone-300 bg-stone-100 px-3 py-3 text-sm font-bold text-stone-700 hover:bg-stone-200">キャンセル</button>
+        <button type="button" onclick="applyCustomTimePicker()" class="rounded-xl bg-rose-900 px-3 py-3 text-sm font-bold text-white shadow-sm hover:bg-rose-800">設定する</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
