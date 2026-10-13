@@ -340,11 +340,12 @@ html, body { max-width: 100%; overflow-x: hidden; }
 #tab-settings .allowance-period-grid > div { column-gap: 6px !important; }
 .settings-job-card { gap: 7px !important; }
 .settings-job-card button { border-radius: 9px; transition: background-color .15s, border-color .15s; }
-.settings-job-card.is-selected .settings-job-action { background: rgba(255,255,255,.58) !important; border-color: #f3c7d3 !important; color: #6f243b !important; }
-.settings-job-card.is-selected .settings-job-delete { background: rgba(255,255,255,.42) !important; border-color: #e7cfd4 !important; color: #6b5a5d !important; }
-.settings-job-card:not(.is-selected) .settings-job-action { background: #f5f5f4 !important; border-color: #e7e5e4 !important; color: #44403c !important; }
-.settings-job-card:not(.is-selected) .settings-job-delete { background: #eeecea !important; border-color: #d6d3d1 !important; color: #57534e !important; }
+.settings-job-card .settings-job-action { background: inherit !important; color: #111827 !important; font-size: 0.8125rem; line-height: 1.25rem; font-weight: 700; }
 .settings-job-card .settings-job-action:active { filter: brightness(.97); }
+/* お給料画面：バイト先名は余白を確保し、長い名前は折り返して全体を表示 */
+#monthlyReceiveBreakdown .job-label-pill { box-sizing: border-box; max-width: 100%; min-width: 0; white-space: normal; padding-left: 8px; padding-right: 8px; }
+#monthlyReceiveBreakdown .job-label-pill > span:last-child { min-width: 0; overflow-wrap: anywhere; white-space: normal; }
+#monthlyReceiveBreakdown .payday-label { justify-self: center; text-align: center; padding-left: 4px; padding-right: 4px; }
 @media (max-width: 380px) {
   #tab-settings .wage-header { align-items: flex-start; }
   #tab-settings .wage-header-label { width: 100%; }
@@ -1707,6 +1708,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
       const rowsHtml = activeKeys.map((jk) => {
         const isSelected = (jk === currentSettingsJobKey);
         const jobInlineStyle = getJobInlineStyle(jk, isSelected);
+        const actionBorderColor = getJobPalette(jk).dot;
+        const actionBg = getJobPalette(jk).bg;
+        const actionStyle = `background:${actionBg};border-color:${actionBorderColor};color:#111827;`;
         return `
           <div class="settings-job-card ${isSelected ? 'is-selected' : ''} flex items-center gap-1.5 w-full min-w-0 rounded-xl px-2 py-2" style="${jobInlineStyle}">
             <button type="button" onclick="switchSettingsJobTab('${jk}')" aria-pressed="${isSelected}"
@@ -1714,9 +1718,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
               ${getJobLabelHtml(jk, 'settings-job-label')}
             </button>
             <button type="button" onclick="renameJobPrompt('${jk}')" title="バイト先名を修正"
-              class="settings-job-action shrink-0 px-2 py-1.5 rounded-lg border border-rose-200 bg-rose-100/70 text-rose-950 text-xs font-bold whitespace-nowrap">✏️ 修正</button>
+              class="settings-job-action shrink-0 px-2 py-1.5 rounded-lg border text-xs font-bold whitespace-nowrap" style="${actionStyle}">✏️ 修正</button>
             <button type="button" onclick="deleteJob('${jk}')" title="このバイト先を削除"
-              class="settings-job-action settings-job-delete shrink-0 px-2 py-1.5 rounded-lg border border-stone-300 bg-stone-100/80 text-stone-700 text-xs font-bold whitespace-nowrap">削除</button>
+              class="settings-job-action settings-job-delete shrink-0 px-2 py-1.5 rounded-lg border text-xs font-bold whitespace-nowrap" style="${actionStyle}">削除</button>
           </div>
         `;
       }).join('');
@@ -2477,10 +2481,10 @@ html, body { max-width: 100%; overflow-x: hidden; }
         const paydayText = `${payday.getMonth() + 1}/${payday.getDate()}支払い`;
 
         breakdownHtml += `
-          <div class="grid grid-cols-[1.25fr_auto_1fr] items-center gap-2 py-2.5 border-b border-rose-100 last:border-b-0 font-bold px-1 text-sm sm:text-base">
-            <span class="text-stone-800 truncate">${getJobLabelHtml(jk)}</span>
-            <span class="text-stone-500 font-bold text-center whitespace-nowrap text-xs sm:text-sm">${paydayText}</span>
-            <span class="font-bold text-rose-950 text-right">${formatCurrency(jobReceivePay)}</span>
+          <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 py-2.5 border-b border-rose-100 last:border-b-0 font-bold px-2 text-sm sm:text-base">
+            <span class="text-stone-800 min-w-0">${getJobLabelHtml(jk, 'max-w-full min-w-0')}</span>
+            <span class="payday-label text-stone-500 font-bold whitespace-nowrap text-xs sm:text-sm">${paydayText}</span>
+            <span class="font-bold text-rose-950 text-right min-w-0">${formatCurrency(jobReceivePay)}</span>
           </div>
         `;
       });
