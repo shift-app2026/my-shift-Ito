@@ -198,6 +198,20 @@
   .standalone-job-label { flex-shrink: 0; }
   .standalone-shift-line > span:first-child { min-width: 0; }
   .standalone-shift-line .job-label-pill { white-space: nowrap; }
+  .calendar-payday-dot .job-color-dot { margin-right: 0 !important; }
+  .calendar-payday-legend { color: #111827; }
+  .receive-breakdown-row { width: 100%; min-width: 0; }
+  .receive-job-name { flex: 1 1 auto; }
+  .receive-job-name .job-label-pill { max-width: 100%; white-space: nowrap; padding-left: 4px; padding-right: 4px; gap: 4px; }
+  .receive-job-name .job-label-pill > span:last-child { white-space: nowrap; }
+  .receive-job-amount { flex: 0 0 auto; margin-left: auto; }
+  @media (max-width: 639px) {
+    .receive-breakdown-row { gap: 5px !important; padding-left: 4px !important; padding-right: 4px !important; }
+    .receive-job-name .job-label-pill { font-size: 11px; padding-top: 4px; padding-bottom: 4px; }
+    .receive-job-name .job-color-dot { width: 8px !important; height: 8px !important; min-width: 8px !important; flex-basis: 8px !important; }
+    .payday-label { font-size: 10px !important; flex: 0 0 auto; }
+    .receive-job-amount { font-size: 12px; }
+  }
 </style>
 <style>
   @media (max-width: 639px) {
@@ -2478,13 +2492,13 @@ html, body { max-width: 100%; overflow-x: hidden; }
         totalReceivePay += jobReceivePay;
 
         const payday = getAdjustedPaydayDate(viewMonth.getFullYear(), viewMonth.getMonth(), String(job.payDay || '5').trim());
-        const paydayText = `${payday.getMonth() + 1}/${payday.getDate()}支払い`;
+        const paydayText = `${payday.getMonth() + 1}/${payday.getDate()} 支払`;
 
         breakdownHtml += `
-          <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 py-2.5 border-b border-rose-100 last:border-b-0 font-bold px-2 text-sm sm:text-base">
-            <span class="text-stone-800 min-w-0">${getJobLabelHtml(jk, 'max-w-full min-w-0')}</span>
-            <span class="payday-label text-stone-500 font-bold whitespace-nowrap text-xs sm:text-sm">${paydayText}</span>
-            <span class="font-bold text-rose-950 text-right min-w-0">${formatCurrency(jobReceivePay)}</span>
+          <div class="receive-breakdown-row flex items-center gap-1.5 sm:gap-3 py-2.5 border-b border-rose-100 last:border-b-0 font-bold px-2">
+            <span class="receive-job-name min-w-0">${getJobLabelHtml(jk, 'max-w-full min-w-0')}</span>
+            <span class="payday-label text-stone-600 font-bold whitespace-nowrap">${paydayText}</span>
+            <span class="receive-job-amount font-bold text-rose-950 text-right whitespace-nowrap">${formatCurrency(jobReceivePay)}</span>
           </div>
         `;
       });
@@ -2768,7 +2782,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
         ? `<div class="flex min-w-0 items-center justify-start">${getJobLabelHtml(jk, 'calendar-legend-label')}</div>`
         : `<div aria-hidden="true"></div>`;
       const firstRow = `<div class="grid grid-cols-2 items-center gap-2">${item(keys[0])}${item(keys[1])}</div>`;
-      const secondRow = `<div class="grid grid-cols-2 items-center gap-2">${item(keys[2])}<div class="flex justify-end"><span class="whitespace-nowrap font-bold text-rose-600">♡ はお給料日</span></div></div>`;
+      const paydayDot = keys[0] ? getJobLabelHtml(keys[0], 'calendar-payday-dot', true) : '<span class="job-color-dot" aria-hidden="true"></span>';
+      const secondRow = `<div class="grid grid-cols-2 items-center gap-2">${item(keys[2])}<div class="flex justify-end"><span class="calendar-payday-legend inline-flex items-center gap-1 whitespace-nowrap font-bold text-stone-900">${paydayDot}<span>お給料日</span></span></div></div>`;
       return `<div class="flex w-full flex-col gap-1.5">${firstRow}${secondRow}</div>`;
     }
 
@@ -2896,7 +2911,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
         getPaydayJobs(d).forEach(jk => {
           const title = `${getJobDisplayName(jk)} お給料日`;
-          lineItems.push({ order: 9500, html: lineHtml(`<span class="text-sm leading-none text-rose-600 font-bold">♡</span><span>お給料日</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)).replace('text-stone-800', 'text-rose-950') });
+          const paydayDot = getJobLabelHtml(jk, 'standalone-job-label', true);
+          lineItems.push({ order: 9500, html: lineHtml(`${paydayDot}<span>お給料日</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)) });
         });
 
         lineItems.sort((a, b) => a.order - b.order);
