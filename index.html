@@ -168,6 +168,36 @@
   .job-label-pill > span:last-child { color: #111827 !important; }
   .settings-job-card .settings-job-name { color: #111827 !important; }
   .job-chip { color: #111827 !important; }
+
+  /* 設定画面：バイト名は背景と一体化。名前だけ左寄せ、文字サイズは統一 */
+  #tab-settings .settings-job-card { border: 0 !important; }
+  #tab-settings .settings-job-name {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #111827 !important;
+  }
+  #tab-settings .settings-job-name .settings-job-label {
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    color: #111827 !important;
+    max-width: 100%;
+  }
+  #tab-settings .settings-job-name .settings-job-label > span:last-child { color: #111827 !important; }
+  #tab-settings .settings-job-name .job-color-dot { flex: 0 0 10px; }
+  /* シフト登録の凡例：バイト先ごとの淡い背景色を表示し、枠線は付けない */
+  .calendar-legend-label { border: 0 !important; padding: 4px 8px !important; border-radius: 8px !important; box-shadow: none !important; }
+  /* 予定表の凡例：淡い背景色は残し、バイト名を囲む枠だけをなくす */
+  .legend-job-label { border: 0 !important; box-shadow: none !important; }
+  .standalone-job-label { flex-shrink: 0; }
+  .standalone-shift-line > span:first-child { min-width: 0; }
+  .standalone-shift-line .job-label-pill { white-space: nowrap; }
 </style>
 <style>
   @media (max-width: 639px) {
@@ -647,9 +677,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
             <span class="text-rose-500">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-sky-600">土</span>
           </div>
           <div id="calendarDays" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
-          <div id="calendarJobLegend" class="flex flex-wrap items-center justify-center gap-2.5 pt-2.5 text-xs font-bold text-stone-700">
-            <span class="text-red-500 font-bold">❤はお給料日</span>
-          </div>
+          <div id="calendarJobLegend" class="w-full pt-2.5 text-xs font-bold text-stone-700"></div>
         </div>
 
         <div class="bg-white border border-stone-100 rounded-3xl p-4 shadow-sm space-y-3">
@@ -674,9 +702,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
           <div class="text-xs sm:text-sm font-bold text-stone-700 border-b border-stone-100 pb-2 flex flex-col items-start tracking-wide leading-relaxed pl-1 space-y-1">
             <span class="text-xs text-stone-700 font-bold">📅 タップするとGoogleカレンダーに登録されます</span>
             <span class="t13 text-rose-900 font-bold">日付をタップすると、シフトを修正できます♡</span>
-            <div id="standaloneJobLegend" class="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5 text-xs font-bold text-stone-700">
-              <span class="text-red-500 font-bold">❤はお給料日</span>
-            </div>
+            <div id="standaloneJobLegend" class="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5 text-xs font-bold text-stone-700"></div>
           </div>
           <div class="text-center text-xs text-stone-500 font-medium py-1" aria-hidden="true">↓ 下にスクロールして、ほかの日の予定も確認できます</div>
           <div id="standaloneShiftListContainer" class="space-y-2 max-h-[62vh] overflow-y-auto pr-1 text-sm"></div>
@@ -1682,10 +1708,10 @@ html, body { max-width: 100%; overflow-x: hidden; }
         const isSelected = (jk === currentSettingsJobKey);
         const jobInlineStyle = getJobInlineStyle(jk, isSelected);
         return `
-          <div class="settings-job-card ${isSelected ? 'is-selected' : ''} flex items-center gap-1.5 w-full min-w-0 rounded-xl border px-2 py-2" style="${jobInlineStyle}">
+          <div class="settings-job-card ${isSelected ? 'is-selected' : ''} flex items-center gap-1.5 w-full min-w-0 rounded-xl px-2 py-2" style="${jobInlineStyle}">
             <button type="button" onclick="switchSettingsJobTab('${jk}')" aria-pressed="${isSelected}"
-              class="settings-job-name flex-1 min-w-0 px-1 py-1 text-xs sm:text-sm font-bold text-left transition truncate">
-              ${getJobLabelHtml(jk)}
+              class="settings-job-name flex-1 min-w-0 px-1 py-1 text-sm font-bold text-left transition truncate">
+              ${getJobLabelHtml(jk, 'settings-job-label')}
             </button>
             <button type="button" onclick="renameJobPrompt('${jk}')" title="バイト先名を修正"
               class="settings-job-action shrink-0 px-2 py-1.5 rounded-lg border border-rose-200 bg-rose-100/70 text-rose-950 text-xs font-bold whitespace-nowrap">✏️ 修正</button>
@@ -2630,7 +2656,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       const placeholderName = jk === 'job1' ? 'バイト名1' : (jk === 'job2' ? 'バイト名2' : 'バイト名3');
       const displayName = rawName ? esc(rawName) : `<span class="font-normal">${placeholderName}</span>`;
       const titleName = esc(rawName || placeholderName);
-      const orb = `<span class="${visual.orbClass || 'glass-orb glass-orb-stone'}" style="background:${palette.dot};border-color:${palette.dot};"></span>`;
+      const orb = `<span class="job-color-dot" aria-hidden="true" style="display:inline-block;flex:0 0 10px;width:10px;height:10px;min-width:10px;border-radius:50%;background:${palette.dot};border:1px solid ${palette.dot};box-sizing:border-box;margin-right:1px;"></span>`;
       if (iconOnly) {
         return `<span class="inline-flex items-center ${extraClass}" title="${titleName}">${orb}</span>`;
       }
@@ -2719,17 +2745,27 @@ html, body { max-width: 100%; overflow-x: hidden; }
       }
 
       const calLegendEl = document.getElementById('calendarJobLegend');
-      if (calLegendEl) calLegendEl.innerHTML = buildJobLegendHtml();
+      if (calLegendEl) calLegendEl.innerHTML = buildCalendarJobLegendHtml();
 
       renderCalendarTodayTomorrowSummary();
     }
 
+    // 予定表上部の凡例：バイト先名のみ表示（お給料日の説明は表示しない）
     function buildJobLegendHtml() {
-      let html = `<span class="text-red-500 font-bold whitespace-nowrap">❤はお給料日</span>`;
-      getActiveJobKeys().forEach(jk => {
-        html += `<div class="bg-stone-50 border border-stone-200 px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-stone-800 flex items-center gap-1.5">${getJobLabelHtml(jk)}</div>`;
-      });
-      return html;
+      return getActiveJobKeys().map(jk =>
+        `<div class="job-legend-item flex items-center text-xs sm:text-sm font-bold" style="color:#111827;">${getJobLabelHtml(jk, 'legend-job-label')}</div>`
+      ).join('');
+    }
+
+    // シフト登録カレンダーの凡例は、1行目に1・2件目、2行目に3件目と給料日を配置
+    function buildCalendarJobLegendHtml() {
+      const keys = getActiveJobKeys();
+      const item = jk => jk
+        ? `<div class="flex min-w-0 items-center justify-start">${getJobLabelHtml(jk, 'calendar-legend-label')}</div>`
+        : `<div aria-hidden="true"></div>`;
+      const firstRow = `<div class="grid grid-cols-2 items-center gap-2">${item(keys[0])}${item(keys[1])}</div>`;
+      const secondRow = `<div class="grid grid-cols-2 items-center gap-2">${item(keys[2])}<div class="flex justify-end"><span class="whitespace-nowrap font-bold text-rose-600">♡ はお給料日</span></div></div>`;
+      return `<div class="flex w-full flex-col gap-1.5">${firstRow}${secondRow}</div>`;
     }
 
     function selectCalendarDate(key) {
@@ -2827,7 +2863,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
         const lineHtml = (label, url) => `
           <div class="standalone-shift-line flex items-center justify-between gap-2 text-sm sm:text-base py-1">
-            <span class="font-bold text-stone-800 whitespace-nowrap truncate flex items-center gap-2">${label}</span>
+            <span class="font-bold text-stone-800 min-w-0 flex items-center gap-2">${label}</span>
             <a href="${url.replace(/&/g, '&amp;')}" target="_blank" rel="noopener" onclick="event.stopPropagation();" class="text-xl hover:scale-110 transition shrink-0" title="Googleカレンダーに登録">📅</a>
           </div>`;
 
@@ -2845,17 +2881,18 @@ html, body { max-width: 100%; overflow-x: hidden; }
             
             if (jobShift.start && jobShift.end) {
               const title = `${jName} ${jobShift.start}〜${jobShift.end}`;
-              lineItems.push({ order: timeStrToMins(jobShift.start), html: lineHtml(`${getJobLabelHtml(jk, "", true)}<span class="job-time">${jobShift.start}〜${jobShift.end}</span>`, generateShiftGoogleCalendarUrl(title, dateStr, jobShift.start, jobShift.end)) });
+              // 予定表の日付内はバイト先名を省き、色付き●と勤務時間だけを表示して時間幅を確保
+              lineItems.push({ order: timeStrToMins(jobShift.start), html: lineHtml(`${getJobLabelHtml(jk, "standalone-job-label", true)}<span class="job-time">${jobShift.start}〜${jobShift.end}</span>`, generateShiftGoogleCalendarUrl(title, dateStr, jobShift.start, jobShift.end)) });
             } else if (jobShift.isPaidLeave) {
               const title = `${jName} 有給休暇`;
-              lineItems.push({ order: 9000, html: lineHtml(`${getJobLabelHtml(jk, "", true)}<span>有給休暇</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)) });
+              lineItems.push({ order: 9000, html: lineHtml(`${getJobLabelHtml(jk, "standalone-job-label", true)}<span>有給休暇</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)) });
             }
           });
         });
 
         getPaydayJobs(d).forEach(jk => {
           const title = `${getJobDisplayName(jk)} お給料日`;
-          lineItems.push({ order: 9500, html: lineHtml(`${getJobLabelHtml(jk, "", true)}<span>お給料日</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)).replace('text-stone-800', 'text-rose-950') });
+          lineItems.push({ order: 9500, html: lineHtml(`<span class="text-sm leading-none text-rose-600 font-bold">♡</span><span>お給料日</span>`, generateAllDayGoogleCalendarUrl(title, dateStr)).replace('text-stone-800', 'text-rose-950') });
         });
 
         lineItems.sort((a, b) => a.order - b.order);
