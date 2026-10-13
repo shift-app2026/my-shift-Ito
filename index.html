@@ -162,6 +162,12 @@
     .standalone-shift-line, .standalone-shift-line .job-time { font-size:14px !important; }
   }
 
+
+  /* バイト先ごとの色を全画面で統一。文字色は黒を基本にする */
+  .job-label-pill { color: #111827 !important; max-width: 100%; }
+  .job-label-pill > span:last-child { color: #111827 !important; }
+  .settings-job-card .settings-job-name { color: #111827 !important; }
+  .job-chip { color: #111827 !important; }
 </style>
 <style>
   @media (max-width: 639px) {
@@ -1221,10 +1227,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
         let htmlRow2 = '';
         activeKeys.forEach((jk, idx) => {
           let isSelected = (jk === currentSelectedJobKey);
-          let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+          let styleClass = "border font-bold";
+          let jobInlineStyle = getJobInlineStyle(jk, isSelected);
           
           let btnHtml = `
-            <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip w-full py-2.5 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
+            <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip w-full py-2.5 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1" style="${jobInlineStyle}">
               ${getJobLabelHtml(jk)}
             </button>
           `;
@@ -1244,10 +1251,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
         let rowHtml = '';
         activeKeys.forEach(jk => {
           let isSelected = (jk === currentSelectedJobKey);
-          let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+          let styleClass = "border font-bold";
+          let jobInlineStyle = getJobInlineStyle(jk, isSelected);
 
           rowHtml += `
-            <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1">
+            <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1" style="${jobInlineStyle}">
               ${getJobLabelHtml(jk)}
             </button>
           `;
@@ -1547,10 +1555,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
       activeKeys.forEach(jk => {
         let name = getJobDisplayName(jk);
         let isSelected = (jk === currentBreakdownJobKey);
-        let styleClass = isSelected ? "bg-rose-50/70 text-rose-950 border border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-bold" : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 font-bold";
+        let styleClass = "border font-bold";
+        let jobInlineStyle = getJobInlineStyle(jk, isSelected);
 
         container.innerHTML += `
-          <button type="button" onclick="switchBreakdownJob('${jk}')" class="job-chip flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition truncate px-1.5 ${styleClass}">
+          <button type="button" onclick="switchBreakdownJob('${jk}')" class="job-chip flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition truncate px-1.5 ${styleClass}" style="${jobInlineStyle}">
             ${getJobLabelHtml(jk)}
           </button>
         `;
@@ -1671,11 +1680,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
       const activeKeys = getActiveJobKeys();
       const rowsHtml = activeKeys.map((jk) => {
         const isSelected = (jk === currentSettingsJobKey);
-        const selectedClass = isSelected
-          ? 'bg-rose-50 text-rose-950 border-rose-200'
-          : 'bg-white text-stone-700 border-stone-200';
+        const jobInlineStyle = getJobInlineStyle(jk, isSelected);
         return `
-          <div class="settings-job-card ${isSelected ? 'is-selected' : ''} flex items-center gap-1.5 w-full min-w-0 rounded-xl border px-2 py-2 ${isSelected ? 'border-rose-200 bg-rose-50' : 'border-stone-200 bg-white'}">
+          <div class="settings-job-card ${isSelected ? 'is-selected' : ''} flex items-center gap-1.5 w-full min-w-0 rounded-xl border px-2 py-2" style="${jobInlineStyle}">
             <button type="button" onclick="switchSettingsJobTab('${jk}')" aria-pressed="${isSelected}"
               class="settings-job-name flex-1 min-w-0 px-1 py-1 text-xs sm:text-sm font-bold text-left transition truncate">
               ${getJobLabelHtml(jk)}
@@ -2594,6 +2601,22 @@ html, body { max-width: 100%; overflow-x: hidden; }
       return JOB_VISUALS[jk] || { bg: 'bg-stone-50', border: 'border-stone-200', text: 'text-stone-800', dot: 'bg-stone-500' };
     }
 
+    // バイト先ごとの淡い背景色を全画面で統一（文字は黒で読みやすく）
+    const JOB_PALE_COLORS = {
+      job1: { bg: '#EAF2FC', border: '#BFD6F4', dot: '#2563EB' },
+      job2: { bg: '#EAF5E4', border: '#C8E2B9', dot: '#4D8B37' },
+      job3: { bg: '#FCECE7', border: '#F1C8BA', dot: '#D97757' }
+    };
+
+    function getJobPalette(jk) {
+      return JOB_PALE_COLORS[jk] || { bg: '#F5F5F4', border: '#D6D3D1', dot: '#78716C' };
+    }
+
+    function getJobInlineStyle(jk, selected = false) {
+      const c = getJobPalette(jk);
+      return `background:${c.bg};border-color:${selected ? c.dot : c.border};color:#111827;${selected ? 'box-shadow:0 0 0 1px ' + c.dot + ' inset;' : ''}`;
+    }
+
     function getJobDisplayName(jk) {
       const raw = configData[jk]?.name;
       if (raw) return raw;
@@ -2602,15 +2625,16 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
     function getJobLabelHtml(jk, extraClass = '', iconOnly = false) {
       const visual = getJobVisual(jk);
+      const palette = getJobPalette(jk);
       const rawName = configData[jk]?.name;
       const placeholderName = jk === 'job1' ? 'バイト名1' : (jk === 'job2' ? 'バイト名2' : 'バイト名3');
-      const displayName = rawName ? esc(rawName) : `<span class="text-stone-400 font-normal">${placeholderName}</span>`;
+      const displayName = rawName ? esc(rawName) : `<span class="font-normal">${placeholderName}</span>`;
       const titleName = esc(rawName || placeholderName);
-      const orb = `<span class="${visual.orbClass || 'glass-orb glass-orb-stone'}"></span>`;
+      const orb = `<span class="${visual.orbClass || 'glass-orb glass-orb-stone'}" style="background:${palette.dot};border-color:${palette.dot};"></span>`;
       if (iconOnly) {
         return `<span class="inline-flex items-center ${extraClass}" title="${titleName}">${orb}</span>`;
       }
-      return `<span class="inline-flex items-center gap-1 ${extraClass}">${orb}<span>${displayName}</span></span>`;
+      return `<span class="job-label-pill inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 ${extraClass}" style="background:${palette.bg};border-color:${palette.border};color:#111827;" title="${titleName}">${orb}<span class="font-bold">${displayName}</span></span>`;
     }
 
     function renderCalendar() {
