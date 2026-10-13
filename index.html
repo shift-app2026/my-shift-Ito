@@ -1722,31 +1722,31 @@ html, body { max-width: 100%; overflow-x: hidden; }
         <div data-slot="${i}" class="p-2.5 rounded-xl border border-stone-200 bg-stone-50/40 space-y-2">
           <div class="flex items-center gap-1.5">
             <div class="relative flex-1 min-w-0">
-              <input type="time" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-6 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
-              <button type="button" onclick="triggerTimePicker('set_time_${i}_start')" class="absolute right-1.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs">🕒</button>
+              <input type="time" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time clock-time w-full px-1.5 py-1.5 border rounded-lg text-center font-bold text-sm bg-white border-stone-200">
             </div>
             <span class="text-stone-400 font-bold text-xs shrink-0">〜</span>
             <div class="relative flex-1 min-w-0">
-              <input type="time" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-6 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
-              <button type="button" onclick="triggerTimePicker('set_time_${i}_end')" class="absolute right-1.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs">🕒</button>
+              <input type="time" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time clock-time w-full px-1.5 py-1.5 border rounded-lg text-center font-bold text-sm bg-white border-stone-200">
             </div>
-            <button type="button" onclick="saveSettingsWageSlotRow(${i})" id="set_reg_btn_${i}" class="${regCls} font-bold px-2 py-1.5 rounded-md text-xs transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] shrink-0">登録</button>
-            <button type="button" onclick="removeSettingsWageSlot(${i})" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-2 py-1.5 rounded-md text-xs shrink-0">削除</button>
           </div>
-          <div class="grid grid-cols-[auto_1fr_auto] items-center gap-1.5">
-            <span class="text-stone-500 font-bold text-xs sm:text-sm">時給</span>
-            <div class="flex items-center gap-1">
-              <input type="text" inputmode="numeric" id="set_wage_${i}" value="${s.wage ? Number(s.wage).toLocaleString() : ''}" oninput="formatInputNumber(this); checkWageSlotInputState(${i})" class="w-full p-2 border rounded-lg font-bold text-xs sm:text-sm bg-white text-right" placeholder="0">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <div class="flex items-center gap-1 flex-1 min-w-[9.5rem]">
+              <span class="text-stone-500 font-bold text-xs sm:text-sm shrink-0">時給</span>
+              <input type="text" inputmode="numeric" id="set_wage_${i}" value="${s.wage ? Number(s.wage).toLocaleString() : ''}" oninput="formatInputNumber(this); checkWageSlotInputState(${i})" class="w-full min-w-[5rem] p-2 border rounded-lg font-bold text-sm bg-white text-right" placeholder="0">
               <span class="text-stone-600 text-xs sm:text-sm shrink-0">円</span>
             </div>
-            <div class="flex items-center gap-1">
-              <select id="set_btype_${i}" class="p-1.5 border rounded-lg bg-white text-xs font-bold text-stone-800">
+            <div class="flex items-center gap-1 flex-1 min-w-[11rem]">
+              <select id="set_btype_${i}" class="p-1.5 border rounded-lg bg-white text-xs font-bold text-stone-800 shrink-0">
                 <option value="weekday" ${sel('weekday')}>平日</option><option value="saturday" ${sel('saturday')}>土日</option><option value="weekend" ${sel('weekend')}>土日祝</option><option value="holiday" ${sel('holiday')}>日祝</option>
               </select>
               <span class="text-stone-600 text-xs shrink-0">＋</span>
-              <input type="text" inputmode="numeric" id="set_bval_${i}" value="${s.bVal ? Number(s.bVal).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-16 p-2 border rounded-lg font-bold text-xs sm:text-sm bg-white text-right" placeholder="0">
+              <input type="text" inputmode="numeric" id="set_bval_${i}" value="${s.bVal ? Number(s.bVal).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="w-full min-w-[4rem] p-2 border rounded-lg font-bold text-sm bg-white text-right" placeholder="0">
               <span class="text-stone-600 text-xs sm:text-sm shrink-0">円</span>
             </div>
+          </div>
+          <div class="flex items-center justify-end gap-2">
+            <button type="button" onclick="saveSettingsWageSlotRow(${i})" id="set_reg_btn_${i}" class="${regCls} font-bold px-4 py-1.5 rounded-md text-xs sm:text-sm transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] shrink-0">登録</button>
+            <button type="button" onclick="removeSettingsWageSlot(${i})" class="bg-stone-200 text-stone-600 hover:bg-stone-300 font-bold px-4 py-1.5 rounded-md text-xs sm:text-sm shrink-0">削除</button>
           </div>
         </div>`;
     }
@@ -1791,7 +1791,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       const st = document.getElementById(`set_time_${i}_start`)?.value || '';
       const ed = document.getElementById(`set_time_${i}_end`)?.value || '';
       const wg = parseFormattedNumber(document.getElementById(`set_wage_${i}`)?.value);
-      btn.className = ((st && ed && wg > 0) ? "bg-rose-900 text-rose-50 hover:bg-rose-800" : "bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-300") + " font-bold px-2 py-1.5 rounded-md text-xs transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] shrink-0";
+      btn.className = ((st && ed && wg > 0) ? "bg-rose-900 text-rose-50 hover:bg-rose-800" : "bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-300") + " font-bold px-4 py-1.5 rounded-md text-xs sm:text-sm transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] shrink-0";
     }
 
     function saveSettingsWageSlotRow(i) {
