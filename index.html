@@ -1722,25 +1722,29 @@ html, body { max-width: 100%; overflow-x: hidden; }
         <div data-slot="${i}" class="p-2.5 rounded-xl border border-stone-200 bg-stone-50/40 space-y-2">
           <div style="display:flex;align-items:center;gap:6px;">
             <div style="position:relative;flex:1 1 0;min-width:0;">
-              <input type="time" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time clock-time w-full border rounded-lg text-center font-bold text-sm bg-white border-stone-200" style="padding:6px 4px;">
+              <input type="time" id="set_time_${i}_start" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time clock-time w-full border rounded-lg text-center font-bold text-sm bg-white border-stone-200" style="padding:6px 24px 6px 2px;font-size:13px !important;">
+              <button type="button" onclick="triggerTimePicker('set_time_${i}_start')" aria-label="時刻を選ぶ" style="position:absolute;right:3px;top:50%;transform:translateY(-50%);font-size:15px;line-height:1;padding:4px;background:none;border:none;">🕒</button>
             </div>
             <span class="text-stone-400 font-bold text-xs shrink-0">〜</span>
             <div style="position:relative;flex:1 1 0;min-width:0;">
-              <input type="time" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time clock-time w-full border rounded-lg text-center font-bold text-sm bg-white border-stone-200" style="padding:6px 4px;">
+              <input type="time" id="set_time_${i}_end" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time clock-time w-full border rounded-lg text-center font-bold text-sm bg-white border-stone-200" style="padding:6px 24px 6px 2px;font-size:13px !important;">
+              <button type="button" onclick="triggerTimePicker('set_time_${i}_end')" aria-label="時刻を選ぶ" style="position:absolute;right:3px;top:50%;transform:translateY(-50%);font-size:15px;line-height:1;padding:4px;background:none;border:none;">🕒</button>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span class="text-stone-500 font-bold text-xs shrink-0" style="width:2.2em;">時給</span>
-            <input type="text" inputmode="numeric" id="set_wage_${i}" value="${s.wage ? Number(s.wage).toLocaleString() : ''}" oninput="formatInputNumber(this); checkWageSlotInputState(${i})" class="border rounded-lg font-bold text-sm bg-white text-right" style="flex:1 1 0;min-width:0;padding:8px;" placeholder="0">
-            <span class="text-stone-600 text-xs shrink-0">円</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <select id="set_btype_${i}" class="border rounded-lg bg-white text-xs font-bold text-stone-800" style="flex:0 0 auto;padding:6px;">
-              <option value="weekday" ${sel('weekday')}>平日</option><option value="saturday" ${sel('saturday')}>土日</option><option value="weekend" ${sel('weekend')}>土日祝</option><option value="holiday" ${sel('holiday')}>日祝</option>
-            </select>
-            <span class="text-stone-600 text-xs shrink-0">＋</span>
-            <input type="text" inputmode="numeric" id="set_bval_${i}" value="${s.bVal ? Number(s.bVal).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="border rounded-lg font-bold text-sm bg-white text-right" style="flex:1 1 0;min-width:0;padding:8px;" placeholder="0">
-            <span class="text-stone-600 text-xs shrink-0">円</span>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+            <div style="display:flex;align-items:center;gap:4px;flex:1 1 104px;min-width:0;">
+              <span class="text-stone-500 font-bold text-xs shrink-0">時給</span>
+              <input type="text" inputmode="numeric" id="set_wage_${i}" value="${s.wage ? Number(s.wage).toLocaleString() : ''}" oninput="formatInputNumber(this); checkWageSlotInputState(${i})" class="border rounded-lg font-bold bg-white text-right" style="flex:1 1 0;width:0;min-width:3.8em;padding:7px 4px;font-size:15px !important;" placeholder="0">
+              <span class="text-stone-600 text-xs shrink-0">円</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex:1 1 160px;min-width:0;">
+              <select id="set_btype_${i}" class="border rounded-lg bg-white font-bold text-stone-800" style="flex:0 0 auto;padding:6px 0 6px 2px;font-size:13px !important;">
+                <option value="weekday" ${sel('weekday')}>平日</option><option value="saturday" ${sel('saturday')}>土日</option><option value="weekend" ${sel('weekend')}>土日祝</option><option value="holiday" ${sel('holiday')}>日祝</option>
+              </select>
+              <span class="text-stone-600 text-xs shrink-0">＋</span>
+              <input type="text" inputmode="numeric" id="set_bval_${i}" value="${s.bVal ? Number(s.bVal).toLocaleString() : ''}" oninput="formatInputNumber(this)" class="border rounded-lg font-bold bg-white text-right" style="flex:1 1 0;width:0;min-width:3.8em;padding:7px 4px;font-size:15px !important;" placeholder="0">
+              <span class="text-stone-600 text-xs shrink-0">円</span>
+            </div>
           </div>
           <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;">
             <button type="button" onclick="saveSettingsWageSlotRow(${i})" id="set_reg_btn_${i}" class="${regCls} font-bold rounded-md text-xs transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] shrink-0" style="padding:6px 16px;">登録</button>
