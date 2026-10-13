@@ -284,6 +284,20 @@ html, body { max-width: 100%; overflow-x: hidden; }
 #tab-settings .wage-header-label { column-gap: 8px; row-gap: 5px; }
 #tab-settings .wage-head-sub { padding-left: 9px !important; padding-right: 9px !important; }
 #tab-settings .wage-head-btn { min-height: 34px; padding-top: 5px; padding-bottom: 5px; }
+/* 時給入力見出しは1行目、確認と追加操作は2行目にして読みやすく */
+#tab-settings .wage-header-title-row { line-height: 1.45; }
+#tab-settings .wage-header-actions-row { min-width: 0; }
+#tab-settings .wage-header-actions-row .wage-head-sub,
+#tab-settings .wage-header-actions-row .wage-head-btn { font-size: 0.875rem !important; line-height: 1.35rem !important; }
+#tab-settings .wage-header-actions-row .wage-head-sub { padding: 5px 9px !important; }
+#tab-settings .wage-header-actions-row .wage-head-btn { padding: 5px 10px !important; }
+@media (max-width: 360px) {
+  #tab-settings .wage-header-actions-row { gap: 6px; }
+  #tab-settings .wage-header-actions-row .wage-head-sub,
+  #tab-settings .wage-header-actions-row .wage-head-btn { font-size: 0.8125rem !important; }
+  #tab-settings .wage-header-actions-row .wage-head-sub { padding-left: 6px !important; padding-right: 6px !important; }
+  #tab-settings .wage-header-actions-row .wage-head-btn { padding-left: 7px !important; padding-right: 7px !important; }
+}
 #tab-settings .wage-rate-row { column-gap: 8px !important; }
 #tab-settings .wage-base-rate, #tab-settings .wage-bonus-rate { column-gap: 6px !important; }
 #tab-settings .allowance-period-grid { column-gap: 12px !important; }
@@ -1786,12 +1800,14 @@ html, body { max-width: 100%; overflow-x: hidden; }
           </div>
 
           <div class="space-y-2 pt-1 border-t border-stone-200">
-            <div class="wage-header flex flex-wrap justify-between items-center gap-x-2 gap-y-2">
-              <div class="wage-header-label flex flex-wrap items-center gap-1.5 min-w-0">
+            <div class="wage-header flex flex-col items-stretch gap-2">
+              <div class="wage-header-title-row w-full">
                 <span class="wage-head-title font-bold text-stone-900 whitespace-nowrap">【時給入力】</span>
-                <button type="button" onclick="openOvertimeInfoModal()" class="wage-head-sub font-bold text-rose-900 whitespace-nowrap px-2 py-1 rounded-full border border-amber-300 bg-amber-100 shadow-sm" aria-label="残業・深夜の割増についてを確認">※確認してね 👆</button>
               </div>
-              <button type="button" onclick="addSettingsWageSlot()" class="wage-head-btn ml-auto bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 font-bold py-2 rounded-xl transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] shrink-0 whitespace-nowrap">+ 時間帯を追加</button>
+              <div class="wage-header-actions-row flex w-full items-center justify-between gap-2">
+                <button type="button" onclick="openOvertimeInfoModal()" class="wage-head-sub font-bold text-rose-900 whitespace-nowrap px-2 py-1 rounded-full border border-amber-300 bg-amber-100 shadow-sm" aria-label="残業・深夜の割増についてを確認">※確認してね 💡</button>
+                <button type="button" onclick="addSettingsWageSlot()" class="wage-head-btn ml-auto bg-rose-50 text-rose-900 border border-rose-200 hover:bg-rose-100 font-bold py-2 rounded-xl transition shadow-[0_1px_2px_rgba(0,0,0,0.05)] shrink-0 whitespace-nowrap">＋時間帯を追加</button>
+              </div>
             </div>
             <div id="setWageSlotsContainer" class="space-y-2.5">
               ${slotsHtml}
