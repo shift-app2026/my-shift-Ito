@@ -79,6 +79,7 @@
     .glass-orb-sky { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
     .glass-orb-emerald { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); }
     .glass-orb-rose { background: linear-gradient(135deg, #db2777 0%, #be185d 100%); }
+    .glass-orb-amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
     .glass-orb-stone { background: linear-gradient(135deg, #a8a29e 0%, #57534e 100%); }
 
     /* ネイティブの時計ピッカーアイコンを1つだけに非表示制御 */
@@ -527,7 +528,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
           <div class="space-y-2">
             <div class="flex items-center justify-between gap-2">
               <button type="button" onclick="registerNewJob()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm whitespace-nowrap">バイト名の登録</button>
-              <span class="text-xs sm:text-sm font-bold text-stone-800">3件まで登録できます♡</span>
+              <span class="text-xs sm:text-sm font-bold text-stone-800">4件まで登録できます♡</span>
             </div>
             <div class="text-xs font-bold text-stone-800">※登録すると、時給関係の登録ができます。</div>
             <div id="settingsJobTabs" class="space-y-1.5"></div>
@@ -589,7 +590,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
               <li><strong class="text-stone-800">お給料タブ</strong>：今月の給料見込や年間収入、目標金額を確認できます。</li>
               <li><strong class="text-stone-800">シフト登録タブ</strong>：シフトの有無や給料日（❤）がわかります。入力したい日付をタップすると、シフトの追加や有給の登録ができます。</li>
               <li><strong class="text-stone-800">予定表タブ</strong>：1か月のシフトを一覧で確認できます。日付をタップすると修正でき、Googleカレンダーへの登録もできます。</li>
-              <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日・給料日、バイト先の登録（最大3件）を自由に変更できます。</li>
+              <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日・給料日、バイト先の登録（最大4件）を自由に変更できます。</li>
               <li><strong class="text-stone-800">はじめにタブ</strong>：このページです。アプリの使い方や、データの保存・お問い合わせなどの大切なお知らせを確認できます。</li>
             </ul>
           </div>
@@ -726,6 +727,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
     const WALL_130 = 1300000;
     // 勤務時間の異常警告（分）
     const MAX_NORMAL_SHIFT_MINS = 16 * 60;
+    // 登録できるバイト先の上限
+    const MAX_JOBS = 4;
     const DEFAULT_PAID_HOURS = 8;
 
     // localStorage保存の安全版（容量超過・プライベートモード等で失敗しても画面を止めない）
@@ -763,7 +766,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
         jobCount: savedWages.jobCount !== undefined ? Number(savedWages.jobCount) : 1,
         job1: createDefaultJobConfig(savedWages.job1, '', defaultPresets1, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', ''),
         job2: createDefaultJobConfig(savedWages.job2, '', defaultPresets1, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', ''),
-        job3: createDefaultJobConfig(savedWages.job3, '', defaultPresets1, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', '')
+        job3: createDefaultJobConfig(savedWages.job3, '', defaultPresets1, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', ''),
+        job4: createDefaultJobConfig(savedWages.job4, '', defaultPresets1, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', '')
       };
     }
     let configData = buildConfigData(savedWages);
@@ -1077,7 +1081,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       const activeKeys = getActiveJobKeys();
       
-      if (activeKeys.length === 3) {
+      if (activeKeys.length >= 3) {
         let htmlRow1 = '';
         let htmlRow2 = '';
         activeKeys.forEach((jk, idx) => {
@@ -1089,7 +1093,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
               ${getJobLabelHtml(jk)}
             </button>
           `;
-          if (idx < 2) {
+          if (idx < activeKeys.length) {
             htmlRow1 += btnHtml;
           } else {
             htmlRow2 += btnHtml;
@@ -1098,7 +1102,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
         container.innerHTML = `
           <div class="space-y-1.5 w-full">
             <div class="grid grid-cols-2 gap-1.5">${htmlRow1}</div>
-            <div class="w-full">${htmlRow2}</div>
           </div>
         `;
       } else {
@@ -1122,7 +1125,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
     function renameJobPrompt(jk) {
       renamingJobKey = jk;
       const input = document.getElementById('renameJobInput');
-      const placeholderName = jk === 'job1' ? 'バイト名1' : (jk === 'job2' ? 'バイト名2' : 'バイト名3');
+      const placeholderName = 'バイト名' + String(jk).replace('job', '');
       input.placeholder = placeholderName;
       const curName = configData[jk] && configData[jk].name;
       input.value = (curName && curName !== 'バイト') ? curName : '';
@@ -1272,6 +1275,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       let keys = ['job1'];
       if (count >= 2) keys.push('job2');
       if (count >= 3) keys.push('job3');
+      if (count >= 4) keys.push('job4');
       return keys;
     }
 
@@ -1520,19 +1524,19 @@ html, body { max-width: 100%; overflow-x: hidden; }
       container.innerHTML = '';
 
       const activeKeys = getActiveJobKeys();
-      const isOddCount = activeKeys.length % 2 === 1;
 
       const cardsHtml = activeKeys.map((jk, idx) => {
         const isSelected = (jk === currentSettingsJobKey);
         const styleClass = isSelected
           ? "bg-rose-50 text-rose-950 border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
           : "bg-white text-stone-700 border-stone-200 hover:bg-stone-50";
-        const spanStyle = (isOddCount && idx === activeKeys.length - 1) ? 'style="grid-column: 1 / -1;"' : '';
         return `
-          <button type="button" onclick="switchSettingsJobTab('${jk}')" aria-pressed="${isSelected}" ${spanStyle} class="job-chip w-full py-3 px-2.5 rounded-xl border text-xs sm:text-sm font-bold transition truncate ${styleClass} flex items-center justify-center gap-1.5">
+          <button type="button" onclick="switchSettingsJobTab('${jk}')" aria-pressed="${isSelected}" class="job-chip w-full rounded-xl border text-xs sm:text-sm font-bold transition ${styleClass}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 6px;min-width:0;">
             ${getJobLabelHtml(jk)}
-            <span class="text-xs shrink-0" onclick="event.stopPropagation(); renameJobPrompt('${jk}');" title="名称を変更">✏️</span>
-            ${jobDeleteChipHtml(jk)}
+            <span style="display:inline-flex;align-items:center;gap:2px;">
+              <span class="text-xs shrink-0" onclick="event.stopPropagation(); renameJobPrompt('${jk}');" title="名称を変更">✏️</span>
+              ${jobDeleteChipHtml(jk)}
+            </span>
           </button>
         `;
       }).join('');
@@ -1548,8 +1552,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
         renameJobPrompt(emptyKey);
         return;
       }
-      if (activeKeys.length >= 3) {
-        showAlertModal("登録できるバイト先は3件までです。\n不要なバイト先を削除してから登録してね♡");
+      if (activeKeys.length >= MAX_JOBS) {
+        showAlertModal(`登録できるバイト先は${MAX_JOBS}件までです。\n不要なバイト先を削除してから登録してね♡`);
         return;
       }
       const nextCount = activeKeys.length + 1;
@@ -2401,7 +2405,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
     const JOB_VISUALS = {
       job1: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', dot: 'bg-blue-600', orbClass: 'glass-orb glass-orb-sky' },
       job2: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-800', dot: 'bg-green-600', orbClass: 'glass-orb glass-orb-emerald' },
-      job3: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', dot: 'bg-pink-600', orbClass: 'glass-orb glass-orb-rose' }
+      job3: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', dot: 'bg-pink-600', orbClass: 'glass-orb glass-orb-rose' },
+      job4: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-800', dot: 'bg-amber-600', orbClass: 'glass-orb glass-orb-amber' }
     };
 
     function getJobVisual(jk) {
@@ -2411,13 +2416,13 @@ html, body { max-width: 100%; overflow-x: hidden; }
     function getJobDisplayName(jk) {
       const raw = configData[jk]?.name;
       if (raw) return raw;
-      return jk === 'job1' ? 'バイト名1' : (jk === 'job2' ? 'バイト名2' : 'バイト名3');
+      return 'バイト名' + String(jk).replace('job', '');
     }
 
     function getJobLabelHtml(jk, extraClass = '', iconOnly = false) {
       const visual = getJobVisual(jk);
       const rawName = configData[jk]?.name;
-      const placeholderName = jk === 'job1' ? 'バイト名1' : (jk === 'job2' ? 'バイト名2' : 'バイト名3');
+      const placeholderName = 'バイト名' + String(jk).replace('job', '');
       const displayName = rawName ? esc(rawName) : `<span class="text-stone-400 font-normal">${placeholderName}</span>`;
       const titleName = esc(rawName || placeholderName);
       const orb = `<span class="${visual.orbClass || 'glass-orb glass-orb-stone'}"></span>`;
@@ -2863,7 +2868,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       const okT = t => (typeof t === 'string' && /^\d{1,2}:\d{2}$/.test(t)) ? t : '';
       Object.keys(obj).forEach(dk => {
         if (!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dk) || !obj[dk] || typeof obj[dk] !== 'object') return;
-        ['job1', 'job2', 'job3'].forEach(jk => {
+        ['job1', 'job2', 'job3', 'job4'].forEach(jk => {
           const arr = [].concat(obj[dk][jk] || []).filter(x => x && typeof x === 'object').map(x => ({
             start: okT(x.start), end: okT(x.end),
             breakMins: Math.max(0, Number(x.breakMins) || 0),
