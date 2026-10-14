@@ -384,8 +384,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
     <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-stone-200 space-y-4">
       <h3 class="text-base font-bold text-stone-900 text-center tracking-wide">バイト先の名称</h3>
       <div>
-        <input type="text" id="renameJobInput" maxlength="5" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="バイト名（5文字以内）" aria-describedby="renameJobHint">
-        <p id="renameJobHint" class="mt-1.5 text-xs text-stone-500 text-center">※ 5文字以内で入力してね</p>
+        <input type="text" id="renameJobInput" maxlength="8" class="w-full p-3 border rounded-xl border-stone-300 bg-stone-50 text-center font-bold text-stone-900 text-base focus:outline-none focus:border-stone-500" placeholder="バイト名（8文字以内）" aria-describedby="renameJobHint">
+        <p id="renameJobHint" class="mt-1.5 text-xs text-stone-500 text-center">※ 8文字以内で入力してね</p>
       </div>
       <div class="flex space-x-2">
         <button type="button" onclick="closeRenameJobModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 transition">キャンセル</button>
@@ -1306,6 +1306,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
     }
 
     let renamingJobKey = null;
+    // バイト先の新規登録時に使う件数を、グローバル変数として明示的に宣言
+    let pendingNewJobCount = null;
 
     function renameJobPrompt(jk) {
       renamingJobKey = jk;
@@ -1345,30 +1347,68 @@ html, body { max-width: 100%; overflow-x: hidden; }
     }
 
     function submitRenameJobModal() {
+      // 保存ボタン押下時の状態を確認し、失敗時も画面に理由を表示する
+      const input = document.getElementById('renameJobInput');
       const jk = renamingJobKey;
-      let newName = document.getElementById('renameJobInput').value.trim();
-      if (!jk || !configData[jk]) { closeRenameJobModal(); return; }
-      if (!newName) { showAlertModal("名称を入力してね♡"); return; }
-      if (newName.length > 5) { showAlertModal("バイト先の名称は5文字以内で入力してね♡"); return; }
+      const newName = input ? input.value.trim() : '';
+
+      if (!jk || !configData || !configData[jk]) {
+        showAlertModal("保存先を確認できませんでした。いったんキャンセルして、もう一度「修正」を押してください。");
+        return;
+      }
+      if (!newName) {
+        showAlertModal("名称を入力してね♡");
+        return;
+      }
+      if (newName.length > 8) {
+        showAlertModal("バイト先の名称は8文字以内で入力してね♡");
+        return;
+      }
+
+      const previousConfig = JSON.parse(JSON.stringify(configData));
+      const previousSettingsJobKey = currentSettingsJobKey;
+      const previousJobCount = configData.jobCount;
       const isNewRegistration = !configData[jk].name;
-      if (isNewRegistration) {
-        configData[jk] = createEmptyJobConfig();
+
+      try {
+        if (isNewRegistration) configData[jk] = createEmptyJobConfig();
+        configData[jk].name = newName;
+        if (pendingNewJobCount) configData.jobCount = pendingNewJobCount;
+
+        if (isNewRegistration && jk !== currentSettingsJobKey) {
+          syncSettingsFormToConfig(currentSettingsJobKey);
+          currentSettingsJobKey = jk;
+        }
+
+        // データ保存だけをこの try で判定し、画面更新のエラーと区別する
+        saveAllDataStorage();
+      } catch (error) {
+        configData = previousConfig;
+        currentSettingsJobKey = previousSettingsJobKey;
+        configData.jobCount = previousJobCount;
+        console.error('バイト先名のデータ保存に失敗しました:', error);
+        const detail = error && (error.name || error.message)
+          ? `${error.name || 'Error'}${error.message ? ': ' + error.message : ''}`
+          : '原因の詳細を取得できませんでした';
+        showAlertModal(`データを保存できませんでした。原因：${detail}。ブラウザの保存設定を確認してください。入力した名前は保存されていません。`);
+        return;
       }
-      configData[jk].name = newName;
-      if (pendingNewJobCount) {
-        configData.jobCount = pendingNewJobCount;
-      }
-      if (isNewRegistration && jk !== currentSettingsJobKey) {
-        syncSettingsFormToConfig(currentSettingsJobKey);
-        currentSettingsJobKey = jk;
-      }
+
+      // 保存成功後の画面更新は、保存処理とは分けて実行する
       closeRenameJobModal();
-      saveAllDataStorage();
-      renderModalJobTabs();
-      renderSettingsJobTabs();
-      renderSettingsJobContent(currentSettingsJobKey);
-      refreshAll();
-      showToast("バイト先名を変更しました");
+      try {
+        renderModalJobTabs();
+        renderSettingsJobTabs();
+        renderSettingsJobContent(currentSettingsJobKey);
+        refreshAll();
+        showToast("バイト先名を変更しました");
+      } catch (error) {
+        console.error('バイト先名の保存後の画面更新に失敗しました:', error);
+        const detail = error && (error.name || error.message)
+          ? `${error.name || 'Error'}${error.message ? ': ' + error.message : ''}`
+          : '原因の詳細を取得できませんでした';
+        showAlertModal(`バイト先名は保存されましたが、画面更新でエラーが発生しました（${detail}）。ページを再読み込みして名前をご確認ください。`);
+      }
     }
 
     function switchModalJobTab(jobKey) {
@@ -2128,16 +2168,22 @@ html, body { max-width: 100%; overflow-x: hidden; }
       setModalShiftTypeUIOnly(isPaid);
       if (isPaid) {
         if (!selectedCalendarDateStr) return;
+        const paidHours = Number(configData[currentSelectedJobKey]?.paidHours) || 0;
+        if (paidHours <= 0) {
+          setModalShiftTypeUIOnly(false);
+          showAlertModal('有給休暇を登録する前に、「設定」タブで有給1日あたりの時間を入力してください。');
+          return;
+        }
         let shifts = getDayShifts(selectedCalendarDateStr, currentSelectedJobKey);
         if (shifts.some(s => s && s.isPaidLeave)) {
           showToast("この日は既に有給休暇が登録されています");
           setModalShiftTypeUIOnly(false);
           return;
         }
-        shifts.push({ start: '', end: '', breakMins: 0, isPaidLeave: true, hours: configData[currentSelectedJobKey].paidHours || 0 });
+        shifts.push({ start: '', end: '', breakMins: 0, isPaidLeave: true, hours: paidHours });
         setDayShifts(selectedCalendarDateStr, currentSelectedJobKey, shifts);
         updateModalSelectedDateSummary();
-        showToast(configData[currentSelectedJobKey].paidHours > 0 ? "有給休暇を登録しました" : "有給休暇を登録しました。時間を入力してね♡");
+        showToast("有給休暇を登録しました");
         setModalShiftTypeUIOnly(false);
       }
     }
