@@ -592,7 +592,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
       
       <!-- タブ1: 給与 -->
       <div id="tab-clock" class="tab-content space-y-3">
-        <div id="trialBanner" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold px-3.5 py-2.5 rounded-2xl flex items-center justify-between gap-2"></div>
 
         <div class="flex justify-between items-center bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-2 rounded-2xl shadow-md border border-rose-800/40 text-xs">
           <button type="button" onclick="changePayPeriodOffset(-1)" class="text-rose-100 font-bold px-3 py-1.5 hover:bg-white/10 rounded-xl transition text-sm">◀ 前月</button>
@@ -851,15 +850,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
           <div class="space-y-1.5 border-b border-stone-200 pb-3">
             <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>🌸</span><span>お試し期間について</span>
-            </h3>
-            <p class="text-stone-600 font-medium">
-              初めてアプリを開いた日から30日間、無料でお試しいただけます。残りの日数は、「お給料」タブの上にあるバナーで確認できます。お試し期間が終わったあとに、続けてご利用いただく方法は、公式LINEからご案内します。
-            </p>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
               <span>🔒</span><span>入力したデータの取り扱い</span>
             </h3>
             <p class="text-stone-600 font-medium">
@@ -1042,7 +1032,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
       renderSettingsJobTabs();
       renderSettingsJobContent(currentSettingsJobKey);
       initOverviewPage();
-      updateTrialBanner();
       let autoTimer = null;
       const settingsArea = document.getElementById('settingsJobContentArea');
       ['input', 'change'].forEach(ev => settingsArea.addEventListener(ev, () => {
@@ -3107,52 +3096,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
       return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
     }
 
-    const TRIAL_DAYS = 30;
-    const LSTEP_URL = '';
-    function openPaymentPage() {
-      if (LSTEP_URL) window.open(LSTEP_URL, '_blank'); else showToast('決済ページは準備中です');
-    }
-
-    function updateTrialBanner() {
-      const banner = document.getElementById('trialBanner');
-      if (!banner) return;
-
-      let startStr = localStorage.getItem('mybasket_trial_start');
-      if (!startStr) {
-        startStr = formatDateKey(new Date());
-        localStorage.setItem('mybasket_trial_start', startStr);
-      }
-
-      const [sy, sm, sd] = startStr.split('-').map(Number);
-      const startDate = new Date(sy, sm - 1, sd);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      startDate.setHours(0, 0, 0, 0);
-
-      const passedDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
-      const remainingDays = TRIAL_DAYS - passedDays;
-
-      banner.classList.remove('hidden');
-      banner.onclick = openPaymentPage;
-      banner.style.cursor = 'pointer';
-
-      if (remainingDays > 0) {
-        banner.innerHTML = `
-          <span>✨ 無料お試し期間中：あと ${remainingDays} 日</span>
-          <span class="text-amber-700 underline">続けて使うには？</span>
-        `;
-        banner.classList.remove('bg-rose-50', 'border-rose-300', 'text-rose-900');
-        banner.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-900');
-      } else {
-        banner.innerHTML = `
-          <span>お試し期間が終了しました</span>
-          <span class="text-rose-700 underline">購入について</span>
-        `;
-        banner.classList.remove('bg-amber-50', 'border-amber-200', 'text-amber-900');
-        banner.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-900');
-      }
-    }
-
     function exportAppData(event) {
       if (event) event.preventDefault();
       syncSettingsFormToConfig(currentSettingsJobKey);
@@ -3243,7 +3186,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
             shiftsData = sanitizeShifts(data.mybasket_shifts_v23 || data.mybasket_shifts_v22 || data.mybasket_shifts_v21 || {});
             let loadedWages = data.mybasket_wages_v77 || data.mybasket_wages_v76 || {};
             monthlyGoal = Number(loadedWages.monthlyGoal) || 0;
-            if (data.mybasket_trial_start) { localStorage.setItem('mybasket_trial_start', data.mybasket_trial_start); updateTrialBanner(); }
+            if (data.mybasket_trial_start) { localStorage.setItem('mybasket_trial_start', data.mybasket_trial_start); }
             configData = buildConfigData(loadedWages);
 
             localStorage.setItem('mybasket_shifts_v23', JSON.stringify(shiftsData));
