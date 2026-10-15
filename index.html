@@ -127,7 +127,22 @@
     #tab-settings .wage-header { width: 100%; }
     .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
-    /* モーダル内に続きがある場合だけ表示する控えめなスクロール案内 */
+  
+  /* 時計アイコンのタップ領域を確保し、入力欄の透明な領域との競合を防ぐ */
+  .time-field-wrap > .time-clock-button {
+    z-index: 12 !important;
+    width: 34px !important;
+    height: 34px !important;
+    right: 1px !important;
+    touch-action: manipulation;
+    pointer-events: auto !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .time-field-wrap > .wage-time { padding-right: 36px !important; }
+  .clock-time::-webkit-calendar-picker-indicator,
+  .wage-time::-webkit-calendar-picker-indicator { opacity: 0 !important; pointer-events: auto !important; }
+  input.wage-time[type="time"] { -webkit-appearance: auto !important; appearance: auto !important; min-width: 0; }
+  /* モーダル内に続きがある場合だけ表示する控えめなスクロール案内 */
     #shiftScrollHint { line-height: 1.2; }
     /* 2026-10 UI readability refinements: keep the existing layout, improve legibility */
   .settings-job-card { min-height: 48px; }
@@ -559,11 +574,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       <div class="bg-white p-2 border rounded-2xl border-stone-200 flex items-center justify-between gap-1">
         <div class="time-field-wrap relative flex-1 min-w-0">
-          <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="pr_start" placeholder="00:00" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('pr_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+          <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="pr_start" placeholder="00:00" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('pr_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
         </div>
         <span class="font-bold text-stone-400 text-xs">〜</span>
         <div class="time-field-wrap relative flex-1 min-w-0">
-          <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="pr_end" placeholder="00:00" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('pr_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+          <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="pr_end" placeholder="00:00" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('pr_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
         </div>
         <button type="button" onclick="openBreakSelectModal('preset')" class="px-2 py-1.5 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="pr_break_disp">0分</span></button>
       </div>
@@ -2000,7 +2015,21 @@ html, body { max-width: 100%; overflow-x: hidden; }
     }
 
     function triggerTimePicker(id) {
-      openCustomTimePicker(id);
+      const input = document.getElementById(id);
+      if (!input) return;
+      // Android Chrome: native dial picker is opened by showPicker from a user tap.
+      if (typeof input.showPicker === 'function') {
+        try {
+          input.showPicker();
+          return;
+        } catch (err) {
+          // Unsupported context/browser: try normal focus, then fallback below.
+        }
+      }
+      input.focus();
+      // Some mobile browsers open their native time UI on a direct click.
+      // Do not synthesize another click here: it could recursively trigger onclick.
+      // Users can still edit the native time input if the browser lacks showPicker.
     }
 
     function wageSlotRowHtml(i, s) {
@@ -2012,12 +2041,12 @@ html, body { max-width: 100%; overflow-x: hidden; }
           <!-- 1行目：勤務時間 -->
           <div class="flex items-center gap-1.5">
             <div class="time-field-wrap relative flex-1 min-w-0">
-              <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="set_time_${i}_start" placeholder="00:00" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
+              <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="set_time_${i}_start" placeholder="00:00" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
               <button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('set_time_${i}_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs leading-none">🕒</button>
             </div>
             <span class="text-stone-400 font-bold text-xs shrink-0">〜</span>
             <div class="time-field-wrap relative flex-1 min-w-0">
-              <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="set_time_${i}_end" placeholder="00:00" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
+              <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="set_time_${i}_end" placeholder="00:00" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
               <button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('set_time_${i}_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs leading-none">🕒</button>
             </div>
           </div>
@@ -2244,11 +2273,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
       container.innerHTML = `
         <div class="bg-white p-2.5 border rounded-2xl border-stone-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-between gap-1.5">
           <div class="time-field-wrap relative flex-1 min-w-0">
-            <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="new_preset_start" placeholder="00:00" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('new_preset_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+            <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="new_preset_start" placeholder="00:00" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('new_preset_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
           </div>
           <span class="font-bold text-stone-400 text-xs">〜</span>
           <div class="time-field-wrap relative flex-1 min-w-0">
-            <input type="text" inputmode="none" readonly onclick="openCustomTimePicker(this.id)" autocomplete="off" id="new_preset_end" placeholder="00:00" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('new_preset_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+            <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="new_preset_end" placeholder="00:00" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('new_preset_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
           </div>
           <button type="button" onclick="openBreakSelectModal()" class="px-2.5 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="modalBreakDisplayVal">${breakMins}分</span></button>
         </div>
@@ -3213,7 +3242,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
   </script>
 
   <!-- アプリ内時間選択画面（スマホ標準のキーボード切替バーを使わない） -->
-  <div id="customTimePickerModal" style="z-index: 1000; background-color: rgba(28,25,23,0.65);" class="fixed inset-0 backdrop-blur-sm hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="customTimePickerTitle" onclick="if(event.target===this) closeCustomTimePicker()">
+  <div id="customTimePickerModal" class="fixed inset-0 bg-stone-950/55 backdrop-blur-sm z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="customTimePickerTitle" onclick="if(event.target===this) closeCustomTimePicker()">
     <div class="w-full max-w-xs rounded-3xl border border-rose-100 bg-white p-5 shadow-2xl space-y-4">
       <div class="text-center space-y-1">
         <h3 id="customTimePickerTitle" class="text-lg font-bold text-stone-900">時間を選択</h3>
