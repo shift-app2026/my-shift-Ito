@@ -3213,7 +3213,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
   </script>
 
   <!-- アプリ内時間選択画面（スマホ標準のキーボード切替バーを使わない） -->
-  <div id="customTimePickerModal" class="fixed inset-0 bg-stone-950/55 backdrop-blur-sm z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="customTimePickerTitle" onclick="if(event.target===this) closeCustomTimePicker()">
+  <div id="customTimePickerModal" style="z-index: 1000; background-color: rgba(28,25,23,0.65);" class="fixed inset-0 backdrop-blur-sm hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="customTimePickerTitle" onclick="if(event.target===this) closeCustomTimePicker()">
     <div class="w-full max-w-xs rounded-3xl border border-rose-100 bg-white p-5 shadow-2xl space-y-4">
       <div class="text-center space-y-1">
         <h3 id="customTimePickerTitle" class="text-lg font-bold text-stone-900">時間を選択</h3>
