@@ -391,6 +391,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 }
 </style>
 
+<style>#clockHourDisplay[aria-pressed="true"],#clockMinuteDisplay[aria-pressed="true"]{background:#ffe4e6} .wage-time[readonly]{caret-color:transparent;cursor:pointer}</style>
 </head>
 <body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
 
@@ -574,11 +575,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       <div class="bg-white p-2 border rounded-2xl border-stone-200 flex items-center justify-between gap-1">
         <div class="time-field-wrap relative flex-1 min-w-0">
-          <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="pr_start" placeholder="00:00" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('pr_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+          <input type="text" readonly inputmode="none" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="pr_start" placeholder="00:00" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('pr_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
         </div>
         <span class="font-bold text-stone-400 text-xs">〜</span>
         <div class="time-field-wrap relative flex-1 min-w-0">
-          <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="pr_end" placeholder="00:00" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('pr_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+          <input type="text" readonly inputmode="none" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="pr_end" placeholder="00:00" class="wage-time clock-time w-full px-1 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('pr_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
         </div>
         <button type="button" onclick="openBreakSelectModal('preset')" class="px-2 py-1.5 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="pr_break_disp">0分</span></button>
       </div>
@@ -1961,76 +1962,111 @@ html, body { max-width: 100%; overflow-x: hidden; }
       `;
     }
 
+    // Custom touch-friendly analog clock: no Android native picker or keyboard.
     let customTimePickerTargetId = null;
-
-    function initCustomTimePickerOptions() {
-      const hour = document.getElementById('customTimeHour');
-      const minute = document.getElementById('customTimeMinute');
-      if (!hour || !minute || hour.options.length) return;
-      for (let h = 0; h < 24; h++) {
-        const option = document.createElement('option');
-        option.value = String(h).padStart(2, '0');
-        option.textContent = String(h).padStart(2, '0');
-        hour.appendChild(option);
+    let dialHour = 0, dialMinute = 0, dialMode = 'hour';
+    const dialNS = 'http://www.w3.org/2000/svg';
+    function dialElement(tag, attrs, text) {
+      const el = document.createElementNS(dialNS, tag);
+      for (const [key, value] of Object.entries(attrs || {})) el.setAttribute(key, String(value));
+      if (text !== undefined) el.textContent = text;
+      return el;
+    }
+    function renderClockDial() {
+      const svg = document.getElementById('customClockFace');
+      if (!svg) return;
+      svg.replaceChildren();
+      svg.appendChild(dialElement('circle', {cx:140,cy:140,r:134,fill:'#fff1f2'}));
+      const isHour = dialMode === 'hour';
+      const selected = isHour ? dialHour : dialMinute;
+      const inner = isHour && (selected === 0 || selected >= 13);
+      const radius = inner ? 78 : 111;
+      const angle = ((isHour ? selected % 12 : selected / 5) * Math.PI / 6) - Math.PI / 2;
+      const px = 140 + radius * Math.cos(angle), py = 140 + radius * Math.sin(angle);
+      svg.appendChild(dialElement('line',{x1:140,y1:140,x2:px,y2:py,stroke:'#881337','stroke-width':3,'stroke-linecap':'round'}));
+      svg.appendChild(dialElement('circle',{cx:px,cy:py,r:19,fill:'#881337'}));
+      svg.appendChild(dialElement('circle',{cx:140,cy:140,r:5,fill:'#881337'}));
+      if (isHour) {
+        for(let h=1;h<=12;h++) {
+          const a=h*Math.PI/6-Math.PI/2;
+          const outer = dialElement('text',{x:140+111*Math.cos(a),y:140+111*Math.sin(a),'text-anchor':'middle','dominant-baseline':'central','font-size':20,'font-weight':700,fill:dialHour===h?'#fff':'#292524','pointer-events':'none'},String(h));
+          svg.appendChild(outer);
+          const innerHour=h===12?0:h+12;
+          svg.appendChild(dialElement('text',{x:140+78*Math.cos(a),y:140+78*Math.sin(a),'text-anchor':'middle','dominant-baseline':'central','font-size':15,'font-weight':700,fill:dialHour===innerHour?'#fff':'#57534e','pointer-events':'none'},String(innerHour).padStart(2,'0')));
+        }
+      } else {
+        for(let m=0;m<60;m+=5) {
+          const a=m*Math.PI/30-Math.PI/2;
+          svg.appendChild(dialElement('text',{x:140+111*Math.cos(a),y:140+111*Math.sin(a),'text-anchor':'middle','dominant-baseline':'central','font-size':19,'font-weight':700,fill:dialMinute===m?'#fff':'#292524','pointer-events':'none'},String(m).padStart(2,'0')));
+        }
       }
-      for (let m = 0; m < 60; m++) {
-        const option = document.createElement('option');
-        option.value = String(m).padStart(2, '0');
-        option.textContent = String(m).padStart(2, '0');
-        minute.appendChild(option);
+      document.getElementById('clockHourDisplay').textContent=String(dialHour).padStart(2,'0');
+      document.getElementById('clockMinuteDisplay').textContent=String(dialMinute).padStart(2,'0');
+      document.getElementById('clockHourDisplay').setAttribute('aria-pressed',String(isHour));
+      document.getElementById('clockMinuteDisplay').setAttribute('aria-pressed',String(!isHour));
+    }
+    function setClockMode(mode) { dialMode=mode; renderClockDial(); }
+    function updateDialFromPointer(event) {
+      const svg=document.getElementById('customClockFace');
+      const rect=svg.getBoundingClientRect();
+      const x=(event.clientX-rect.left)*280/rect.width-140;
+      const y=(event.clientY-rect.top)*280/rect.height-140;
+      const degrees=(Math.atan2(y,x)*180/Math.PI+90+360)%360;
+      if(dialMode==='hour') {
+        const h=Math.round(degrees/30)%12;
+        const distance=Math.hypot(x,y);
+        dialHour=distance<94?(h===0?0:h+12):(h===0?12:h);
+      } else {
+        dialMinute=Math.round(degrees/6)%60;
+      }
+      renderClockDial();
+    }
+    function clockPointerDown(event) {
+      if(event.button!==undefined && event.button!==0) return;
+      const svg=document.getElementById('customClockFace');
+      svg.setPointerCapture(event.pointerId);
+      updateDialFromPointer(event);
+    }
+    function clockPointerMove(event) {
+      const svg=document.getElementById('customClockFace');
+      if(svg.hasPointerCapture(event.pointerId)) updateDialFromPointer(event);
+    }
+    function clockPointerUp(event) {
+      const svg=document.getElementById('customClockFace');
+      if(svg.hasPointerCapture(event.pointerId)) {
+        updateDialFromPointer(event);
+        svg.releasePointerCapture(event.pointerId);
+        // 時間から分へ自動では移動しない。上部の「分」を押した時だけ切り替える。
       }
     }
-
     function openCustomTimePicker(id) {
-      const el = document.getElementById(id);
-      const modal = document.getElementById('customTimePickerModal');
-      if (!el || !modal) return;
-      customTimePickerTargetId = id;
-      initCustomTimePickerOptions();
-      const match = /^(\d{2}):(\d{2})$/.exec(el.value || '');
-      document.getElementById('customTimeHour').value = match ? match[1] : '00';
-      document.getElementById('customTimeMinute').value = match ? match[2] : '00';
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      const el=document.getElementById(id);
+      const modal=document.getElementById('customTimePickerModal');
+      if(!el||!modal) return;
+      customTimePickerTargetId=id;
+      const match=/^(\d{2}):(\d{2})$/.exec(el.value||'');
+      dialHour=match?Number(match[1]):9;
+      dialMinute=match?Number(match[2]):0;
+      dialMode='hour';
+      renderClockDial();
+      modal.classList.remove('hidden');modal.classList.add('flex');
     }
-
     function closeCustomTimePicker() {
-      const modal = document.getElementById('customTimePickerModal');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      }
-      customTimePickerTargetId = null;
+      const modal=document.getElementById('customTimePickerModal');
+      if(modal){modal.classList.add('hidden');modal.classList.remove('flex');}
+      customTimePickerTargetId=null;
     }
-
     function applyCustomTimePicker() {
-      if (!customTimePickerTargetId) return closeCustomTimePicker();
-      const el = document.getElementById(customTimePickerTargetId);
-      if (el) {
-        el.value = `${document.getElementById('customTimeHour').value}:${document.getElementById('customTimeMinute').value}`;
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
+      if(!customTimePickerTargetId)return closeCustomTimePicker();
+      const el=document.getElementById(customTimePickerTargetId);
+      if(el){
+        el.value=String(dialHour).padStart(2,'0')+':'+String(dialMinute).padStart(2,'0');
+        el.dispatchEvent(new Event('input',{bubbles:true}));
+        el.dispatchEvent(new Event('change',{bubbles:true}));
       }
       closeCustomTimePicker();
     }
-
-    function triggerTimePicker(id) {
-      const input = document.getElementById(id);
-      if (!input) return;
-      // Android Chrome: native dial picker is opened by showPicker from a user tap.
-      if (typeof input.showPicker === 'function') {
-        try {
-          input.showPicker();
-          return;
-        } catch (err) {
-          // Unsupported context/browser: try normal focus, then fallback below.
-        }
-      }
-      input.focus();
-      // Some mobile browsers open their native time UI on a direct click.
-      // Do not synthesize another click here: it could recursively trigger onclick.
-      // Users can still edit the native time input if the browser lacks showPicker.
-    }
+    function triggerTimePicker(id) { openCustomTimePicker(id); }
 
     function wageSlotRowHtml(i, s) {
       const ok = !!(s.start && s.end && s.wage > 0);
@@ -2041,12 +2077,12 @@ html, body { max-width: 100%; overflow-x: hidden; }
           <!-- 1行目：勤務時間 -->
           <div class="flex items-center gap-1.5">
             <div class="time-field-wrap relative flex-1 min-w-0">
-              <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="set_time_${i}_start" placeholder="00:00" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
+              <input type="text" readonly inputmode="none" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="set_time_${i}_start" placeholder="00:00" value="${s.start || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
               <button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('set_time_${i}_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs leading-none">🕒</button>
             </div>
             <span class="text-stone-400 font-bold text-xs shrink-0">〜</span>
             <div class="time-field-wrap relative flex-1 min-w-0">
-              <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="set_time_${i}_end" placeholder="00:00" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
+              <input type="text" readonly inputmode="none" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="set_time_${i}_end" placeholder="00:00" value="${s.end || ''}" onchange="checkWageSlotInputState(${i})" class="wage-time w-full px-1.5 py-1.5 pr-7 border rounded-lg text-center font-bold text-xs sm:text-sm bg-white border-stone-200">
               <button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('set_time_${i}_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs leading-none">🕒</button>
             </div>
           </div>
@@ -2273,11 +2309,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
       container.innerHTML = `
         <div class="bg-white p-2.5 border rounded-2xl border-stone-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-between gap-1.5">
           <div class="time-field-wrap relative flex-1 min-w-0">
-            <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="new_preset_start" placeholder="00:00" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('new_preset_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+            <input type="text" readonly inputmode="none" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="new_preset_start" placeholder="00:00" value="${newPresetForm.start}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="開始時間を選択" onclick="triggerTimePicker('new_preset_start')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
           </div>
           <span class="font-bold text-stone-400 text-xs">〜</span>
           <div class="time-field-wrap relative flex-1 min-w-0">
-            <input type="time" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="new_preset_end" placeholder="00:00" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('new_preset_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
+            <input type="text" readonly inputmode="none" step="60" onclick="triggerTimePicker(this.id)" autocomplete="off" id="new_preset_end" placeholder="00:00" value="${newPresetForm.end}" onchange="updateNewPresetForm()" class="wage-time clock-time w-full px-1.5 py-1.5 pr-7 border rounded-lg border-stone-200 bg-stone-50 font-bold text-center text-sm"><button type="button" aria-label="終了時間を選択" onclick="triggerTimePicker('new_preset_end')" class="time-clock-button absolute right-1 top-1/2 -translate-y-1/2 text-stone-500 text-xs w-5 h-6 flex items-center justify-center rounded-md bg-white/90">🕒</button>
           </div>
           <button type="button" onclick="openBreakSelectModal()" class="px-2.5 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-200 rounded-lg font-bold text-xs text-stone-700 transition whitespace-nowrap">☕<span id="modalBreakDisplayVal">${breakMins}分</span></button>
         </div>
@@ -3241,24 +3277,19 @@ html, body { max-width: 100%; overflow-x: hidden; }
     }
   </script>
 
-  <!-- アプリ内時間選択画面（スマホ標準のキーボード切替バーを使わない） -->
-  <div id="customTimePickerModal" class="fixed inset-0 bg-stone-950/55 backdrop-blur-sm z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="customTimePickerTitle" onclick="if(event.target===this) closeCustomTimePicker()">
-    <div class="w-full max-w-xs rounded-3xl border border-rose-100 bg-white p-5 shadow-2xl space-y-4">
-      <div class="text-center space-y-1">
-        <h3 id="customTimePickerTitle" class="text-lg font-bold text-stone-900">時間を選択</h3>
-        <p class="text-xs text-stone-500">時と分を選んでね</p>
+  <!-- アプリ専用の針で選ぶ時計（Android標準のキーボード切替なし） -->
+  <div id="customTimePickerModal" style="z-index: 9999; background: rgba(28,25,23,.62);" class="fixed inset-0 backdrop-blur-sm hidden items-center justify-center p-3" role="dialog" aria-modal="true" aria-labelledby="customTimePickerTitle" onclick="if(event.target===this) closeCustomTimePicker()">
+    <div class="w-full rounded-3xl border border-rose-100 bg-white shadow-2xl" style="max-width:340px;max-height:95dvh;overflow-y:auto;padding:14px;">
+      <h3 id="customTimePickerTitle" class="text-center text-base font-bold text-stone-900">時間を選択</h3>
+      <div class="flex justify-center items-center gap-1 font-bold" style="font-size:32px;color:#881337;margin:5px 0;">
+        <button type="button" id="clockHourDisplay" aria-label="時を選ぶ" onclick="setClockMode('hour')" style="padding:3px 9px;border-radius:9px;">09</button><span>:</span>
+        <button type="button" id="clockMinuteDisplay" aria-label="分を選ぶ" onclick="setClockMode('minute')" style="padding:3px 9px;border-radius:9px;">00</button>
       </div>
-      <div class="grid grid-cols-2 gap-3 items-end">
-        <label class="block text-center text-xs font-bold text-stone-600">時
-          <select id="customTimeHour" class="custom-time-select mt-1" aria-label="時を選択"></select>
-        </label>
-        <label class="block text-center text-xs font-bold text-stone-600">分
-          <select id="customTimeMinute" class="custom-time-select mt-1" aria-label="分を選択"></select>
-        </label>
-      </div>
-      <div class="grid grid-cols-2 gap-2 pt-1">
-        <button type="button" onclick="closeCustomTimePicker()" class="rounded-xl border border-stone-300 bg-stone-100 px-3 py-3 text-sm font-bold text-stone-700 hover:bg-stone-200">キャンセル</button>
-        <button type="button" onclick="applyCustomTimePicker()" class="rounded-xl bg-rose-900 px-3 py-3 text-sm font-bold text-white shadow-sm hover:bg-rose-800">設定する</button>
+      <p class="text-center text-xs text-stone-600" style="margin-bottom:7px;">上の「時」「分」を押して<br>文字盤を切り替えてね（24時間表示）</p>
+      <svg id="customClockFace" viewBox="0 0 280 280" role="group" aria-label="時間を選ぶ文字盤" onpointerdown="clockPointerDown(event)" onpointermove="clockPointerMove(event)" onpointerup="clockPointerUp(event)" onpointercancel="clockPointerUp(event)" style="display:block;width:min(100%,280px,42dvh);height:auto;aspect-ratio:1;margin:0 auto;touch-action:none;user-select:none;"></svg>
+      <div class="grid grid-cols-2 gap-2" style="margin-top:10px;">
+        <button type="button" onclick="closeCustomTimePicker()" class="rounded-xl border border-stone-300 bg-stone-100 px-3 py-3 text-sm font-bold text-stone-700">キャンセル</button>
+        <button type="button" onclick="applyCustomTimePicker()" class="rounded-xl bg-rose-900 px-3 py-3 text-sm font-bold text-white">設定する</button>
       </div>
     </div>
   </div>
