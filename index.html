@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>マイシフト＆給料</title>
   
-  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADCklEQVR4nO3dwW1TQRRAUYOogE0aoATaYEEJtEEBdIHoACTqoARqSA0sQChAbuLgzJ+Z6JxCxubpMj+K/ZRnH6/enOA2z2e/AdYlDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SC9mv4E/fLn+NvstzPf25evZb+GXJeLQxE2/pzG9kvmPFWWU6ZOZeHnM/8ev7+eIZl0h024OZZxv1qzmxKGMh5oysfk/c7CsCXG4Nv7P8XM7Og5lXOLg6XmskMRBOjQOz5TLHTlDNwdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgfp0C37r9efj3y5p+rTqw/HpJCbgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQO0hJ/UuMcf31O/e77e+ePtsfN8e83GB73Ow27nz/IBnHUHB9rvrufP87qcdw9wcvnu/v5Qy0dxzmzu2S+u58/2tJxMJc4SOIgiYO0dBzn/Kbokt8m7X7+aEvHcbdpdddpdfvfzh1o9nlNP8LEmu/v542wQx+m2OT7uZHc/f5BnH6/eHPZiW0xkfXZlmU8cJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kpB/mCfM2/VKEGAAAAABJRU5ErkJggg==">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#881337">
 
   <style>/* Tailwind CSS（ビルド済み） */
@@ -191,6 +193,8 @@
   }
   #tab-settings .settings-job-name .settings-job-label > span:last-child { color: #111827 !important; }
   #tab-settings .settings-job-name .job-color-dot { flex: 0 0 10px; }
+  /* シフト入力の職場名に付く内側の枠線だけを除去 */
+  #modalJobSelectContainer .job-label-pill { border:0 !important; box-shadow:none !important; background:transparent !important; padding:0 !important; }
   /* シフト登録の凡例：バイト先ごとの淡い背景色を表示し、枠線は付けない */
   .calendar-legend-label { border: 0 !important; padding: 4px 8px !important; border-radius: 8px !important; box-shadow: none !important; }
   /* 予定表の凡例：淡い背景色は残し、バイト名を囲む枠だけをなくす */
@@ -719,7 +723,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
             <span class="t13 text-rose-900 font-bold">日付をタップすると、シフトを修正できます♡</span>
             <div id="standaloneJobLegend" class="flex flex-wrap items-center gap-2.5 pt-1.5 pb-0.5 text-xs font-bold text-stone-700"></div>
           </div>
-          <div class="text-center text-xs text-stone-500 font-medium py-1" aria-hidden="true">↓ 下にスクロールして、ほかの日の予定も確認できます</div>
           <div id="standaloneShiftListContainer" class="space-y-2 max-h-[62vh] overflow-y-auto pr-1 text-sm"></div>
         </div>
       </div>
@@ -807,6 +810,15 @@ html, body { max-width: 100%; overflow-x: hidden; }
               <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日・給料日、バイト先の登録（最大3件）を自由に変更できます。</li>
               <li><strong class="text-stone-800">はじめにタブ</strong>：このページです。アプリの使い方や、データの保存・お問い合わせなどの大切なお知らせを確認できます。</li>
             </ul>
+          </div>
+
+          <div class="space-y-1.5 border-b border-stone-200 pb-3">
+            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
+              <span>📱</span><span>ホーム画面に追加すると便利です♪</span>
+            </h3>
+            <p class="text-stone-600 font-medium">
+              ホーム画面に追加すると、次回からすぐに開けます♪ ブラウザのメニューから「ホーム画面に追加」を選んでください。操作方法は端末によって異なります。
+            </p>
           </div>
 
           <div class="space-y-1.5 border-b border-stone-200 pb-3">
@@ -2828,7 +2840,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         ? `<div class="flex min-w-0 items-center justify-start">${getJobLabelHtml(jk, 'calendar-legend-label')}</div>`
         : `<div aria-hidden="true"></div>`;
       const firstRow = `<div class="grid grid-cols-2 items-center gap-2">${item(keys[0])}${item(keys[1])}</div>`;
-      const paydayDot = keys[0] ? getJobLabelHtml(keys[0], 'calendar-payday-dot', true) : '<span class="job-color-dot" aria-hidden="true"></span>';
+      const paydayDot = '<span aria-hidden="true" style="color:#ec4899;font-size:16px;line-height:1;">♥</span>';
       const secondRow = `<div class="grid grid-cols-2 items-center gap-2">${item(keys[2])}<div class="flex justify-end"><span class="calendar-payday-legend inline-flex items-center gap-1 whitespace-nowrap font-bold text-stone-900">${paydayDot}<span>お給料日</span></span></div></div>`;
       return `<div class="flex w-full flex-col gap-1.5">${firstRow}${secondRow}</div>`;
     }
