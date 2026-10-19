@@ -495,6 +495,152 @@ html, body { max-width: 100%; overflow-x: hidden; }
   border-color:#a25b3d;
 }
 </style>
+<style id="oct19-enhancements">
+.shift-date-nav{display:flex;align-items:center;justify-content:space-between;gap:5px;background:#e9aebc;border-radius:12px;padding:8px 5px;color:#721c38;font-weight:800}
+.shift-date-nav button{font-size:13px;font-weight:800;padding:7px 5px;white-space:nowrap;color:#721c38}
+#modalDateTitle{font-size:clamp(13px,3.7vw,16px);text-align:center;white-space:nowrap;font-weight:800;color:#721c38}
+.shift-help-item{padding:10px 0;border-bottom:1px solid #f3e4e8;font-size:14px;line-height:1.7;color:#292524}
+.shift-help-item strong{display:block;color:#881337;font-size:15px}
+#shiftInputModal .shift-section-title{font-size:15px;font-weight:800;color:#292524}
+#modalPresetContainer .job-time{font-size:clamp(15px,4.2vw,18px)!important;font-weight:800!important}
+#modalJobSelectContainer select{width:100%;font-weight:800;background:#fff;border:1px solid #d6b5bf;border-radius:9px;padding:7px;color:#292524}
+#standaloneJobLegend .legend-job-label{font-size:15px!important;font-weight:800!important;white-space:normal!important;overflow-wrap:anywhere}
+#standaloneJobLegend{flex-wrap:wrap!important;gap:7px!important}
+#tab-guide .text-xs,#tab-guide p,#tab-guide li{font-size:14px!important;line-height:1.75}
+#tab-settings .head-sub,#tab-settings .note-fit,#tab-settings .paid-note{font-size:14px!important;line-height:1.55}
+#tab-settings .settings-job-name{font-size:15px!important;font-weight:800!important}
+#tab-settings .wage-head-title{font-size:16px!important}
+#tab-settings .wage-head-sub,#tab-settings .wage-head-btn{font-size:14px!important}
+#calendarJobLegend .calendar-legend-label{font-size:14px!important;font-weight:800!important}
+#modalSelectedDateSummaryContent{font-size:14px!important}
+#firstUseConsentOverlay{z-index:100!important}
+#firstUseConsentOverlay .consent-card{max-height:90dvh;overflow:auto}
+#firstUseConsentOverlay button:disabled{background:#d6d3d1;color:#78716c;cursor:not-allowed}
+@media(max-width:380px){#tab-settings .wage-head-sub,#tab-settings .wage-head-btn{font-size:13px!important}#modalPresetContainer .job-time{font-size:15px!important}}
+</style>
+<style id="friend-oct19-final-ui">
+/* お給料の文字：数値やカレンダーを変えず、説明と項目名を読みやすく */
+#tab-clock .text-xs:not(button):not(input){font-size:14px!important;line-height:1.55!important}
+#tab-clock .text-sm:not(button):not(input){font-size:15px!important}
+#tab-clock h2,#tab-clock h3{font-size:17px!important;line-height:1.45!important}
+#tab-clock .job-label-pill{font-size:15px!important;font-weight:800!important}
+/* バイト先カード：淡い背景と落ち着いた濃色の操作ボタン */
+#tab-settings .settings-job-card{box-shadow:none!important}
+#tab-settings .settings-job-action{color:#fff!important;border-color:transparent!important;min-height:32px;box-shadow:0 1px 2px rgba(0,0,0,.13)}
+/* 日付枠はコンパクトにし、バイト先欄と距離を確保 */
+#shiftInputModal .shift-date-nav{min-height:42px;padding:3px 7px!important;margin-bottom:10px!important}
+#shiftInputModal .shift-date-nav button{font-size:12px!important;padding:5px 2px!important}
+#shiftInputModal #modalDateTitle{font-size:clamp(15px,4vw,17px)!important;font-weight:800!important}
+/* 保存ボタン：下部の5タブより上に固定し、設定画面だけ表示 */
+#settingsFixedSave:not([hidden]){display:block;position:fixed;z-index:41;bottom:calc(65px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:min(100%,448px);padding:7px 14px;background:rgba(255,255,255,.96);border-top:1px solid #eadfe3;box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+#settingsFixedSave button{width:100%;border-radius:12px;background:#881337;color:#fff;font-weight:800;font-size:15px;padding:10px 8px;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+#tab-settings{padding-bottom:94px!important}
+#tab-settings .note-fit{font-size:clamp(11px,3vw,13px)!important;line-height:1.65!important;letter-spacing:-.025em}
+/* はじめに：段落を短くまとめて読みやすく */
+#tab-guide .guide-steps{display:grid;gap:9px}
+#tab-guide .guide-steps p{display:flex;align-items:flex-start;gap:9px;margin:0!important}
+#tab-guide .guide-steps b{flex:none;border-radius:8px;background:#fce8ef;color:#881337;padding:2px 7px}
+#tab-guide .guide-steps span{flex:1;min-width:0}
+#tab-guide .guide-extra{background:#fff5f8;border-radius:10px;padding:10px;display:grid;gap:8px}
+#tab-guide .guide-extra p{margin:0!important;font-size:13px!important}
+@media(max-width:365px){#shiftInputModal #modalDateTitle{font-size:14px!important}#shiftInputModal .shift-date-nav button{font-size:11px!important}#tab-settings .settings-job-action{padding-left:6px!important;padding-right:6px!important}}
+</style>
+<style id="friend-oct19-extra-09-10">
+/* 修正⑨：バイト名の登録と説明を横一列で読みやすく */
+#tab-settings .friend-job-register-row{flex-wrap:nowrap;align-items:center}
+#tab-settings .friend-job-limit{font-size:clamp(12px,3.5vw,15px);line-height:1.35;white-space:nowrap}
+#tab-settings .friend-job-hint{font-size:clamp(13px,3.6vw,15px);line-height:1.5}
+/* 修正⑩：選択中をバイト名の隣に。選択中の枠は控えめな発光で強調 */
+#tab-settings .settings-job-card{position:relative;min-height:48px}
+#tab-settings .settings-job-card.friend-job-glow{outline:2px solid var(--selected-job-accent,#508ac2);outline-offset:-2px;box-shadow:0 0 0 2px rgba(255,255,255,.8) inset,0 0 11px rgba(85,135,185,.35)!important}
+#tab-settings .friend-job-name-inline{display:flex;align-items:center;gap:4px;min-width:0;white-space:nowrap}
+#tab-settings .friend-job-name-inline .settings-job-label{display:inline-flex;align-items:center;min-width:0;padding:2px 0!important;border:0!important;background:transparent!important;gap:3px!important}
+#tab-settings .friend-job-name-inline .settings-job-label>span:last-child{display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#tab-settings .friend-job-selected-tag{font-size:clamp(10px,2.9vw,12px);font-weight:800;white-space:nowrap;color:#164e83;flex-shrink:0}
+#tab-settings .settings-job-action{color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;font-weight:800!important;text-shadow:none!important;filter:none!important}
+#tab-settings .settings-job-action:focus-visible{outline:2px solid #1f2937;outline-offset:2px}
+@media(max-width:375px){#tab-settings .settings-job-card{gap:3px!important;padding-left:5px!important;padding-right:5px!important}#tab-settings .settings-job-name{padding-left:2px!important;padding-right:1px!important;font-size:13px!important}#tab-settings .settings-job-action{font-size:11px!important;padding-left:5px!important;padding-right:5px!important}#tab-settings .friend-job-selected-tag{font-size:10px!important}}
+</style>
+<style id="friend-oct19-extra-11-16">
+/* ① 日付：背景なし・文字を大きく・余白を維持 */
+#shiftInputModal .shift-date-nav{background:transparent!important;border-radius:0!important;padding:6px 2px!important;margin:5px 0 12px!important;min-height:42px!important;color:#781334!important}
+#shiftInputModal #modalDateTitle{font-size:clamp(17px,4.7vw,20px)!important;font-weight:900!important;white-space:nowrap;letter-spacing:0!important}
+#shiftInputModal .shift-date-nav button{color:#781334!important;font-size:clamp(12px,3.1vw,14px)!important;flex-shrink:0}
+/* ② バイト先セレクトの左に、選択先に合わせた丸印 */
+#modalJobSelectContainer{position:relative}
+#modalJobSelectContainer .modal-job-color-dot{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:1}
+#modalJobSelectContainer select{padding-left:27px!important}
+/* ③ 選択中ラベルを少し大きく。狭い画面でも一行を維持 */
+#tab-settings .friend-job-selected-tag{font-size:clamp(12px,3.3vw,14px)!important;font-weight:900!important}
+/* ④ 操作ボタンの背景：既存CSSのbackground:inherit!importantを上書き */
+#tab-settings .settings-job-action{background:var(--job-action-bg,#547FAE)!important;background-color:var(--job-action-bg,#547FAE)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:1px solid var(--job-action-bg,#547FAE)!important;opacity:1!important;box-shadow:0 1px 3px rgba(0,0,0,.15)!important}
+#tab-settings .settings-job-action:active{filter:brightness(.88)!important}
+/* ⑤ 設定保存成功の通知だけ、画面下の固定保存ボタン直上へ */
+#toastMessage.settings-save-toast{position:fixed!important;top:auto!important;bottom:calc(137px + env(safe-area-inset-bottom,0px))!important;max-width:min(90vw,410px);width:max-content;z-index:72!important}
+@media(max-width:375px){#tab-settings .friend-job-selected-tag{font-size:12px!important}#shiftInputModal #modalDateTitle{font-size:17px!important}}
+</style>
+<style id="friend-final-adjustments">
+/* 給与画面：目標金額は控えめに、バイト別の支払情報は読みやすく */
+#goalAmountHeader{font-size:12px!important;font-weight:600!important;width:85px!important}
+#monthlyReceiveBreakdown .receive-breakdown-row{gap:5px!important;padding-left:3px!important;padding-right:3px!important}
+#monthlyReceiveBreakdown .receive-job-name{flex:1 1 auto!important;min-width:0!important}
+#monthlyReceiveBreakdown .receive-job-name .job-label-pill{font-size:clamp(13px,3.6vw,15px)!important;font-weight:700!important}
+#monthlyReceiveBreakdown .payday-label{font-size:clamp(12px,3.35vw,15px)!important;font-weight:600!important;flex-shrink:0}
+#monthlyReceiveBreakdown .receive-job-amount{font-size:clamp(15px,4.2vw,18px)!important;font-weight:800!important;margin-left:2px!important;flex-shrink:0}
+/* シフト登録：バイト先を一行まるごと使って選択 */
+#modalJobSelectContainer{width:100%!important;position:relative}
+#modalJobSelectContainer .friend-modal-job-choice{display:flex;align-items:center;width:100%;min-width:0;border:1px solid;border-radius:10px;padding:3px 9px 3px 6px;gap:6px}
+#modalJobSelectContainer .modal-job-color-dot{position:static!important;transform:none!important;display:block;flex-shrink:0;width:10px;height:10px;border-radius:50%}
+#modalJobSelectContainer select{flex:1;min-width:0;width:100%;padding:6px 1px!important;border:0!important;background:transparent!important;color:#242424!important;font-size:clamp(13px,3.6vw,15px)!important;box-shadow:none!important}
+#modalJobSelectContainer .friend-modal-selected-tag{font-size:clamp(11px,3.1vw,13px);font-weight:800;color:#781334;white-space:nowrap;flex-shrink:0;pointer-events:none}
+</style>
+<style id="friend-final-two-adjustments">
+/* はじめに：①〜③の背景をなくし、案内文をコンパクトに */
+#tab-guide .guide-steps p{background:transparent!important;box-shadow:none!important}
+#tab-guide .guide-steps b{background:transparent!important;padding:2px 3px!important;border-radius:0!important}
+#tab-guide .guide-extra{background:transparent!important;padding:2px 0!important;border-radius:0!important;gap:5px!important}
+#tab-guide .guide-extra p{font-size:13px!important;line-height:1.65!important}
+/* バックアップの説明を読みやすく。改行と全角1字下げを維持 */
+#tab-settings .note-fit{font-size:clamp(13px,3.6vw,15px)!important;line-height:1.65!important;letter-spacing:normal!important;text-wrap:normal!important}
+</style>
+<style id="friend-readable-labels-oct19">
+/* 文字サイズのみ調整。説明文・日付・時刻・曜日プルダウンは既存のまま。 */
+#tab-settings #settingsJobContentArea .wage-base-rate > span:first-child{font-size:15px!important;line-height:1.3;font-weight:800!important}
+#tab-settings #settingsJobContentArea .wage-base-rate > span:last-child,
+#tab-settings #settingsJobContentArea .wage-bonus-rate > span{font-size:14px!important;line-height:1.3}
+#tab-settings #settingsJobContentArea .wage-base-rate .wage-base-input,
+#tab-settings #settingsJobContentArea .wage-bonus-rate .wage-bonus-input{font-size:16px!important}
+#tab-settings #settingsJobContentArea .wage-rate-row button{font-size:14px!important}
+#tab-settings #settingsJobContentArea .grid.grid-cols-2 > div > span.font-bold{font-size:15px!important}
+#tab-settings #settingsJobContentArea .wage-rate-row{gap:5px!important}
+#tab-settings #settingsJobContentArea .wage-base-rate,
+#tab-settings #settingsJobContentArea .wage-bonus-rate{gap:3px!important}
+#tab-settings #settingsJobContentArea .wage-base-rate{flex:0 1 42%;min-width:0}
+#tab-settings #settingsJobContentArea .wage-bonus-rate{flex:1 1 58%;min-width:0}
+#tab-settings #settingsJobContentArea .wage-base-input{width:100%;min-width:0;padding-left:3px!important;padding-right:3px!important}
+#tab-settings #settingsJobContentArea .wage-bonus-select{flex:1 1 auto;min-width:0}
+#tab-settings #settingsJobContentArea .wage-bonus-input{flex:0 1 48px;min-width:0;width:48px;padding-left:2px!important;padding-right:2px!important}
+#tab-settings #settingsJobContentArea .wage-rate-row + div button{font-size:14px!important;min-height:30px}
+#tab-settings #settingsJobContentArea .paid-sub{font-size:14px!important}
+#tab-settings #settingsJobContentArea .font-bold.text-stone-700:not(.paid-note),
+#tab-settings #settingsJobContentArea .font-bold.text-stone-900:not(.wage-head-title){font-size:15px}
+#tab-settings #settingsJobContentArea .allowance-period-grid > div{font-size:14px!important}
+#tab-settings #settingsJobContentArea .allowance-period-grid > div > span{font-size:14px!important}
+#tab-settings .settings-job-name{font-size:16px!important}
+#tab-settings .settings-job-action{font-size:13px!important}
+#calendarJobLegend .calendar-legend-label{font-size:clamp(12px,3.6vw,15px)!important}
+#standaloneJobLegend .legend-job-label{font-size:16px!important}
+@media(max-width:375px){
+ #tab-settings #settingsJobContentArea .wage-rate-row{gap:3px!important}
+ #tab-settings #settingsJobContentArea .wage-base-rate,
+ #tab-settings #settingsJobContentArea .wage-bonus-rate{gap:2px!important}
+ #tab-settings #settingsJobContentArea .wage-base-rate > span:first-child{font-size:14px!important}
+ #tab-settings #settingsJobContentArea .wage-base-rate > span:last-child,
+ #tab-settings #settingsJobContentArea .wage-bonus-rate > span{font-size:13px!important}
+ #tab-settings .settings-job-action{font-size:12px!important}
+ #tab-settings .settings-job-name{font-size:14px!important}
+}
+</style>
 </head>
 <body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
 
@@ -596,53 +742,17 @@ html, body { max-width: 100%; overflow-x: hidden; }
     </div>
   </div>
 
+  <div id="shiftUsageHelpModal" role="dialog" aria-modal="true" onclick="if(event.target===this)closeShiftHelp()" class="fixed inset-0 bg-stone-900/60 z-[80] flex items-center justify-center p-3 hidden"><div class="bg-white rounded-2xl p-4 w-full max-w-sm max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-lg text-rose-900">🌷 シフト登録の使い方 ♡</h3><div class="shift-help-item"><strong>1 【日付の選択】について</strong><p>「前日」「翌日」を押すと、日付を切り替えられます。シフトを登録したい日付を選んでね♪</p></div><div class="shift-help-item"><strong>2 【バイト先を選択】について</strong><p>プルダウンから、シフトを登録したいバイト先を選んでね。選択中のバイト先名が表示されます。</p></div><div class="shift-help-item"><strong>3 【シフト一覧】について</strong><p>登録したシフトが表示されます。間違えた場合は「削除」を押して、もう一度登録してね。</p></div><div class="shift-help-item"><strong>4 【勤務時間を登録】について</strong><p>出勤時間・退勤時間・休憩時間を入力して、「登録」を押してね。</p></div><div class="shift-help-item"><strong>5 【ワンタッチ時間登録】について</strong><p>「＋ 新規登録」を押して、よく使う勤務時間を登録してね。次回から簡単にシフトを登録できるよ♪</p></div><div class="shift-help-item"><strong>6 【ワンタッチ時間登録一覧】について</strong><p>⑤で登録した勤務時間が表示されます。使いたい時間の「登録」を押すだけで、その日のシフトを登録できるよ。</p></div><button onclick="closeShiftHelp()" class="w-full mt-3 p-3 bg-rose-900 text-white rounded-xl font-bold">閉じる</button></div></div>
   <!-- シフト入力・編集専用モーダル -->
   <div id="shiftInputModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
     <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-stone-200 space-y-3.5 max-h-[92vh] flex flex-col overflow-hidden">
-      <div class="flex justify-between items-center border-b border-stone-200 pb-2 shrink-0">
-        <span class="text-xs font-bold text-stone-500">選択した日付</span>
-        <h3 id="modalDateTitle" class="text-sm font-bold text-stone-900 tracking-wide">日付 のシフト</h3>
-      </div>
+      <div class="flex justify-between items-center gap-2 border-b border-stone-200 pb-2 shrink-0"><span class="font-bold text-stone-900">📅 シフト登録画面</span><button type="button" onclick="showShiftHelp()" class="px-2 py-1.5 rounded-xl bg-pink-50 text-rose-900 border border-rose-200 font-bold text-xs">はじめに見てね♡</button></div><div class="shift-date-nav shrink-0"><button onclick="shiftModalChangeDay(-1)">◀ 前日</button><h3 id="modalDateTitle">日付</h3><button onclick="shiftModalChangeDay(1)">翌日 ▶</button></div>
 
       <div id="shiftInputScrollArea" class="space-y-3 overflow-y-auto pr-1 flex-1 no-scrollbar" onscroll="updateShiftScrollHint()">
-        <section class="space-y-2">
-          <div class="text-sm font-bold text-stone-800">【シフト登録】</div>
-          <p class="text-xs font-medium text-stone-600">※バイト先を選択して、勤務時間を登録します。</p>
-          <div id="modalJobSelectContainer" class="flex space-x-1.5"></div>
-        </section>
-
-        <section class="space-y-2 pt-2 border-t border-stone-100">
-          <div class="text-sm font-bold text-stone-800">【この日のシフト一覧】</div>
-          <div id="modalSelectedDateSummaryContent" class="space-y-2 text-xs text-stone-700">
-            <span class="text-stone-400">シフトは登録されていません</span>
-          </div>
-        </section>
-
-        <section class="space-y-2 pt-2 border-t border-stone-100">
-          <div class="flex space-x-2">
-            <button type="button" id="modalTypeWorkBtn" onclick="setModalShiftType(false)" class="flex-1 py-1.5 rounded-xl text-sm font-bold border transition bg-stone-100 text-stone-900 border-stone-300 shadow-sm">通常勤務</button>
-            <button type="button" id="modalTypePaidBtn" onclick="setModalShiftType(true)" class="flex-1 py-1.5 rounded-xl text-sm font-bold border transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50">☆ 有給休暇</button>
-          </div>
-          <div class="flex items-center justify-between gap-2">
-            <div class="text-sm font-bold text-stone-800">【シフト入力】</div>
-            <button type="button" onclick="registerNewPresetAndRegister()" class="shrink-0 px-5 py-2.5 bg-rose-900 text-rose-50 hover:bg-rose-800 rounded-xl font-bold text-sm transition shadow-sm">登録</button>
-          </div>
-          <div id="modalCustomPresetContainer" class="space-y-2"></div>
-          <p class="text-xs font-medium text-stone-600">※時間を直接入力できます。</p>
-        </section>
-
-        <section class="space-y-2 pt-2 border-t border-stone-100">
-          <div class="text-sm font-bold text-stone-800">【ワンタッチ時間登録一覧】</div>
-          <p class="text-xs font-medium text-stone-600">※下の「＋ワンタッチ時間登録」から登録した時間が表示されます。</p>
-          <div id="modalPresetContainer" class="space-y-2 text-xs"></div>
-        </section>
-
-        <section id="shiftPresetSettingsSection" class="space-y-2 pt-2 border-t border-stone-100">
-          <button type="button" onclick="openPresetRegisterModal()" class="text-center text-sm font-bold text-stone-900" style="display:block;width:100%;min-height:38px;padding:6px 8px;border:1px solid #e9b6c5;border-radius:12px;background:#fce7ed;color:#171717;cursor:pointer;">
-            ＋ワンタッチ時間登録しましょ～♡
-          </button>
-          <p class="text-sm font-medium text-stone-700" style="line-height:1.5;font-size:clamp(11px,3.2vw,14px);white-space:nowrap;">※登録すると、シフトの入力が楽になります。</p>
-        </section>
+        <div class="space-y-2"><div class="space-y-1.5"><span class="shift-section-title">【バイト先選択】</span><div id="modalJobSelectContainer" class="w-full min-w-0"></div></div><div class="flex space-x-2 pt-1"><button type="button" id="modalTypeWorkBtn" onclick="setModalShiftType(false)" class="flex-1 py-1.5 rounded-xl text-sm font-bold border bg-stone-100 border-stone-300">通常勤務</button><button type="button" id="modalTypePaidBtn" onclick="setModalShiftType(true)" class="flex-1 py-1.5 rounded-xl text-sm font-bold border bg-white border-stone-200">☆ 有給休暇</button></div></div>
+        <div class="space-y-1.5 border-t border-stone-100 pt-2"><span id="modalShiftListHeading" class="shift-section-title">【この日のシフト一覧】</span><div id="modalSelectedDateSummaryContent" class="space-y-2 pt-1"></div></div>
+        <div class="space-y-2 border-t border-stone-100 pt-2"><div class="flex items-center justify-between"><span class="shift-section-title">【勤務時間を登録】</span><button type="button" onclick="registerNewPresetAndRegister()" class="px-4 py-1.5 bg-rose-900 text-white rounded-xl text-sm font-bold">登録</button></div><div id="modalCustomPresetContainer" class="space-y-2"></div></div>
+        <div class="flex items-center justify-between gap-2 border-t border-stone-100 pt-2"><span class="shift-section-title">【ワンタッチ時間登録】</span><button type="button" onclick="openPresetRegisterModal()" class="px-3 py-1.5 rounded-xl bg-pink-50 text-rose-900 border border-rose-200 font-bold text-sm">＋ 新規登録</button></div>
       </div>
 
       <div id="shiftScrollHint" class="shrink-0 text-center text-[11px] font-bold text-stone-400 py-1 hidden" aria-hidden="true">↓ 下に続きがあります</div>
@@ -780,7 +890,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
           </div>
 
           <div id="incomeWallBox" class="mt-3 bg-stone-50/70 border border-stone-200 rounded-xl px-3 py-2.5 transition-colors duration-300">
-            <div class="text-sm font-bold text-stone-600 mb-1">【年収の壁】</div>
+            <div class="text-sm font-bold text-stone-700 mb-1 flex flex-wrap items-center gap-2">【年収の壁】 <button type="button" onclick="document.getElementById('incomeWallHelp').classList.remove('hidden')" class="text-xs font-bold text-rose-900 bg-rose-50 border border-rose-200 rounded-lg px-2 py-1">見てね♡</button></div>
             <div class="space-y-1.5 text-xs">
               <div class="flex justify-between items-baseline gap-2">
                 <span class="text-base text-stone-700 font-bold">103万円まで</span>
@@ -855,37 +965,27 @@ html, body { max-width: 100%; overflow-x: hidden; }
       <div id="tab-settings" class="tab-content hidden space-y-3">
         <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-2 rounded-2xl text-center shadow-md border border-rose-800/40 relative overflow-hidden">
           <div class="absolute -top-6 -left-6 w-16 h-16 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>
-          <div class="flex justify-between items-center px-1">
-            <span class="text-xs text-rose-300 tracking-widest text-lg">🕒</span>
-            <div>
-              <p class="text-base sm:text-lg font-bold tracking-wider text-white">お仕事設定</p>
-              <p class="head-sub text-xs sm:text-sm font-bold text-rose-200">タブを切り替えて時給や給料日を設定しよう</p>
-            </div>
-            <span class="text-xs text-rose-300 tracking-widest text-lg">🕒</span>
+          <div class="text-center">
+            <p class="text-base sm:text-lg font-bold tracking-wider text-white">お給料の設定</p>
+            <p class="head-sub text-xs sm:text-sm font-bold text-rose-100">時給や手当、給料日を設定しよう♪</p>
           </div>
         </div>
 
         <div class="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm space-y-3">
           <div class="space-y-2">
-            <div class="flex items-center justify-between gap-2">
-              <button type="button" onclick="registerNewJob()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-sm whitespace-nowrap">バイト名の登録</button>
-              <span class="text-xs sm:text-sm font-bold text-stone-800">3件まで登録できます♡</span>
+            <div class="friend-job-register-row flex items-center gap-2">
+              <button type="button" onclick="registerNewJob()" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-3 py-2.5 rounded-xl text-sm transition shadow-sm whitespace-nowrap">バイト名の登録</button>
+              <span class="friend-job-limit font-bold text-stone-800">3件まで登録できます♡</span>
             </div>
-            <div class="text-xs font-bold text-stone-800">※登録すると、時給関係の登録ができます。</div>
+            <div class="friend-job-hint font-bold text-stone-800">※登録すると、時給関係の登録ができます。</div>
             <div id="settingsJobTabs" class="space-y-1.5"></div>
           </div>
 
           <div id="settingsJobContentArea" class="pt-2 border-t border-stone-200 space-y-3"></div>
 
-          <div class="pt-3 border-t border-stone-200">
-            <button type="button" onclick="saveSettings()" class="w-full bg-rose-900 text-rose-50 font-bold py-3 rounded-xl text-xs sm:text-sm hover:bg-rose-800 transition shadow-sm flex items-center justify-center space-x-1">
-              <span>💾 設定を保存する</span>
-            </button>
-          </div>
-
           <div class="pt-2.5 border-t border-stone-200 space-y-2">
             <div class="text-xs sm:text-sm font-bold text-stone-800">【データのバックアップ】</div>
-            <p class="note-fit text-xs text-stone-500 font-bold leading-relaxed">※機種変更やアプリの再インストールに備えて、<br>時々書き出しておくと安心です♡</p>
+            <p class="note-fit text-xs text-stone-500 font-bold leading-relaxed">※機種変更や再インストールに備えて、<br>　定期的に書き出しておくと安心です♡</p>
             <div class="flex space-x-2">
               <button type="button" onclick="exportAppData(event)" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold py-3 rounded-xl text-xs sm:text-sm transition border border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">⬇️ 書き出す</button>
               <button type="button" onclick="document.getElementById('importFileInput').click()" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-900 font-bold py-3 rounded-xl text-xs sm:text-sm transition border border-rose-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">⬆ 読み込む</button>
@@ -897,143 +997,39 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       <!-- タブ4: はじめに -->
       <div id="tab-guide" class="tab-content hidden space-y-3">
-        <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-2 rounded-2xl text-center shadow-md border border-rose-800/40 relative overflow-hidden">
-          <div class="absolute -top-6 -left-6 w-16 h-16 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>
-          <div class="flex justify-between items-center px-1">
-            <span class="text-xs text-rose-300 tracking-widest text-lg">📖</span>
-            <div>
-              <p class="text-lg sm:text-xl font-bold tracking-wider text-white">はじめに</p>
-              <p class="text-sm sm:text-base font-bold text-rose-200 tracking-wide">アプリの使い方や大切なお知らせ</p>
-            </div>
-            <span class="text-xs text-rose-300 tracking-widest text-lg">📖</span>
-          </div>
+        <div class="bg-gradient-to-br from-rose-950 via-rose-900 to-rose-950 text-rose-100 px-3 py-3 rounded-2xl text-center shadow-md border border-rose-800/40">
+          <p class="text-base sm:text-lg font-bold text-white">📖 はじめに 📖　必ず読んでね♡</p>
         </div>
-
-        <div class="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm space-y-3 text-xs sm:text-sm text-stone-800 leading-relaxed">
-          <div class="bg-rose-50 border border-rose-200 rounded-xl px-3 py-2.5 font-bold text-rose-900 text-xs sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis">
-            🌸 まずは「設定」タブでバイト先を登録しよう
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>✨</span><span>このアプリについて</span>
-            </h3>
-            <p class="text-stone-600 font-medium">
-              シフトの管理や給料計算をいつでも手軽に行える専用アプリです。LINEミニアプリとして、いつでも快適にご利用いただけます。
-            </p>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>📌</span><span>基本的な使い方</span>
-            </h3>
-            <ul class="list-disc list-inside space-y-1 text-stone-600 font-medium">
-              <li><strong class="text-stone-800">お給料タブ</strong>：今月の給料見込や年間収入、目標金額を確認できます。</li>
-              <li><strong class="text-stone-800">シフト登録タブ</strong>：シフトの有無や給料日（❤）がわかります。入力したい日付をタップすると、シフトの追加や有給の登録ができます。</li>
-              <li><strong class="text-stone-800">予定表タブ</strong>：1か月のシフトを一覧で確認できます。日付をタップすると修正でき、Googleカレンダーへの登録もできます。</li>
-              <li><strong class="text-stone-800">設定タブ</strong>：時給や締め日・給料日、バイト先の登録（最大3件）を自由に変更できます。</li>
-              <li><strong class="text-stone-800">はじめにタブ</strong>：このページです。アプリの使い方や、データの保存・お問い合わせなどの大切なお知らせを確認できます。</li>
-            </ul>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>📱</span><span>ホーム画面に追加すると便利です♪</span>
-            </h3>
-            <p class="text-stone-600 font-medium">
-              ホーム画面に追加すると、次回からすぐに開けます♪ ブラウザのメニューから「ホーム画面に追加」を選んでください。操作方法は端末によって異なります。
-            </p>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>💡</span><span>データの保存・バックアップについて</span>
-            </h3>
-            <p class="text-stone-600 font-medium">
-              入力したデータはお使いの端末に保存されます。機種変更や万が一のデータ保護に備えて、「設定」タブから定期的に「書き出す」を行っていただくことをおすすめします。
-            </p>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>💬</span><span>お問い合わせ・サポート</span>
-            </h3>
-            <p class="text-stone-600 font-medium">
-              アプリの使い方やご不明な点、ご要望などがございましたら、公式LINEよりお気軽にお問い合わせください。
-            </p>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>💡</span><span>残業・深夜の割増について</span>
-            </h3>
-            <p class="text-stone-600 font-medium">
-              労働基準法では、1日8時間を超えた分（時間外）と、22時〜翌5時（深夜）に、25%以上の割増賃金が必要と定められています。時間外と深夜が重なる時間は50%以上です（実際の割増率は、お勤め先の規定や雇用契約で異なります）。<br>
-              このアプリは割増を自動では計算しません。22時以降などは、設定の「時間帯を追加」で割増後の時給を入力してください（例：時給1,200円の25%増し → 1,500円）。1日8時間を超えた分の割増は反映されないため、実際の給料明細でご確認ください。
-            </p>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>🔒</span><span>入力したデータの取り扱い</span>
-            </h3>
-            <p class="text-stone-600 font-medium">
-              入力したシフトや給料のデータは、お使いの端末の中だけに保存され、運営のサーバーには送信されません。Googleカレンダーへの登録は、ボタンをタップしたときだけ、Googleの画面が開きます。
-            </p>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>⚠️</span><span>データが消えてしまうことがあります</span>
-            </h3>
-            <p class="text-stone-600 font-medium">次のような場合、保存したデータが消えることがあります。</p>
-            <ul class="list-disc list-inside space-y-1 text-stone-600 font-medium">
-              <li>LINEアプリの削除・再インストール</li>
-              <li>機種変更や、スマホの初期化</li>
-              <li>LINEやスマホの「キャッシュ・データの削除」</li>
-            </ul>
-            <p class="text-stone-600 font-medium">
-              データはお使いの端末にだけ保存されているため、消えてしまった場合、運営では元に戻せません。また、スマホとパソコンなど、別の端末とはデータが共有されません。「設定」タブの「書き出す」で保存したデータがあれば、「読み込む」で元に戻せます。
-            </p>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>🧮</span><span>計算結果や「年収の壁」について</span>
-            </h3>
-            <ul class="list-disc list-inside space-y-1 text-stone-600 font-medium">
-              <li>「給料見込」は、登録した時給・交通費・手当などから計算した目安です。税金や社会保険料が引かれる前の金額で、実際の手取りとは異なります。</li>
-              <li>端数の処理や、締め日・給料日の扱いは、お勤め先によって異なります。</li>
-              <li>「年収の壁」の金額は、制度の改正で変わることがあります。表示は目安として、実際の扶養や税金の扱いは、お勤め先・加入している健康保険・税務署などでご確認ください。</li>
-            </ul>
-          </div>
-
-          <div class="space-y-1.5 border-b border-stone-200 pb-3">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>🛡️</span><span>補償・責任の範囲について</span>
-            </h3>
-            <ul class="list-disc list-inside space-y-1 text-stone-600 font-medium">
-              <li>計算結果の正確さ、データが消えないこと、いつでも中断なく使えることを、保証するものではありません。</li>
-              <li>データの消失や、計算結果の誤りなどによる損害に対する補償は、行っておりません。大切なデータは、「書き出す」で、こまめに保存してください。</li>
-              <li>運営に故意または重大な過失がある場合を除き、損害が生じても、お支払いいただいた金額を上限とさせていただきます。</li>
-              <li>LINEの仕様変更や不具合などにより、一時的に使えなくなったり、内容を変更したりする場合があります。</li>
-            </ul>
-          </div>
-
-          <div class="space-y-1.5">
-            <h3 class="font-bold text-stone-900 text-sm sm:text-base flex items-center gap-1.5">
-              <span>⚖️</span><span>著作権・免責事項について</span>
-            </h3>
-            <p class="text-stone-600 font-medium">
-              当アプリのプログラム、デザイン、構成等の著作権は制作者に帰属します。無断での転載、再配布、商用利用等は禁止されています。<br>
-              また、給料計算やシフト管理の結果については万全を期しておりますが、計算結果の正確性を完全に保証するものではありません。実際の給与明細や雇用契約の内容を必ずご確認ください。運営に故意または重大な過失がある場合を除き、本アプリの利用によって生じた損害について、責任を負いかねますのでご了承ください。
-            </p>
-          </div>
+        <div class="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm space-y-4 text-sm text-stone-800 leading-relaxed">
+          <p>このアプリは、毎日のバイトやお仕事で忙しい方でも、シフト登録やお給料の計算を簡単にできるように作ったアプリです♪</p>
+          <p>複数のバイトを掛け持ちしている方も、シフトやお給料の目安をまとめて確認できます。</p>
+          <section class="space-y-2"><h3 class="font-bold text-rose-900 text-base">🌸 この順番で進めてね♪</h3>
+            <div class="guide-steps"><p><b>①</b><span>「設定」でバイト先名を登録します。</span></p>
+            <p><b>②</b><span>時間帯ごとの時給や手当を設定します。</span></p>
+            <p><b>③</b><span>「シフト登録」で勤務日時を登録します。</span></p></div>
+            <div class="guide-extra"><p>※「予定表」からもシフト登録できます。</p>
+            <p>💡 詳しい使い方は、各画面の<br>　「見てね♡」「確認してね💡」をご覧ください。</p></div>
+          </section>
+          <section class="space-y-3 border-t border-stone-200 pt-3"><h3 class="font-bold text-rose-900 text-base">🌷 その他のご案内</h3>
+            <div><h4 class="font-bold">📱 ホーム画面に追加すると便利です♪</h4><p>ホーム画面に追加すると、次回からすぐに開けます♪ ブラウザのメニューから「ホーム画面に追加」を選んでね。操作方法は端末によって異なります。</p></div>
+            <div><h4 class="font-bold">💾 データの保存・バックアップについて</h4><p>入力したデータはお使いの端末に保存されます。機種変更や万が一のデータ保護に備えて、「設定」画面から定期的に「書き出す」を行うことをおすすめします。</p></div>
+          </section>
+          <section class="space-y-3 border-t border-stone-200 pt-3"><h3 class="font-bold text-rose-900 text-base">🔒 ご利用にあたっての大切な確認事項</h3>
+            <div><h4 class="font-bold">① 🔒 入力したデータの取り扱い</h4><p>シフトやお給料のデータは、現在のアプリではお使いの端末内に保存されます。Googleカレンダーへの登録は、利用者が操作したときにGoogleの画面が開きます。</p></div>
+            <div><h4 class="font-bold">② ⚠️ データが消えてしまうことがあります</h4><p>機種変更、端末の初期化、ブラウザのデータ削除、アプリの削除などで、保存したデータが消える場合があります。別の端末との自動同期はありません。消失したデータは運営では復元できませんので、「設定」の「書き出す」でバックアップを保存し、必要に応じて「読み込む」で復元してください。</p></div>
+            <div><h4 class="font-bold">③ 🛡️ 補償・責任の範囲について</h4><p>このアプリはシフト管理とお給料の見込みを確認するための補助ツールです。入力間違いや計算方法の違い、アプリ・端末・通信環境などの不具合によって、結果が実際の給与と異なる場合があります。給与明細や雇用契約の内容をご確認ください。損害への対応は、故意・重大な過失など法令上免責できない場合を除き、適用法令に従います。</p></div>
+            <div><h4 class="font-bold">④ ⚖️ 著作権・禁止事項について</h4><p>アプリのプログラム、デザイン、文章などの権利は制作者または正当な権利者に帰属します。権利者の許可のない転載、再配布、販売などは禁止します。ただし、法律で認められた利用を制限するものではありません。</p></div>
+            <div><h4 class="font-bold">⑤ 🌷 ご利用にあたって</h4><p>本アプリの利用にあたり、上記の注意事項をご確認ください。「はじめに」はいつでも読み直せます。</p></div>
+          </section>
         </div>
       </div>
 
     </div>
 
+    <!-- 設定タブ専用の固定保存ボタン：下部ナビの直上 -->
+    <div id="settingsFixedSave" hidden>
+      <button type="button" onclick="saveAndCloseSettings()">閉じる（設定を保存します♡）</button>
+    </div>
     <!-- 下部タブバー -->
     <div class="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-stone-100/95 border-t border-stone-200 p-1.5 shadow-lg" style="padding-bottom: calc(0.625rem + env(safe-area-inset-bottom, 0px));">
       <div class="grid grid-cols-5 gap-1">
@@ -1354,7 +1350,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       const [y, m, d] = dateStr.split('-');
       const titleEl = document.getElementById('modalDateTitle');
-      if (titleEl) { const weekday = ['日','月','火','水','木','金','土'][new Date(Number(y), Number(m) - 1, Number(d)).getDay()]; titleEl.innerText = `${y}年${m}月${d}日（${weekday}）`; }
+      if (titleEl) { const weekday = ['日','月','火','水','木','金','土'][new Date(Number(y), Number(m) - 1, Number(d)).getDay()]; titleEl.innerText = `${Number(m)}月${Number(d)}日（${weekday}）`; const h=document.getElementById("modalShiftListHeading");if(h)h.textContent=`【${Number(m)}月${Number(d)}日（${weekday}）のシフト一覧】`; }
 
       renderModalJobTabs();
       updateShiftEntryLayout();
@@ -1386,59 +1382,12 @@ html, body { max-width: 100%; overflow-x: hidden; }
     }
 
     function renderModalJobTabs() {
-      const container = document.getElementById('modalJobSelectContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const warnEl = document.getElementById('modalWageWarn');
-      if (warnEl) {
-        const noWage = !jobHasWage(currentSelectedJobKey);
-        warnEl.classList.toggle('hidden', !noWage);
-        if (noWage) warnEl.textContent = '⚠️ このバイト先は時給が未設定です。\nこのままだと金額が¥0になるので、\n「設定」タブで時給を入れてね♡';
-      }
-
-      const activeKeys = getActiveJobKeys();
-      
-      if (activeKeys.length === 3) {
-        let htmlRow1 = '';
-        let htmlRow2 = '';
-        activeKeys.forEach((jk, idx) => {
-          let isSelected = (jk === currentSelectedJobKey);
-          let styleClass = "border font-bold";
-          let jobInlineStyle = getJobInlineStyle(jk, isSelected);
-          
-          let btnHtml = `
-            <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip w-full py-2.5 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1" style="${jobInlineStyle}">
-              ${getJobLabelHtml(jk)}
-            </button>
-          `;
-          if (idx < 2) {
-            htmlRow1 += btnHtml;
-          } else {
-            htmlRow2 += btnHtml;
-          }
-        });
-        container.innerHTML = `
-          <div class="space-y-1.5 w-full">
-            <div class="grid grid-cols-2 gap-1.5">${htmlRow1}</div>
-            <div class="w-full">${htmlRow2}</div>
-          </div>
-        `;
-      } else {
-        let rowHtml = '';
-        activeKeys.forEach(jk => {
-          let isSelected = (jk === currentSelectedJobKey);
-          let styleClass = "border font-bold";
-          let jobInlineStyle = getJobInlineStyle(jk, isSelected);
-
-          rowHtml += `
-            <button type="button" onclick="switchModalJobTab('${jk}')" class="job-chip flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm truncate px-1.5 ${styleClass} flex items-center justify-center gap-1" style="${jobInlineStyle}">
-              ${getJobLabelHtml(jk)}
-            </button>
-          `;
-        });
-        container.innerHTML = `<div class="flex space-x-1.5 w-full">${rowHtml}</div>`;
-      }
+      const container=document.getElementById('modalJobSelectContainer');if(!container)return;
+      const keys=getActiveJobKeys();
+      const modalJobDotColor = currentSelectedJobKey === 'job1' ? '#2875E7' : currentSelectedJobKey === 'job2' ? '#488E37' : '#B97461';
+      const modalJobTint = currentSelectedJobKey === 'job1' ? '#edf5ff' : currentSelectedJobKey === 'job2' ? '#edf8ed' : '#fff4ee';
+      container.innerHTML=`<div class="friend-modal-job-choice" style="background:${modalJobTint};border-color:${modalJobDotColor}55"><span class="modal-job-color-dot" style="background:${modalJobDotColor}" aria-hidden="true"></span><select aria-label="バイト先を選択" onchange="switchModalJobTab(this.value)">${keys.map(jk=>`<option value="${jk}" ${jk===currentSelectedJobKey?'selected':''}>${(configData[jk]?.name||jk).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</option>`).join('')}</select><span class="friend-modal-selected-tag">✨選択中</span></div>`;
+      const warnEl=document.getElementById('modalWageWarn');if(warnEl){const noWage=!jobHasWage(currentSelectedJobKey);warnEl.classList.toggle('hidden',!noWage);if(noWage)warnEl.textContent='⚠️ このバイト先は時給が未設定です。設定タブで時給を入力してね♡';}
     }
 
     let renamingJobKey = null;
@@ -1594,7 +1543,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
                 <input type="text" inputmode="decimal" id="modal_paid_hours_${jk}_${idx}" value="${h || ''}" class="w-14 p-1 border rounded text-center bg-white font-bold text-xs sm:text-sm" placeholder="0">
                 <span class="text-stone-600 text-xs">時間</span>
                 <button type="button" onclick="updatePaidHoursModal('${jk}', ${idx})" class="bg-rose-900 text-rose-50 hover:bg-rose-800 font-bold px-2.5 py-1.5 rounded-lg text-xs transition">変更</button>
-                <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1.5 rounded-lg text-xs transition">削除</button>
+                <button type="button" onclick="confirmShiftDeletion('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-2.5 py-1.5 rounded-lg text-xs transition">削除</button>
               </div>
             </div>`;
           return;
@@ -1606,7 +1555,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
           <div class="bg-stone-50 p-2.5 border rounded-xl border-stone-200 flex items-center justify-between gap-1 text-xs sm:text-sm">
             <span class="font-bold text-stone-800 job-time flex-1">${sh.start}〜${sh.end}</span>
             <span class="font-bold text-stone-600 whitespace-nowrap">休憩${breakMins}分</span>
-            <button type="button" onclick="deleteJobShiftIndexModal('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-3 py-1.5 rounded-lg text-xs transition">削除</button>
+            <button type="button" onclick="confirmShiftDeletion('${jk}', ${idx})" class="bg-stone-200 text-stone-700 hover:bg-stone-300 font-bold px-3 py-1.5 rounded-lg text-xs transition">削除</button>
           </div>
         `;
       });
@@ -1677,6 +1626,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
       const toast = document.getElementById('toastMessage');
       const toastText = document.getElementById('toastText');
       if (!toast || !toastText) return;
+      toast.classList.toggle('settings-save-toast', msg === '設定を保存しました');
       toastText.innerText = msg;
       if (undoFn) { const ub = document.createElement('button'); ub.textContent = '元に戻す'; ub.className = 'ml-3 underline font-bold text-rose-200'; ub.onclick = () => { undoFn(); toast.classList.remove('opacity-100'); toast.classList.add('opacity-0', 'pointer-events-none'); }; toastText.appendChild(ub); }
 
@@ -1699,6 +1649,8 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
       const targetTab = document.getElementById(`tab-${tabName}`);
       if (targetTab) targetTab.classList.remove('hidden');
+      const fixedSave = document.getElementById('settingsFixedSave');
+      if (fixedSave) fixedSave.hidden = tabName !== 'settings';
       const activeBtn = document.getElementById(`btn-${tabName}`);
       if (activeBtn) {
         activeBtn.classList.add('active');
@@ -1782,7 +1734,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         let jobInlineStyle = getJobInlineStyle(jk, isSelected);
 
         container.innerHTML += `
-          <button type="button" onclick="switchBreakdownJob('${jk}')" class="job-chip flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition truncate px-1.5 ${styleClass}" style="${jobInlineStyle}">
+          <button type="button" onclick="switchBreakdownJob('${jk}')" class="job-chip flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition truncate px-1.5 ${styleClass}" style="${jobInlineStyle};--selected-job-accent:${getJobPalette(jk).dot};">
             ${getJobLabelHtml(jk)}
           </button>
         `;
@@ -1904,19 +1856,18 @@ html, body { max-width: 100%; overflow-x: hidden; }
       const rowsHtml = activeKeys.map((jk) => {
         const isSelected = (jk === currentSettingsJobKey);
         const jobInlineStyle = getJobInlineStyle(jk, isSelected);
-        const actionBorderColor = getJobPalette(jk).dot;
-        const actionBg = getJobPalette(jk).bg;
-        const actionStyle = `background:${actionBg};border-color:${actionBorderColor};color:#111827;`;
+        const actionBg = jk === 'job1' ? '#5B83B3' : jk === 'job2' ? '#608C58' : '#B97461';
+        const actionStyle = `background:${actionBg};border:1px solid ${actionBg};color:#fff;`;
         return `
-          <div class="settings-job-card ${isSelected ? 'is-selected' : ''} flex items-center gap-1.5 w-full min-w-0 rounded-xl px-2 py-2" style="${jobInlineStyle}">
+          <div class="settings-job-card ${isSelected ? 'is-selected friend-job-glow' : ''} flex items-center gap-1.5 w-full min-w-0 rounded-xl px-2 py-2" style="${jobInlineStyle}">
             <button type="button" onclick="switchSettingsJobTab('${jk}')" aria-pressed="${isSelected}"
-              class="settings-job-name flex-1 min-w-0 px-1 py-1 text-sm font-bold text-left transition truncate">
-              ${getJobLabelHtml(jk, 'settings-job-label')}
+              class="settings-job-name flex-1 min-w-0 px-1 py-1 text-sm font-bold text-left transition" title="このバイト先を選択">
+              <span class="friend-job-name-inline">${getJobLabelHtml(jk, 'settings-job-label')}${isSelected ? `<span class="friend-job-selected-tag" aria-label="選択中">✨選択中</span>` : ''}</span>
             </button>
             <button type="button" onclick="renameJobPrompt('${jk}')" title="バイト先名を修正"
-              class="settings-job-action shrink-0 px-2 py-1.5 rounded-lg border text-xs font-bold whitespace-nowrap" style="${actionStyle}">✏️ 修正</button>
+              class="settings-job-action shrink-0 px-2 py-1.5 rounded-lg border text-xs font-bold whitespace-nowrap" style="${actionStyle}--job-action-bg:${actionBg};">✏️ 修正</button>
             <button type="button" onclick="deleteJob('${jk}')" title="このバイト先を削除"
-              class="settings-job-action settings-job-delete shrink-0 px-2 py-1.5 rounded-lg border text-xs font-bold whitespace-nowrap" style="${actionStyle}">削除</button>
+              class="settings-job-action settings-job-delete shrink-0 px-2 py-1.5 rounded-lg border text-xs font-bold whitespace-nowrap" style="${actionStyle}--job-action-bg:${actionBg};">削除</button>
           </div>
         `;
       }).join('');
@@ -2412,7 +2363,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
           container.innerHTML += `
             <div class="bg-white border border-stone-200 py-2.5 px-3 rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex items-center gap-2 text-xs sm:text-sm">
-              <span class="font-bold text-stone-800 job-time">${p.start}〜${p.end}</span>
+              <span class="font-bold text-stone-800 job-time">${p.start} ～ ${p.end}</span>
               <span class="font-bold text-stone-600 flex-1 text-center whitespace-nowrap">休憩${breakMins}分</span>
               <div class="flex items-center gap-1.5 shrink-0">
                 <button type="button" onclick="registerModalPresetTime('${p.start}', '${p.end}', ${breakMins})"
@@ -3294,12 +3245,22 @@ html, body { max-width: 100%; overflow-x: hidden; }
     function saveSettings() {
       syncSettingsFormToConfig(currentSettingsJobKey);
       saveAllDataStorage();
-      showToast("設定しました");
+      showToast("設定を保存しました");
       ensureValidSelectedJob();
       renderSettingsJobTabs();
       renderCalendar();
       renderStandaloneShiftList();
       initOverviewPage();
+    }
+
+    function saveAndCloseSettings() {
+      try {
+        saveSettings();
+        switchTab('clock');
+      } catch (error) {
+        console.error('設定の保存に失敗しました', error);
+        showToast('設定を保存できませんでした。入力内容を確認して、もう一度お試しください。');
+      }
     }
 
     function formatCurrency(val) {
@@ -3445,5 +3406,14 @@ html, body { max-width: 100%; overflow-x: hidden; }
       </div>
     </div>
   </div>
+<div id="incomeWallHelp" class="fixed inset-0 bg-stone-900/60 z-[90] hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" onclick="if(event.target===this)this.classList.add('hidden')"><div class="bg-white rounded-2xl p-4 max-w-sm w-full text-sm text-stone-800 space-y-3"><h3 class="font-bold text-rose-900 text-lg">🌷 年収の壁について</h3><p>お給料の見込みは税金や社会保険料が引かれる前の金額で、実際の手取りとは異なります。端数の処理や締め日などは勤務先によって異なります。</p><p>「年収の壁」に関する制度や基準額は変わることがあります。扶養・税金・社会保険の詳しい条件は、勤務先や公的機関にご確認ください。</p><button type="button" onclick="document.getElementById('incomeWallHelp').classList.add('hidden')" class="w-full rounded-xl p-3 bg-rose-900 text-white font-bold">閉じる</button></div></div>
+<script id="oct19-enhancement-scripts">
+(function(){
+ window.shiftModalChangeDay=function(offset){if(!selectedCalendarDateStr)return;const [y,m,d]=selectedCalendarDateStr.split('-').map(Number);const next=new Date(y,m-1,d+offset);openShiftInputModal(formatDateKey(next));};
+ window.showShiftHelp=function(){document.getElementById('shiftUsageHelpModal')?.classList.remove('hidden');};
+ window.closeShiftHelp=function(){document.getElementById('shiftUsageHelpModal')?.classList.add('hidden');};
+ window.confirmShiftDeletion=function(jk,idx){deleteJobShiftIndexModal(jk,idx);};
+})();
+</script>
 </body>
 </html>
