@@ -678,6 +678,21 @@ html, body { max-width: 100%; overflow-x: hidden; }
  #shiftInputModal .ito-modal-job-row>.shift-section-title{font-size:15px!important}
 }
 </style>
+<style id="champagne-gold-refinement-20261020">
+/* 今日：細めのエンジ枠と淡いピンク背景 */
+#calendarDays .today-champagne-gold {background:linear-gradient(145deg,#fff8f9 0%,#fff0f2 100%)!important;border:1.5px solid #870b2d!important;box-shadow:0 1px 3px rgba(135,11,45,.10)!important;}
+/* 背景色と文字色を維持し、淡いピンクの枠だけ変更 */
+#tab-clock .border-rose-200,#tab-calendar .border-rose-200,#tab-settings .border-rose-200,#shiftInputModal .border-rose-200 {border-color:#dfc69d!important;}
+/* 給与内訳の大きな枠（淡いピンク背景は維持） */
+#tab-clock .border-rose-100 {border-color:#e7d5b8!important;}
+/* 選択後のマウス・タッチの黒枠を抑え、キーボード操作のフォーカスは残す */
+#modalJobSelectContainer select:focus:not(:focus-visible),#tab-settings .ito-settings-job-select select:focus:not(:focus-visible),#tab-settings .settings-job-card select:focus:not(:focus-visible){outline:none!important;box-shadow:none!important;}
+#modalJobSelectContainer select:focus-visible,#tab-settings .ito-settings-job-select select:focus-visible,#tab-settings .settings-job-card select:focus-visible{outline:2px solid #4c87d5!important;outline-offset:1px!important;}
+/* カレンダー凡例は少しだけ読みやすく、狭い端末では収まるよう調整 */
+#calendarJobLegend .calendar-legend-first-row .calendar-legend-label{font-size:clamp(11px,3.25vw,14px)!important;letter-spacing:-.03em;padding:4px 4px!important;}
+#calendarJobLegend .calendar-legend-first-row .calendar-payday-legend{font-size:clamp(11px,3.25vw,14px)!important;letter-spacing:-.03em;}
+#calendarJobLegend .calendar-legend-second-row .calendar-legend-label{font-size:14px!important;}
+</style>
 </head>
 <body class="flex justify-center p-1 sm:p-2 relative min-h-screen items-center">
 
@@ -791,6 +806,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
         <div class="space-y-1.5 border-t border-stone-100 pt-2"><span id="modalShiftListHeading" class="shift-section-title">【この日のシフト一覧】</span><div id="modalSelectedDateSummaryContent" class="space-y-2 pt-1"></div></div>
         <div class="space-y-2 border-t border-stone-100 pt-2"><div class="flex items-center justify-between"><span class="shift-section-title">【勤務時間を登録】</span><button type="button" onclick="registerNewPresetAndRegister()" class="px-4 py-1.5 bg-rose-900 text-white rounded-xl text-sm font-bold">登録</button></div><div id="modalCustomPresetContainer" class="space-y-2"></div></div>
         <div class="flex items-center justify-between gap-2 border-t border-stone-100 pt-2"><span class="shift-section-title">【ワンタッチ時間登録】</span><button type="button" onclick="openPresetRegisterModal()" class="px-3 py-1.5 rounded-xl bg-pink-50 text-rose-900 border border-rose-200 font-bold text-sm">＋ 新規登録</button></div>
+        <div class="space-y-1.5 border-t border-stone-100 pt-2"><span class="shift-section-title">【ワンタッチ時間登録一覧】</span><p class="text-xs font-bold text-stone-600">※ここでは時間の修正はできません。</p><div id="modalPresetContainer" class="space-y-2 text-xs"></div></div>
       </div>
 
       <div id="shiftScrollHint" class="shrink-0 text-center text-[11px] font-bold text-stone-400 py-1 hidden" aria-hidden="true">↓ 下に続きがあります</div>
@@ -3009,10 +3025,10 @@ html, body { max-width: 100%; overflow-x: hidden; }
         const colorCls = isSunHol ? "text-rose-600" : (isSat ? "text-sky-600" : "text-stone-800");
         
         let dayClass = `p-1 rounded-xl font-bold flex flex-col items-center justify-center min-h-[52px] ${colorCls} `;
-        if (isToday) dayClass += "bg-rose-50 border-2 border-rose-300 shadow-[0_1px_2px_rgba(0,0,0,0.05)]";
+        if (isToday) dayClass += "today-champagne-gold border-2";
         else dayClass += "bg-stone-50/70 border border-stone-200/70";
         dayClass += " cursor-pointer";
-        if (dateStr === calSelectedDateStr) dayClass += " ring-2 ring-rose-500";
+        // 選択した日付の強調枠は付けない（今日の表示だけ残す）
 
         let dayNumDisplay = isPayday 
           ? `<div class="flex items-center justify-center"><span class="text-base font-bold leading-tight">${d.getDate()}</span>${paydayHtml}</div>`
